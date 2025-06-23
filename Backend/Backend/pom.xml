@@ -8,10 +8,10 @@
     <name>Backend</name>
     <description>Backend</description>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring-boot.version>2.6.13</spring-boot.version>
+        <spring-boot.version>3.0.1</spring-boot.version>
     </properties>
     <dependencies>
         <dependency>
@@ -71,7 +71,6 @@
                     <execution>
                         <id>repackage</id>
                         <goals>
-                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>
