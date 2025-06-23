@@ -1,11 +1,18 @@
 package com.team.backend.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/23
  * @Time: 16:36
  * @Description: 帖子实体类
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Post {
     // 帖子唯一标识
     private Integer ID;

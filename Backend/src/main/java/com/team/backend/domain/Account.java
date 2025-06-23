@@ -1,11 +1,18 @@
 package com.team.backend.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/23
  * @Time: 16:39
  * @Description: 账户信息
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Account {
     // 用户昵称
     private String nickname;
