@@ -41,6 +41,8 @@ nbdist/
 *.log
 *.xml.versionsBackup
 *.swp
+application.yml
+application-druid.yml
 
 !*/build/*.java
 !*/build/*.html
