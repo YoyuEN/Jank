@@ -74,7 +74,7 @@ spring:
     # 数据库索引
     database: 0
     # 密码
-    password: 242431
+#    password: Yx049999
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -98,7 +98,7 @@ token:
   expireTime: 30
 
 # MyBatis配置
-mybatis:
+mybatis-plus:
   # 搜索指定包别名
   typeAliasesPackage: com.ruoyi.**.domain
   # 配置mapper的扫描，找到所有的mapper.xml映射文件
