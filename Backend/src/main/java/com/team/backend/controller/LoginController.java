@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     /*
-    * func LoginAccount(c echo.Context) error {
+    func LoginAccount(c echo.Context) error {
 	req := new(dto.LoginRequest)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, vo.Fail(c, err, bizErr.New(bizErr.BAD_REQUEST, err.Error())))
@@ -36,5 +36,12 @@ public class LoginController {
 
 	return c.JSON(http.StatusOK, vo.Success(c, response))
 }
-    * */
+    */
+//    @RequestMapping("/login")
+//    public AjaxResult login() {
+//        return "login";
+//    }
+
+
+}
 
