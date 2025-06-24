@@ -14,6 +14,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Verification {
+    private String verificationId;
     // 图片的base64编码
     private String ImgBase64;
+    // 创建时间
+    private String createTime;
+    //修改时间
+    private String updateTime;
+    // 删除状态
+    private int deleted;
 }

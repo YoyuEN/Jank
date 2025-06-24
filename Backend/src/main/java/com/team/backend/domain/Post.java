@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Post {
     // 帖子唯一标识
-    private Integer ID;
+    private String postId;
     // 帖子标题
     private String Title;
     // 帖子封面图片 URL
@@ -25,5 +25,11 @@ public class Post {
     // 帖子 HTML 格式内容
     private String ContentHTML;
     // 帖子所属分类 ID
-    private Integer CategoryID;
+    private String categoryId;
+    // 创建时间
+    private String createTime;
+    //修改时间
+    private String updateTime;
+    // 删除状态
+    private int deleted;
 }

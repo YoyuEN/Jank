@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Category {
     // 类目唯一标识
-    private String ID;
+    private String categoryId;
     // 类目名称
     private String name;
     // 类目描述
@@ -30,4 +30,10 @@ public class Category {
     // 子类目列表
     @TableField(exist = false)
     private List<Category> children;
+    // 创建时间
+    private String createTime;
+    //修改时间
+    private String updateTime;
+    // 删除状态
+    private int deleted;
 }

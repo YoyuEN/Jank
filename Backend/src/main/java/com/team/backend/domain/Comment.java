@@ -18,16 +18,22 @@ import java.util.List;
 @NoArgsConstructor
 public class Comment {
     // 评论唯一标识
-    private Integer ID;
+    private String commentId;
     // 评论内容
     private String content;
     // 评论所属用户ID
-    private Integer userID;
+    private String userId;
     // 评论所属文章ID
-    private Integer postID;
+    private String postId;
     // 回复的目标评论ID
-    private Integer replyToCommentId;
+    private String replyToCommentId;
     // 子评论列表
     @TableField(exist = false)
     private List<Comment> replies;
+    // 创建时间
+    private String createTime;
+    //修改时间
+    private String updateTime;
+    // 删除状态
+    private int deleted;
 }

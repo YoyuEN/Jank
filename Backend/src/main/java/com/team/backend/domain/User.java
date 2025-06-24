@@ -1,5 +1,6 @@
 package com.team.backend.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Account {
+public class User {
+    @TableId
+    private String userId;
     // 用户昵称
     private String nickname;
     // 用户邮箱
@@ -24,5 +27,11 @@ public class Account {
     private String accessToken;
     // 刷新令牌
     private String refreshToken;
+    // 创建时间
+    private String createTime;
+    //修改时间
+    private String updateTime;
+    // 删除状态
+    private int deleted;
 
 }
