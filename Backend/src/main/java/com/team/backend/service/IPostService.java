@@ -1,7 +1,10 @@
 package com.team.backend.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.team.backend.domain.Post;
+
+import java.util.List;
 
 /**
  * @Author: YoyuEN
@@ -10,4 +13,5 @@ import com.team.backend.domain.Post;
  * @Description:
  */
 public interface IPostService extends IService<Post> {
+    Page<Post> getPosts(int pageSize, int page);
 }
