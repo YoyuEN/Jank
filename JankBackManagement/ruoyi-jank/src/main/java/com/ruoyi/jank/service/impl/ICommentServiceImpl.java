@@ -1,17 +1,38 @@
 package com.ruoyi.jank.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.jank.domain.Comment;
-import com.ruoyi.jank.domain.User;
+import com.ruoyi.jank.domain.dto.CommentDto;
 import com.ruoyi.jank.mapper.CommentMapper;
-import com.ruoyi.jank.mapper.UserMapper;
 import com.ruoyi.jank.service.ICommentService;
-import com.ruoyi.jank.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * author: wuyinai
  * date: 2025/6/24
  */
 @Service
 public class ICommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements ICommentService {
+    @Override
+    //查询评论列表
+    public List<CommentDto> selectCommentList(Comment comment) {
+        //实例化集合
+        List<CommentDto> CommentDtoList=new ArrayList<>();
+        LambdaQueryWrapper<Comment> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(comment.getContent()),Comment::getContent,comment.getContent());
+        List<Comment> CommentList=list(lambdaQueryWrapper);
+        CommentList.forEach(c->{
+            CommentDto CommentDto=new CommentDto();
+            BeanUtils.copyProperties(c,CommentDto);
+            CommentDtoList.add(CommentDto);
+        });
+        return CommentDtoList;
+    }
 }
