@@ -2,7 +2,7 @@ package com.ruoyi.jank.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.jank.domain.Category;
-import com.ruoyi.jank.domain.User;
+import com.ruoyi.jank.domain.CommonUser;
 import com.ruoyi.jank.domain.dto.CategoryDto;
 
 import java.util.List;
