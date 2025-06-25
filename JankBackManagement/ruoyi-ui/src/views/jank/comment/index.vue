@@ -79,7 +79,8 @@
 
     <el-table v-loading="loading" :data="commentList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="评论内容" align="center" prop="content" />
+
+      <el-table-column label="评论内容" align="center" prop="content" :formatter="removePTags" />
       <el-table-column label="评论所属用户ID" align="center" prop="userId" />
       <el-table-column label="评论所属文章ID" align="center" prop="postId" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -111,38 +112,20 @@
     />
 
     <!-- 添加或修改评论功能对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="评论内容">
-          <editor v-model="form.content" :min-height="192"/>
-        </el-form-item>
+    <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="评论所属用户ID" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入评论所属用户ID" />
         </el-form-item>
+        <el-form-item label="评论内容" prop="content">
+          <editor v-model="form.content" :min-height="192"/>
+        </el-form-item>
+
         <el-form-item label="评论所属文章ID" prop="postId">
           <el-input v-model="form.postId" placeholder="请输入评论所属文章ID" />
         </el-form-item>
-        <el-form-item label="回复的目标评论ID" prop="replyToCommentId">
+        <el-form-item label="回复目标评论ID" prop="replyToCommentId">
           <el-input v-model="form.replyToCommentId" placeholder="请输入回复的目标评论ID" />
-        </el-form-item>
-        <el-form-item label="创建时间" prop="createdAt">
-          <el-date-picker clearable
-                          v-model="form.createdAt"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="请选择创建时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="更新时间" prop="updatedAt">
-          <el-date-picker clearable
-                          v-model="form.updatedAt"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="请选择更新时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="是否删除" prop="deleted">
-          <el-input v-model="form.deleted" placeholder="请输入是否删除" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -197,6 +180,10 @@ export default {
         content: [
           { required: true, message: "评论内容不能为空", trigger: "blur" }
         ],
+        userId: [
+          { required: true, message: "类目描述不能为空", trigger: "blur" }],
+        postId: [
+          { required: true, message: "类目描述不能为空", trigger: "blur" }],
       }
     };
   },
@@ -299,6 +286,12 @@ export default {
       this.download('jank/comment/export', {
         ...this.queryParams
       }, `comment_${new Date().getTime()}.xlsx`)
+    },
+    removePTags(row, column, cellValue) {
+      if (cellValue) {
+        return cellValue.replace(/<p>/g, '').replace(/<\/p>/g, '');
+      }
+      return '';
     }
   }
 };

@@ -37,7 +37,7 @@ public class Comment implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Excel(name = "评论唯一标识")
-    private String commentId;
+    private Integer commentId;
     @Excel(name = "评论内容")
     private String content;
     @Excel(name = "评论所属用户ID")

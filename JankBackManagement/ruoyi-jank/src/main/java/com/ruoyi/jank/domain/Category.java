@@ -31,7 +31,7 @@ public class Category implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Excel(name = "类目唯一标识")
-    private String categoryId;
+    private Integer categoryId;
     @Excel(name = "类目名称")
     private String name;
     @Excel(name = "类目描述")
