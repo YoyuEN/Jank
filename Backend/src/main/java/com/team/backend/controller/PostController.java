@@ -22,14 +22,14 @@ import java.util.List;
  * @Description:
  */
 @RestController
-@RequestMapping("/v1/post")
+@RequestMapping("/post")
 public class PostController {
     private final IPostService postService;;
     public PostController(IPostService postService) {
         this.postService = postService;
     }
 
-    @GetMapping("/getAllPosts")
+    /*@GetMapping("/getAllPosts")
     public Result<PostPageResult> getPosts(
             @RequestParam int pageSize,
             @RequestParam int page) {
@@ -38,5 +38,11 @@ public class PostController {
         result.setPosts(pageData.getRecords());
         result.setTotalPages((int) pageData.getPages());
         return Result.success(ResponseCode.SUCCESS, result);
+    }*/
+    @GetMapping("/getPostList")
+    public Result<List<Post>> getPostList() {
+        List<Post> posts = postService.list();
+        return Result.success(ResponseCode.SUCCESS, posts);
     }
+
 }

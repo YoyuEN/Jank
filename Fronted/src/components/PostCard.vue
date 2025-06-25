@@ -1,73 +1,54 @@
 <template>
-  <div class="post-card">
-    <div class="thumbnail"></div>
-    <div class="info">
-      <h3 class="title">{{ post.title }}</h3>
-      <p class="excerpt">{{ post.excerpt }}</p>
+  <div v-if="post" class="post-card">
+    <img v-if="post.image" :src="post.image" alt="封面" class="post-image" />
+    <h3 class="post-title">{{ post.title }}</h3>
+    <div class="post-meta">
+      <span class="post-time">{{ post.createTime }}</span>
+      <span class="post-categories">
+        <span v-for="id in post.categoryIds" :key="id" class="category-tag">#{{ id }}</span>
+      </span>
     </div>
+    <div class="post-content" v-html="post.contentHtml.slice(0, 100) + '...'"></div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'PostCard',
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 显示分页
-      showPagination: true,
-      // 显示工具栏
-      showToolbar: true,
-      post: {
-        title: 'Vue.js 3.0',
-        excerpt: 'Vue.js 3.0 is a new major release of Vue.js.',
-      },
-    };
-  },
-};
+<script setup>
+defineProps({
+  post: {
+    type: Object,
+    required: true
+  }
+})
 </script>
-
-
 
 <style scoped>
 .post-card {
-  display: flex;
-  background: #fafafa;
   border: 1px solid #eee;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 16px;
-  padding: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  background: #fff;
 }
-
-.thumbnail {
-  width: 450px;
-  height: 150px;
-  background-color: #eee;
-  margin-right: 16px;
-  border-radius: 4px;
+.post-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
 }
-
-.info {
-  flex: 1;
+.post-title {
+  font-size: 1.2em;
+  margin: 10px 0;
 }
-
-.title {
-  font-size: 18px;
-  margin: 0 0 8px;
-}
-
-.excerpt {
+.post-meta {
+  font-size: 0.9em;
   color: #666;
-  font-size: 14px;
+}
+.category-tag {
+  margin-left: 6px;
+  color: #007acc;
+}
+.post-content {
+  margin-top: 10px;
+  color: #444;
 }
 </style>
