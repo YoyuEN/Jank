@@ -100,7 +100,7 @@
         <el-form-item label="类目名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入类目名称" />
         </el-form-item>
-        <el-form-item label="类目描述" >
+        <el-form-item label="类目描述" prop="description">
           <editor v-model="form.description" :min-height="192" />
         </el-form-item>
         <el-form-item label="父类目ID" prop="parentId">

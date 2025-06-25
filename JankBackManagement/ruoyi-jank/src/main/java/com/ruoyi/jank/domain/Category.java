@@ -1,5 +1,6 @@
 package com.ruoyi.jank.domain;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.annotation.Excel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
