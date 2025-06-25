@@ -2,6 +2,7 @@ package com.ruoyi.jank.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 //用户管理
+@TableName("user")
 public class CommonUser implements Serializable {
     private static final long serialVersionUID = 1L;
     @TableId
