@@ -1,5 +1,6 @@
 package com.ruoyi.jank.domain;
 
+import com.ruoyi.common.annotation.Excel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,12 +30,17 @@ import java.io.Serializable;
 public class Category implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Excel(name = "类目唯一标识")
     private String categoryId;
+    @Excel(name = "类目名称")
     private String name;
+    @Excel(name = "类目描述")
     private String description;
     private String parentId;
     private String path;
+    @Excel(name = "创建时间")
     private String createdAt;
+    @Excel(name = "更新时间")
     private String updatedAt;
     private Integer deleted;
 }

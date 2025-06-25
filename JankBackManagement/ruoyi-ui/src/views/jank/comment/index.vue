@@ -23,14 +23,6 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="回复的目标评论ID" prop="replyToCommentId" label-width="150px">
-            <el-input
-              v-model="queryParams.replyToCommentId"
-              placeholder="请输入回复的目标评论ID"
-              clearable
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
         </el-col>
       </el-row>
       <el-form-item>

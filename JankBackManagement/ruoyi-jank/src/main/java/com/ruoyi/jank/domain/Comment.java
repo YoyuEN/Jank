@@ -1,5 +1,6 @@
 package com.ruoyi.jank.domain;
 
+import com.ruoyi.common.annotation.Excel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,12 +36,18 @@ public class Comment implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @Excel(name = "评论唯一标识")
     private String commentId;
+    @Excel(name = "评论内容")
     private String content;
+    @Excel(name = "评论所属用户ID")
     private String userId;
+    @Excel(name = "评论所属文章ID")
     private String postId;
     private String replyToCommentId;
+    @Excel(name = "创建时间")
     private String createdAt;
+    @Excel(name = "更新时间")
     private String updatedAt;
     private Integer deleted;
 
