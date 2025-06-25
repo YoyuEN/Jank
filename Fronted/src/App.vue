@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="main">
     <AppHeader />
     <router-view />
   </div>
@@ -9,3 +9,21 @@
 import AppHeader from './components/AppHeader.vue'
 </script>
 
+<style>
+.main {
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: left;
+  color: #2c3e50;
+  width: 85%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+</style>

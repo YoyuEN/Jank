@@ -14,7 +14,23 @@ const routes = [
   },
   {
     path: '/',
-    redirect: '/H'
+    redirect: '/home',
+    component: () => import('@/views/Home.vue'),
+  },
+  {
+    path: '/say',
+    name: 'say',
+    component: () => import('@/views/say.vue'),
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: () => import('@/views/Home.vue'),
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: () => import('@/views/About.vue'),
   }
 ];
 
