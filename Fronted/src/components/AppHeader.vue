@@ -10,17 +10,33 @@
       </nav>
     </div>
     <div class="icons">
-      <button @click="toggleTheme">🌙</button>
+      <button @click="toggleTheme">
+        {{ isDarkMode ? '☀️' : '🌙' }}
+      </button>
+
       <button @click="goToProfile">👤</button>
     </div>
   </header>
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue'
+
+const isDarkMode = ref(false);
+
 const toggleTheme = () => {
-  document.body.classList.toggle('dark');
+  isDarkMode.value = !isDarkMode.value;
+  document.body.classList.toggle('dark', isDarkMode.value);
+  localStorage.setItem('theme', isDarkMode.value ? 'dark' : 'light');
 };
 
+onMounted(() => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    isDarkMode.value = true;
+    document.body.classList.add('dark');
+  }
+});
 const goToProfile = () => {
   alert('跳转到用户中心（可替换为路由）');
 };

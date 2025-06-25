@@ -23,11 +23,9 @@ defineProps({
 
 <style scoped>
 .post-card {
-  border: 1px solid #eee;
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 20px;
-  background: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
@@ -49,7 +47,6 @@ defineProps({
 }
 .post-meta {
   font-size: 0.9em;
-  color: #666;
 }
 .category-tag {
   margin-left: 6px;
@@ -57,6 +54,5 @@ defineProps({
 }
 .post-content {
   margin-top: 10px;
-  color: #444;
 }
 </style>

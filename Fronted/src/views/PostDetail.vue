@@ -5,7 +5,7 @@
       <!-- 图片与标题组合 -->
       <div class="post-header">
         <img v-if="post.image" :src="post.image" alt="封面" class="post-image" />
-        <div class="post-title-overlay">
+        <div class="title-overlay">
           <h1 class="post-title">{{ post.title }}</h1>
           <div class="post-meta">
             <span>发布时间：{{ post.createTime }}</span>
@@ -15,8 +15,8 @@
       </div>
 
       <div class="post-body-wrapper">
-        <div class="post-body" v-html="post.contentHtml"></div>
-        <div class="post-author">
+        <div class="post-body card" v-html="post.contentHtml"></div>
+        <div class="post-author card flex-center flex-column">
           <img src="https://www.jank.org.cn/_next/image?url=https%3A%2F%2Fhaowallpaper.com%2Flink%2Fcommon%2Ffile%2FpreviewFileImg%2F16144648753630592&w=1080&q=80" alt="作者头像" class="author-avatar" />
           <span class="author-name">{{ post.title }}</span>
         </div>
@@ -51,11 +51,45 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
+<style>
+.card {
+  border: 1px solid #e1e1e1;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  border-color: #ccc;
+}
+
+.title-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+  color: white;
+  border-radius: 0 0 8px 8px;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
 .post-detail-container {
   padding: 24px;
-  margin: 40px auto 0; /* 距离顶部 100px，左右自动居中 */
+  margin: 40px auto 0;
 }
+
 .post-header {
   position: relative;
   width: 100%;
@@ -67,52 +101,23 @@ onMounted(async () => {
   object-fit: cover;
   border-radius: 8px;
   display: block;
-}
-.post-title-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
-  color: white;
-  border-radius: 0 0 8px 8px;
+  margin-bottom: 20px;
 }
 
 .post-title {
   font-size: 2em;
   margin-bottom: 16px;
 }
+
 .post-meta {
   font-size: 0.9em;
   color: #666;
   margin-bottom: 16px;
 }
+
 .category-tag {
   margin-left: 6px;
   color: #007acc;
-}
-.post-image {
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-.post-body {
-  flex: 1;
-  line-height: 1.6;
-  color: #333;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #fafafa;
-  transition: all 0.3s ease;
-}
-.post-body:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-  border-color: #ccc;
 }
 
 .loading,
@@ -120,35 +125,15 @@ onMounted(async () => {
   text-align: center;
   padding: 40px;
   font-size: 1.2em;
-  color: #888;
-}
-.post-body-wrapper {
-  display: flex;
-  gap: 5%; /* 可选间距 */
-  margin-top: 32px;
-}
-.post-author {
-  width: 20%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  border: 1px dashed #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #f9f9f9;
-  transition: all 0.3s ease;
-  cursor: pointer;
 }
 
-.post-author:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-  border-color: #aaa;
+.post-body-wrapper {
+  display: flex;
+  gap: 5%;
+  margin-top: 32px;
 }
-.post-author:active {
-  transform: scale(0.98);
-  opacity: 0.8;
+.post-body {
+  width: 70%;
 }
 .author-avatar {
   width: 80px;
@@ -157,8 +142,10 @@ onMounted(async () => {
   object-fit: cover;
   margin-bottom: 12px;
 }
+
 .author-name {
   font-weight: bold;
   margin-top: 8px;
 }
+
 </style>
