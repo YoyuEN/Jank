@@ -21,7 +21,7 @@ defineProps({
 })
 </script>
 
-<style scoped>
+<style>
 .post-card {
   padding: 16px;
   border-radius: 12px;

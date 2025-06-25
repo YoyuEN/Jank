@@ -33,7 +33,7 @@ import AppHeader from './components/AppHeader.vue'
 }
 
 .dark .navbar {
-  background-color: rgba(30, 30, 30, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
   border-bottom-color: rgba(255, 255, 255, 0.1);
   color: white;
 }
@@ -93,7 +93,7 @@ body {
 .dark .post-body:hover,
 .dark .post-card:hover,
 .dark .post-author:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(66, 66, 66, 0.25);
   border-color: #666; /* 悬浮时变为稍亮的灰色 */
 }
 </style>
