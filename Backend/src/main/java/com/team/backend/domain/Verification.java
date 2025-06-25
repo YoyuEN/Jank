@@ -1,5 +1,6 @@
 package com.team.backend.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Verification {
+    @TableId
     private String verificationId;
     // 图片的base64编码
     private String ImgBase64;

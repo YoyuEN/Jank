@@ -24,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/post")
 public class PostController {
+
     private final IPostService postService;;
     public PostController(IPostService postService) {
         this.postService = postService;
@@ -43,6 +44,12 @@ public class PostController {
     public Result<List<Post>> getPostList() {
         List<Post> posts = postService.list();
         return Result.success(ResponseCode.SUCCESS, posts);
+    }
+
+    @GetMapping("/getPostDetail")
+    public Result<Post> getPostDetail(@RequestParam String postId) {
+        Post post = postService.getById(postId);
+        return Result.success(ResponseCode.SUCCESS, post);
     }
 
 }

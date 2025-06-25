@@ -12,6 +12,5 @@ import org.springframework.stereotype.Repository;
  * @Description:
  */
 @Mapper
-@Repository
 public interface CategoryMapper extends BaseMapper<Category> {
 }

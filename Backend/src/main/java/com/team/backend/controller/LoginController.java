@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @Description:
  */
 @RestController
-@RequestMapping("/v1/account")
-@CrossOrigin(origins = "http://localhost:3000") // 允许特定源
+@RequestMapping("/account")
+//@CrossOrigin(origins = "http://localhost:3000") // 允许特定源
 public class LoginController {
     private final IUserService userService;
 

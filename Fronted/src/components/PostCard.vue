@@ -1,5 +1,5 @@
 <template>
-  <div v-if="post" class="post-card">
+  <div v-if="post" class="post-card" @click="$router.push(`/post/${post.postId}`)">
     <img v-if="post.image" :src="post.image" alt="封面" class="post-image" />
     <h3 class="post-title">{{ post.title }}</h3>
     <div class="post-meta">

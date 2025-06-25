@@ -1,6 +1,7 @@
 package com.team.backend.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.team.backend.handler.CategoryIdsTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Post {
     // 帖子唯一标识
+    @TableId
     private String postId;
     // 帖子标题
     private String title;

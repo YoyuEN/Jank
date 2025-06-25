@@ -1,6 +1,7 @@
 package com.team.backend.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Comment {
     // 评论唯一标识
+    @TableId
     private String commentId;
     // 评论内容
     private String content;
