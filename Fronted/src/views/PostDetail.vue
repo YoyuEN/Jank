@@ -17,17 +17,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getPostById } from '@/api/posts/posts.js'
+import { getPostDetail } from '@/api/posts/posts.js'
 
 const route = useRoute()
-const postId = route.params.id
+const postId = route.params.postId
 
 const post = ref(null)
 const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const response = await getPostById(postId)
+    const response = await getPostDetail(postId)
     if (response.code === 200) {
       post.value = response.data
     }

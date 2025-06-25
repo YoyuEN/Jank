@@ -1,12 +1,14 @@
 <template>
   <header class="navbar">
-    <div class="logo">Jank</div>
-    <nav class="menu">
-      <router-link to="/" >首页</router-link>
-      <router-link to="/posts" >文章</router-link>
-      <router-link to="/say" >说说</router-link>
-      <router-link to="/about" >关于</router-link>
-    </nav>
+    <div class="lm">
+      <div class="logo">Jank</div>
+      <nav class="menu">
+        <router-link to="/" >首页</router-link>
+        <router-link to="/posts" >文章</router-link>
+        <router-link to="/say" >说说</router-link>
+        <router-link to="/about" >关于</router-link>
+      </nav>
+    </div>
     <div class="icons">
       <button @click="toggleTheme">🌙</button>
       <button @click="goToProfile">👤</button>
@@ -38,10 +40,14 @@ const goToProfile = () => {
   font-weight: bold;
   font-size: 18px;
 }
-
+.lm {
+  display: flex;
+  align-items: center;
+}
 .menu {
   display: flex;
   gap: 20px;
+  margin-left: 20px;
 }
 
 .menu a {
