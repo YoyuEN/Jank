@@ -58,6 +58,7 @@ export default {
 .posts-container {
   padding: 24px;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 40px auto 0; /* 距离顶部 100px，左右自动居中 */
 }
+
 </style>

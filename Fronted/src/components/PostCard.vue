@@ -28,7 +28,15 @@ defineProps({
   border-radius: 12px;
   margin-bottom: 20px;
   background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
+
+.post-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
 .post-image {
   width: 100%;
   max-height: 200px;

@@ -4,7 +4,7 @@
       <div class="logo">Jank</div>
       <nav class="menu">
         <router-link to="/" >首页</router-link>
-        <router-link to="/posts" >文章</router-link>
+        <router-link to="/posts" >帖子</router-link>
         <router-link to="/say" >说说</router-link>
         <router-link to="/about" >关于</router-link>
       </nav>
@@ -32,14 +32,24 @@ const goToProfile = () => {
   justify-content: space-between;
   align-items: center;
   padding: 10px 24px;
-  border-bottom: 1px solid #eee;
-  background-color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  position: fixed;
+  width: 70%;
+  left: 50%;
+  transform: translateX(-50%); /* 水平居中 */
+  top: 0;
 }
+
 
 .logo {
   font-weight: bold;
   font-size: 18px;
 }
+
 .lm {
   display: flex;
   align-items: center;

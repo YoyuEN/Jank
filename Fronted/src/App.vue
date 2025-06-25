@@ -17,7 +17,7 @@ import AppHeader from './components/AppHeader.vue'
 }
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: KaiTi, SimKai, 'Noto Serif SC', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
