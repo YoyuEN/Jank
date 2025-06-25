@@ -2,10 +2,10 @@
   <header class="navbar">
     <div class="logo">Jank</div>
     <nav class="menu">
-      <router-link to="/">首页</router-link>
-      <router-link to="/posts">文章</router-link>
-      <router-link to="/about">关于</router-link>
-      <router-link to="/thanks">鸣谢</router-link>
+      <router-link to="/" >首页</router-link>
+      <router-link to="/posts" >文章</router-link>
+      <router-link to="/say" >说说</router-link>
+      <router-link to="/about" >关于</router-link>
     </nav>
     <div class="icons">
       <button @click="toggleTheme">🌙</button>

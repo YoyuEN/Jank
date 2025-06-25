@@ -1,8 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Posts from '@/views/Posts.vue';
+import PostList from '@/views/PostList.vue';
 
 const routes = [
-  { path: '/posts', name: 'Posts', component: Posts },
+  {
+    path: '/posts',
+    name: 'PostList',
+    component: PostList
+  },
+  {
+    path: '/posts/:postId',
+    name: 'PostDetail',
+    component: () => import('@/views/PostDetail.vue')
+  },
+  {
+    path: '/',
+    redirect: '/H'
+  }
 ];
 
 const router = createRouter({

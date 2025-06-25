@@ -1,7 +1,7 @@
 package com.ruoyi.jank.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ruoyi.jank.domain.Post;
+import com.ruoyi.jank.domain.CommonUser;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -9,5 +9,6 @@ import org.apache.ibatis.annotations.Mapper;
  * date: 2025/6/24
  */
 @Mapper
-public interface PostMapper extends BaseMapper<Post> {
+public interface CommonUserMapper extends BaseMapper<CommonUser> {
+
 }

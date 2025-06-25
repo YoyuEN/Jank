@@ -11,7 +11,7 @@
  Target Server Version : 80036 (8.0.36)
  File Encoding         : 65001
 
- Date: 24/06/2025 11:18:11
+ Date: 25/06/2025 10:19:23
 */
 
 SET NAMES utf8mb4;
@@ -84,7 +84,7 @@ CREATE TABLE `gen_table`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`table_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '代码生成业务表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '代码生成业务表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of gen_table
@@ -118,7 +118,7 @@ CREATE TABLE `gen_table_column`  (
   `update_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '更新者',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`column_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '代码生成业务表字段' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '代码生成业务表字段' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of gen_table_column
@@ -134,9 +134,9 @@ CREATE TABLE `post`  (
   `image` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '帖子封面图片URL',
   `visibility` tinyint(1) NULL DEFAULT 1 COMMENT '帖子可见性状态',
   `content_html` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '帖子HTML格式内容',
-  `category_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '帖子所属分类ID',
-  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `category_ids` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '帖子所属分类ID',
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted` int NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`post_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '帖子表' ROW_FORMAT = Dynamic;
@@ -144,6 +144,12 @@ CREATE TABLE `post`  (
 -- ----------------------------
 -- Records of post
 -- ----------------------------
+INSERT INTO `post` VALUES ('post_001', '前端框架对比：React vs Vue', NULL, 1, '<p>本文将从性能、生态、学习曲线等方面对比两大前端框架...</p>', 'category_001,category_002', '2025-06-24 16:41:49', '2025-06-24 20:27:48', 0);
+INSERT INTO `post` VALUES ('post_002', '后端API设计最佳实践', NULL, 1, '<p>介绍RESTful API设计原则、版本控制、错误处理等内容...</p>', 'category_001,category_002', '2025-06-24 16:41:49', '2025-06-24 20:27:48', 0);
+INSERT INTO `post` VALUES ('post_003', '数据库索引优化技巧', NULL, 1, '<p>深入解析B+树索引、覆盖索引、索引下推等优化策略...</p>', 'category_001,category_002', '2025-06-24 16:41:49', '2025-06-24 20:27:48', 0);
+INSERT INTO `post` VALUES ('post_004', '云计算架构演进史', 'https://example.com/images/cloud_architecture.jpg', 0, '<p>从传统IDC到容器云、Serverless的技术演进过程...</p>', 'category_001,category_002', '2025-06-24 16:41:50', '2025-06-24 20:27:48', 0);
+INSERT INTO `post` VALUES ('post_005', '移动端性能优化实战', 'https://example.com/images/mobile_optimization.jpg', 1, '<p>介绍首屏加载、资源压缩、懒加载等优化手段...</p>', 'category_001,category_002', '2025-06-24 16:41:50', '2025-06-24 20:27:48', 0);
+INSERT INTO `post` VALUES ('post_006', '过时的技术：Flash开发指南', NULL, 1, '<p>回顾Flash技术的发展与应用场景...</p>', 'category_004', '2025-06-24 16:41:50', '2025-06-24 16:41:50', 1);
 
 -- ----------------------------
 -- Table structure for sys_config
@@ -785,11 +791,13 @@ CREATE TABLE `user`  (
   `user_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主键ID',
   `nickname` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户昵称',
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户邮箱',
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户手机号',
   `access_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '访问令牌',
   `refresh_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '刷新令牌',
-  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted` int NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`user_id`) USING BTREE,
   UNIQUE INDEX `email`(`email` ASC) USING BTREE,
@@ -799,6 +807,7 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
+INSERT INTO `user` VALUES ('32131221312', '', '15839393171@163.com', NULL, '123123', NULL, NULL, NULL, '2025-06-24 15:39:22', '2025-06-24 15:39:22', 0);
 
 -- ----------------------------
 -- Table structure for verification
