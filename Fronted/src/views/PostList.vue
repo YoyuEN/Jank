@@ -5,7 +5,7 @@
     <PostCard v-for="post in posts" :key="post.postId" :post="post" />
   </div>
     <div class="sidebar-buttons">
-      <button @click="showCommentPanel = true" title="发布帖子" class="sidebar-btn">📝</button>
+      <button @click="showCommentPanel = true" title="发布帖子" class="sidebar-btn" >📝</button>
       <button @click="scrollToTop" title="回到顶部" class="sidebar-btn">⬆️</button>
     </div>
   </div>

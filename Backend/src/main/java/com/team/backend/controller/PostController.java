@@ -3,15 +3,14 @@ package com.team.backend.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.team.backend.domain.Post;
 import com.team.backend.domain.dto.PostPageResult;
+import com.team.backend.domain.vo.LoginUserVO;
+import com.team.backend.domain.vo.PostVO;
 import com.team.backend.service.IPostService;
 import com.team.backend.service.IUserService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -50,6 +49,12 @@ public class PostController {
     public Result<Post> getPostDetail(@RequestParam String postId) {
         Post post = postService.getById(postId);
         return Result.success(ResponseCode.SUCCESS, post);
+    }
+    @PostMapping("/addPostDetail")
+    public Result<PostVO> addPost(@RequestBody PostVO postVO) {
+        postService.addPost(postVO);
+        return Result.success(ResponseCode.SUCCESS);
+
     }
 
 }

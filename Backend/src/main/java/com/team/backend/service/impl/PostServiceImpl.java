@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.team.backend.domain.Post;
 import com.team.backend.domain.dto.PostPageResult;
+import com.team.backend.domain.vo.PostVO;
 import com.team.backend.mapper.PostMapper;
 import com.team.backend.service.IPostService;
 import com.team.backend.utils.ResponseCode;
@@ -55,5 +56,22 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         System.out.println("当前页记录: " + pageData.getRecords().size());
 
         return pageData;
+    }
+    //新增帖子
+    @Override
+    public int addPost(PostVO postVO) {
+        if(postVO.getImage() == null){
+            postVO.setImage("https://pic.imgdb.cn/item/64cf07a61ddac507cc7501cc.jpg");
+        }
+        if(postVO.getTitle() == null&&postVO.getContentHtml() == null&&postVO.getCategoryIds() == null){
+            return 0;
+        }
+        Post post = new Post();
+        post.setTitle(postVO.getTitle());
+        post.setImage(postVO.getImage());
+        post.setContentHtml(postVO.getContentHtml());
+        post.setCategoryIds(postVO.getCategoryIds());
+        super.save(post);
+        return 1;
     }
 }

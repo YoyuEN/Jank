@@ -26,31 +26,34 @@
           @change="handleImageUpload"
           class="form-input"
         >
-        <div class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        <div class="el-upload__tip">只能上传jpg/png文件，且不超过1mb</div>
         <span v-if="errors.image">{{ errors.image }}</span>
       </div>
       <div class="form-group">
         <label for="content">内容</label>
-        <textarea
-          id="content"
-          v-model="postForm.content"
-          placeholder="请输入帖子内容"
-          class="form-textarea"
-          rows="10"
-        ></textarea>
-        <span class="error-text" v-if="errors.content">{{ errors.content }}</span>
+        <div class="markdown-editor">
+          <textarea
+            id="content"
+            v-model="postForm.contentHtml"
+            placeholder="请输入帖子内容（支持Markdown语法）"
+            class="form-textarea markdown-textarea"
+            rows="10"
+          ></textarea>
+          <div class="markdown-preview" v-html="markedContent"></div>
+        </div>
+        <span class="error-text" v-if="errors.contentHtml">{{ errors.contentHtml }}</span>
       </div>
 
       <div class="form-group">
         <label for="category">分类</label>
-        <select id="category" v-model="postForm.category" class="form-select">
+        <select id="category" v-model="postForm.categoryIds" class="form-select">
           <option value="">请选择分类</option>
           <option value="technology">技术</option>
           <option value="life">生活</option>
           <option value="discussion">讨论</option>
           <option value="question">问答</option>
         </select>
-        <span class="error-text" v-if="errors.category">{{ errors.category }}</span>
+        <span class="error-text" v-if="errors.categoryIds">{{ errors.categoryIds }}</span>
       </div>
 
       <div class="form-actions">
@@ -64,22 +67,40 @@
 </template>
 
 <script>
+import * as marked from 'marked';
+import DOMPurify from 'dompurify';
+import { addPostDetail } from '@/api/posts/posts.js'
+import { ElMessage } from 'element-plus';
+
 export default {
   name: 'PublishPost',
   data() {
     return {
       postForm: {
         title: '',
-        content: '',
-        category: '',
-        image:null
+        image: '',
+        contentHtml: '',
+        categoryIds: ''
       },
       errors: {
         title: '',
-        content: '',
-        category: ''
+        contentHtml: '',
+        categoryIds: ''
       },
       publishing: false
+    }
+  },
+  computed: {
+    markedContent() {
+      const sanitize = (html) => {
+        return DOMPurify.sanitize(html);
+      };
+
+      return marked.parse(this.postForm.contentHtml || '', {
+        renderer: new marked.Renderer(),
+        sanitize: true,
+        sanitizer: sanitize
+      });
     }
   },
   methods: {
@@ -94,7 +115,7 @@ export default {
         }
 
         // 校验文件大小（不超过 500KB）
-        if (file.size > 500 * 1024) {
+        if (file.size > 1024*1024) {
           this.errors.image = '图片大小不能超过 500KB';
           event.target.value = ''; // 清空选择的文件
           return;
@@ -109,11 +130,11 @@ export default {
       let isValid = true
       this.errors = {
         title: '',
-        content: '',
-        category: ''
+        contentHtml: '',
+        categoryIds: ''
       }
 
-      if (!this.postForm.title.trim()) {
+      if (!this.postForm.title || !this.postForm.title.trim()) {
         this.errors.title = '请输入帖子标题'
         isValid = false
       } else if (this.postForm.title.length > 100) {
@@ -121,13 +142,13 @@ export default {
         isValid = false
       }
 
-      if (!this.postForm.content.trim()) {
-        this.errors.content = '请输入帖子内容'
+      if (!this.postForm.contentHtml || !this.postForm.contentHtml.trim()) {
+        this.errors.contentHtml = '请输入帖子内容'
         isValid = false
       }
 
-      if (!this.postForm.category) {
-        this.errors.category = '请选择帖子分类'
+      if (!this.postForm.categoryIds) {
+        this.errors.categoryIds = '请选择帖子分类'
         isValid = false
       }
 
@@ -136,29 +157,27 @@ export default {
 
     async handlePublish() {
       if (!this.validateForm()) {
-        return
+        return "发布失败"
       }
 
       this.publishing = true
 
       try {
         // 发送请求发布帖子
-        const response = await this.$axios.post('/api/posts', this.postForm)
+        const response = await addPostDetail(this.postForm)
 
         if (response.data.code === 200) {
           // 发布成功
-          this.$message.success('帖子发布成功！')
+          ElMessage.success('帖子发布成功！')
           // 跳转到帖子列表或帖子详情页
-          this.$router.push({
-            name: 'PostDetail',
-            params: { id: response.data.data.id }
-          })
+          this.$router.push('/posts')
+
         } else {
-          this.$message.error(response.data.message || '发布失败，请重试')
+          ElMessage.error(response.data.message || '发布失败，请重试')
         }
       } catch (error) {
         console.error('发布帖子失败:', error)
-        this.$message.error('服务器错误，请稍后重试')
+        ElMessage.error('服务器错误，请稍后重试')
       } finally {
         this.publishing = false
       }
@@ -293,5 +312,26 @@ export default {
 .btn-publish:disabled {
   background: #a0cfff;
   cursor: not-allowed;
+}
+
+.markdown-editor {
+  display: flex;
+  gap: 20px;
+}
+
+.markdown-textarea {
+  flex: 1;
+  width: 50%;
+  border-right: 1px solid #e4e4e4;
+  resize: vertical;
+}
+
+.markdown-preview {
+  flex: 1;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #e4e4e4;
+  border-radius: 4px;
+  min-height: 200px;
 }
 </style>
