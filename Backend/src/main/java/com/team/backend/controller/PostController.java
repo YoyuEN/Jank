@@ -30,16 +30,6 @@ public class PostController {
         this.postService = postService;
     }
 
-    /*@GetMapping("/getAllPosts")
-    public Result<PostPageResult> getPosts(
-            @RequestParam int pageSize,
-            @RequestParam int page) {
-        Page<Post> pageData = postService.getPosts(pageSize, page);
-        PostPageResult result = new PostPageResult();
-        result.setPosts(pageData.getRecords());
-        result.setTotalPages((int) pageData.getPages());
-        return Result.success(ResponseCode.SUCCESS, result);
-    }*/
     @GetMapping("/getPostList")
     public Result<List<Post>> getPostList() {
         List<Post> posts = postService.list();
@@ -47,7 +37,7 @@ public class PostController {
     }
 
     @GetMapping("/getPostDetail")
-    public Result<Post> getPostDetail(@RequestParam String postId) {
+    public Result<Post> getPostDetail(@RequestParam("postId") String postId) {
         Post post = postService.getById(postId);
         return Result.success(ResponseCode.SUCCESS, post);
     }

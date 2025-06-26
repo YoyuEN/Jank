@@ -36,10 +36,24 @@
 
       <div class="post-body-wrapper">
         <div class="post-body card" v-html="post.contentHtml"></div>
-        <div class="ai-summary card">
-          <h2 class="summary-title">AI 摘要</h2>
-          <div class="summary-content">
-            <p>这里是 AI 根据文章内容自动生成的摘要文字。你可以将实际摘要内容通过接口获取后绑定到此处，或使用前端解析逻辑生成简要概述。</p>
+        <div class="right-panel">
+          <!-- AI 摘要卡片 -->
+          <div class="ai-summary card">
+            <h2 class="summary-title">AI 摘要</h2>
+            <div class="summary-content">
+              <p>这里是 AI 根据文章内容自动生成的摘要文字。</p>
+            </div>
+          </div>
+          <!-- 目录卡片：与 ai-summary 平级 -->
+          <div class="toc-card card" v-if="tocItems.length > 0">
+            <h3 class="toc-title">目录</h3>
+            <ul class="toc-list">
+              <li v-for="item in tocItems" :key="item.id" :class="`toc-level-${item.level}`">
+                <a :href="`#${item.id}`" @click.prevent="scrollToHeading(item)">
+                  {{ item.text }}
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -52,13 +66,14 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPostDetail } from '@/api/posts/posts.js'
+import { marked } from 'marked'
 
 const route = useRoute()
 const postId = route.params.postId
-
+const tocItems = ref([])
 const post = ref(null)
 const loading = ref(true)
-
+const activeTocItem = ref(null)
 const showCommentPanel = ref(false)
 const newComment = ref('')
 
@@ -70,9 +85,46 @@ const submitComment = () => {
     showCommentPanel.value = false
   }
 }
+const generateTOC = (htmlContent) => {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(htmlContent, 'text/html')
+  const headings = Array.from(doc.querySelectorAll('h1, h2, h3, h4'))
+
+  const toc = headings.map((heading, index) => {
+    // 生成唯一 id，如果没有则添加
+    const id = heading.id || `toc-${index}`
+    heading.id = id // 修改原始 DOM
+    return {
+      id,
+      text: heading.textContent.trim(),
+      level: parseInt(heading.tagName[1], 10)
+    }
+  })
+
+  // 替换 post.contentHtml 中的 heading（带上 id）
+  post.value.contentHtml = doc.body.innerHTML
+
+  return toc
+}
+
 
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// 使用 marked 将 Markdown 转换为 HTML
+const renderMarkdown = (markdown) => {
+  return marked.parse(markdown || '')
+}
+
+const scrollToHeading = (item) => {
+  const targetElement = document.getElementById(item.id)
+  if (targetElement) {
+    window.scrollTo({
+      top: targetElement.offsetTop - 80,
+      behavior: 'smooth'
+    })
+  }
 }
 
 onMounted(async () => {
@@ -80,6 +132,9 @@ onMounted(async () => {
     const response = await getPostDetail(postId)
     if (response.code === 200) {
       post.value = response.data
+      // 假设接口返回的是 Markdown 格式的 content 字段
+      post.value.contentHtml = renderMarkdown(post.value.contentHtml)
+      tocItems.value = generateTOC(post.value.contentHtml)
     }
   } catch (error) {
     console.error('获取岗位详情失败:', error)
@@ -87,6 +142,19 @@ onMounted(async () => {
     loading.value = false
   }
 })
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+const handleScroll = () => {
+  const scrollPosition = window.scrollY + 100 // 加上 offset 值
+  for (const item of tocItems.value) {
+    const element = document.getElementById(item.id)
+    if (element && element.offsetTop <= scrollPosition + 20) {
+      activeTocItem.value = item.id
+    }
+  }
+}
 </script>
 
 <style>
@@ -203,15 +271,6 @@ onMounted(async () => {
   border-radius: 0 0 8px 8px;
 }
 
-.flex-center {
-  display: flex;
-  align-items: center;
-}
-
-.flex-column {
-  flex-direction: column;
-}
-
 .post-detail-container {
   padding: 24px;
   margin: 40px auto 0;
@@ -259,6 +318,7 @@ onMounted(async () => {
   gap: 5%;
   margin-top: 32px;
 }
+
 .post-body {
   width: 70%;
 }
@@ -277,9 +337,12 @@ onMounted(async () => {
 
 .ai-summary {
   padding: 20px;
-  width: 20%;
   background-color: #f9f9f9;
   border-left: 4px solid #007BFF; /* 高亮边框 */
+  flex: none; /* 不要占满剩余高度 */
+  position: sticky; /* 固定定位 */
+  top: 60px; /* 距离顶部位置 */
+  align-self: flex-start; /* 避免 stretch 拉伸 */
 }
 
 .summary-title {
@@ -294,5 +357,90 @@ onMounted(async () => {
   line-height: 1.6;
 }
 
+.card h1,
+.card h2,
+.card h3 {
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 8px;
+}
 
+.card p {
+  line-height: 1.6;
+  margin: 10px 0;
+}
+
+.card code {
+  background-color: #f4f4f4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.card pre {
+  background-color: #2d2d2d;
+  color: #f8f8f2;
+  padding: 12px;
+  overflow-x: auto;
+  border-radius: 6px;
+}
+
+.card blockquote {
+  border-left: 4px solid #007BFF;
+  padding-left: 16px;
+  color: #555;
+  font-style: italic;
+}
+
+.toc-card {
+  position: sticky;
+  top: 270px;
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f9f9f9;
+}
+
+.toc-title {
+  font-size: 1.2em;
+  margin-bottom: 12px;
+}
+
+.toc-list {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.toc-list li {
+  margin: 6px 0;
+}
+
+.toc-list a {
+  color: #007BFF;
+  text-decoration: none;
+  font-size: 0.95em;
+  display: block;
+}
+
+.toc-list a:hover {
+  text-decoration: underline;
+}
+
+.toc-level-2 {
+  padding-left: 10px;
+}
+
+.toc-level-3 {
+  padding-left: 20px;
+}
+.toc-level-4 {
+  padding-left: 30px;
+}
+.toc-level-5 {
+  padding-left: 40px;
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* 模块间距 */
+}
 </style>

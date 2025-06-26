@@ -13,5 +13,4 @@ import java.util.List;
  * @Description:
  */
 public interface IPostService extends IService<Post> {
-    Page<Post> getPosts(int pageSize, int page);
 }
