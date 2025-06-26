@@ -1,13 +1,15 @@
 package com.team.backend.controller;
 
-import com.team.backend.domain.User;
 import com.team.backend.domain.vo.LoginUserVO;
 import com.team.backend.domain.vo.RegisterUserVO;
 import com.team.backend.service.IUserService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @Author: YoyuEN
@@ -16,16 +18,17 @@ import org.springframework.web.bind.annotation.*;
  * @Description:
  */
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/account")
+//@CrossOrigin(origins = "http://localhost:3000") // 允许特定源
+public class LoginController {
     private final IUserService userService;
 
     @Autowired
-    public UserController(IUserService userService) {
+    public LoginController(IUserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/loginAccount")
     public Result<Void> login(@RequestBody LoginUserVO userVO){
         userService.login(userVO);
         return Result.success(ResponseCode.SUCCESS);
@@ -36,16 +39,6 @@ public class UserController {
         long id =userService.register(userVO);
         return Result.success(ResponseCode.SUCCESS);
     }
-
-
-    // 根据用户ID获取用户信息
-    @GetMapping("/getUserByUserId")
-    public Result<User> getUserByUserId(@RequestParam("userId") Long userId){
-        User user = userService.getById(userId);
-        return user != null ? Result.success(ResponseCode.SUCCESS, user) : Result.fail(ResponseCode.USER_NOT_FOUND);
-    }
-
-
 
 
 
