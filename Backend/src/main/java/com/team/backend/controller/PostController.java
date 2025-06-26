@@ -1,15 +1,10 @@
 package com.team.backend.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.team.backend.domain.Post;
-import com.team.backend.domain.dto.PostPageResult;
-import com.team.backend.domain.vo.LoginUserVO;
 import com.team.backend.domain.vo.PostVO;
 import com.team.backend.service.IPostService;
-import com.team.backend.service.IUserService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

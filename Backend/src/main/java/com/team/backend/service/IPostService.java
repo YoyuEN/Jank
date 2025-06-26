@@ -1,11 +1,8 @@
 package com.team.backend.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.team.backend.domain.Post;
 import com.team.backend.domain.vo.PostVO;
-
-import java.util.List;
 
 /**
  * @Author: YoyuEN
