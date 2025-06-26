@@ -34,7 +34,7 @@ public class LoginController {
         return Result.success(ResponseCode.SUCCESS);
     }
 
-    @PostMapping("/RegisterAccount")
+    @PostMapping("/register")
     public Result<Void> Register(@RequestBody RegisterUserVO userVO){
         long id =userService.register(userVO);
         return Result.success(ResponseCode.SUCCESS);

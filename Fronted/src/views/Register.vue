@@ -8,6 +8,26 @@
     <div>
       <form @submit.prevent="handleLogin">
         <div>
+          <label for="username">用户昵称:</label>
+          <input
+            class="form-group"
+            type="text"
+            id="nickname"
+            v-model="form.nickname"
+            placeholder="请输入用户昵称"
+          />
+        </div>
+        <div>
+          <label for="username">邮箱:</label>
+          <input
+            class="form-group"
+            type="text"
+            id="email"
+            v-model="form.email"
+            placeholder="请输入邮箱"
+          />
+        </div>
+        <div>
           <label for="username">用户名:</label>
           <input
             class="form-group"
@@ -27,11 +47,21 @@
             placeholder="请输入密码"
           />
         </div>
+        <div>
+          <label for="password">确认密码:</label>
+          <input
+            class="form-group"
+            type="password"
+            id="checkPassword"
+            v-model="form.checkPassword"
+            placeholder="请输入密码"
+          />
+        </div>
         <div class="big">
-          <a href="/register" class="big2">注册?</a>
+          <a href="/login" class="big2">已有账户返回登录</a>
           <a href="#" class="big2">忘记密码?</a>
         </div>
-        <button type="submit">登录</button>
+        <button type="submit">注册</button>
       </form>
     </div>
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -39,7 +69,7 @@
 </template>
 
 <script>
-import { getLogin } from '@/api/user/user.js'
+import { getRegister } from '@/api/user/user.js'
 
 export default {
   name: 'LoginForm',
@@ -53,26 +83,26 @@ export default {
   methods: {
     async handleLogin() {
       // 表单验证
-      if (!this.form.username || !this.form.password) {
-        this.errorMessage = '用户名和密码不能为空'
+      if (!this.form.username || !this.form.password|| !this.form.email) {
+        this.errorMessage = '用户名和密码和邮箱不能为空'
         return
       }
 
       try {
 
-        const response = await getLogin(this.form)
+        const response = await getRegister(this.form)
 
         // 处理登录成功
         if (response.code === 200) {
           // 存储token
           // localStorage.setItem('token', response.data.data.token)
           // 跳转到首页或其他页面
-          this.$router.push('/posts')
+          this.$router.push('/login')
         } else {
-          this.errorMessage = response.data.message || '登录失败，请重试'
+          this.errorMessage = response.data.message || '注册失败，请重试'
         }
       } catch (error) {
-        console.error('登录请求失败:', error)
+        console.error('注册请求失败:', error)
         this.errorMessage = '服务器错误，请稍后再试'
       }
     },
