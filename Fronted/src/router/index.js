@@ -26,7 +26,7 @@ const routes = [
   {
     path: '/',
     redirect: '/home',
-    component: () => import('@/views/Home.vue'),
+    component: () => import('@/views/HomeView.vue'),
   },
   {
     path: '/say',
@@ -36,7 +36,7 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: () => import('@/views/Home.vue'),
+    component: () => import('@/views/HomeView.vue'),
   },
   {
     path: '/about',
@@ -47,6 +47,11 @@ const routes = [
     path: '/message',
     name: 'Message',
     component: () => import('@/views/Message.vue'),
+  },
+  {
+    path: '/publish',
+    name: 'Publish',
+    component: () => import('@/views/PublishPost.vue'),
   },
 ];
 
