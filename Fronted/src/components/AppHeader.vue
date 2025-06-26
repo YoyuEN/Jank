@@ -3,18 +3,23 @@
     <div class="lm">
       <div class="logo">Jank</div>
       <nav class="menu">
-        <router-link to="/" >首页</router-link>
-        <router-link to="/posts" >帖子</router-link>
-        <router-link to="/say" >说说</router-link>
-        <router-link to="/about" >关于</router-link>
+        <router-link to="/home" active-class="active">首页</router-link>
+        <router-link to="/posts" active-class="active">帖子</router-link>
+        <router-link to="/say" active-class="active">说说</router-link>
+        <router-link to="/message" active-class="active">留言</router-link>
+        <router-link to="/about" active-class="active">关于</router-link>
       </nav>
     </div>
     <div class="icons">
       <button @click="toggleTheme">
         {{ isDarkMode ? '☀️' : '🌙' }}
       </button>
-
-      <button @click="goToProfile">👤</button>
+      <img
+        :src="user.avatar"
+        alt="用户头像"
+        class="user-avatar"
+        @click="goToProfile"
+      />
     </div>
   </header>
 </template>
@@ -23,6 +28,18 @@
 import { onMounted, ref } from 'vue'
 
 const isDarkMode = ref(false);
+
+const user = ref({
+  avatar: '/YoyuEN.png', // 示例头像地址，可替换为真实数据
+  username: 'test_user'
+});
+
+onMounted(async () => {
+  const userData = await fetchUserInfo(); // 假设这是你的用户信息接口
+  if (userData) {
+    user.value = userData;
+  }
+})
 
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
@@ -43,6 +60,10 @@ const goToProfile = () => {
 </script>
 
 <style scoped>
+.menu a.active {
+  color: #000000; /* 激活状态的文字颜色 */
+  font-weight: bold; /* 加粗字体 */
+}
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -60,6 +81,18 @@ const goToProfile = () => {
   top: 0;
 }
 
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.1);
+}
 
 .logo {
   font-weight: bold;

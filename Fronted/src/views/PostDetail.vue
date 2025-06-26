@@ -1,5 +1,25 @@
 <template>
+
   <div class="post-detail-container">
+    <!-- 左侧浮动按钮 -->
+    <div class="sidebar-buttons">
+      <button @click="showCommentPanel = true" title="发表评论" class="sidebar-btn">💬</button>
+      <button @click="scrollToTop" title="回到顶部" class="sidebar-btn">⬆️</button>
+    </div>
+    <!-- 弹窗层 -->
+    <transition name="slide">
+      <div v-show="showCommentPanel" class="comment-panel">
+        <div>
+          <h3>发表评论</h3>
+          <textarea v-model="newComment" placeholder="写下你的评论..." rows="5"></textarea>
+        </div>
+        <div class="comment-actions">
+          <button @click="submitComment" class="submit-comment-btn">提交评论</button>
+          <button @click="showCommentPanel = false" class="close-btn">关闭</button>
+        </div>
+      </div>
+    </transition>
+
     <div v-if="loading" class="loading">加载中...</div>
     <div v-else-if="post" class="post-content">
       <!-- 图片与标题组合 -->
@@ -16,9 +36,11 @@
 
       <div class="post-body-wrapper">
         <div class="post-body card" v-html="post.contentHtml"></div>
-        <div class="post-author card flex-center flex-column">
-          <img src="https://www.jank.org.cn/_next/image?url=https%3A%2F%2Fhaowallpaper.com%2Flink%2Fcommon%2Ffile%2FpreviewFileImg%2F16144648753630592&w=1080&q=80" alt="作者头像" class="author-avatar" />
-          <span class="author-name">{{ post.title }}</span>
+        <div class="ai-summary card">
+          <h2 class="summary-title">AI 摘要</h2>
+          <div class="summary-content">
+            <p>这里是 AI 根据文章内容自动生成的摘要文字。你可以将实际摘要内容通过接口获取后绑定到此处，或使用前端解析逻辑生成简要概述。</p>
+          </div>
         </div>
       </div>
     </div>
@@ -37,6 +59,22 @@ const postId = route.params.postId
 const post = ref(null)
 const loading = ref(true)
 
+const showCommentPanel = ref(false)
+const newComment = ref('')
+
+const submitComment = () => {
+  if (newComment.value.trim()) {
+    alert('模拟提交评论: ' + newComment.value)
+    // TODO: 调用 API 提交评论
+    newComment.value = ''
+    showCommentPanel.value = false
+  }
+}
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
 onMounted(async () => {
   try {
     const response = await getPostDetail(postId)
@@ -52,6 +90,95 @@ onMounted(async () => {
 </script>
 
 <style>
+.sidebar-buttons {
+  position: fixed;
+  left: 20px;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 999;
+}
+
+.sidebar-btn {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.sidebar-btn:hover {
+  transform: scale(1.1);
+}
+
+.comment-panel {
+  position: fixed;
+  right: 0;
+  top: 50px;
+  height: auto;
+  width: 20%;
+  background: white;
+  padding: 24px;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease;
+}
+
+.comment-panel textarea {
+  width: 100%;
+  resize: none;
+  margin-bottom: 16px;
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: space-between;
+}
+.comment-panel h3 {
+  margin-top: 0;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.submit-comment-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-btn {
+  margin-left: 10px;
+  padding: 8px 12px;
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 动画过渡效果 */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(100%);
+}
+
 .card {
   border: 1px solid #e1e1e1;
   border-radius: 8px;
@@ -147,5 +274,25 @@ onMounted(async () => {
   font-weight: bold;
   margin-top: 8px;
 }
+
+.ai-summary {
+  padding: 20px;
+  width: 20%;
+  background-color: #f9f9f9;
+  border-left: 4px solid #007BFF; /* 高亮边框 */
+}
+
+.summary-title {
+  font-size: 1.5em;
+  color: #007BFF;
+  margin-bottom: 12px;
+}
+
+.summary-content p {
+  font-size: 1em;
+  color: #555;
+  line-height: 1.6;
+}
+
 
 </style>

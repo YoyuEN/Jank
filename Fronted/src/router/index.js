@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import PostList from '@/views/PostList.vue';
-import HomeView from '@/views/HomeView.vue'
+import LoginForm from '@/views/LoginForm.vue';
 
 const routes = [
   {
-    path: '/posts',
-    name: 'Posts',
-    component: PostList
+    path: '/login',
+    name: 'LoginForm',
+    component: LoginForm
   },
   {
     path: '/posts',
@@ -21,7 +21,7 @@ const routes = [
   {
     path: '/',
     redirect: '/home',
-    component: () => import('@/views/HomeView.vue'),
+    component: () => import('@/views/Home.vue'),
   },
   {
     path: '/say',
@@ -31,13 +31,18 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: () => import('@/views/HomeView.vue'),
+    component: () => import('@/views/Home.vue'),
   },
   {
     path: '/about',
     name: 'About',
     component: () => import('@/views/About.vue'),
-  }
+  },
+  {
+    path: '/message',
+    name: 'Message',
+    component: () => import('@/views/Message.vue'),
+  },
 ];
 
 const router = createRouter({
