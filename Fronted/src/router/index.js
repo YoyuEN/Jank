@@ -1,7 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import PostList from '@/views/PostList.vue';
+import HomeView from '@/views/HomeView.vue'
 
 const routes = [
+  {
+    path: '/posts',
+    name: 'Posts',
+    component: PostList
+  },
   {
     path: '/posts',
     name: 'PostList',
@@ -15,7 +21,7 @@ const routes = [
   {
     path: '/',
     redirect: '/home',
-    component: () => import('@/views/Home.vue'),
+    component: () => import('@/views/HomeView.vue'),
   },
   {
     path: '/say',
@@ -25,7 +31,7 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: () => import('@/views/Home.vue'),
+    component: () => import('@/views/HomeView.vue'),
   },
   {
     path: '/about',
