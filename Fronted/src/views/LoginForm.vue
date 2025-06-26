@@ -40,6 +40,7 @@
 
 <script>
 import { getLogin } from '@/api/user/user.js'
+import { useUserStore } from '@/store/userStore.js'
 
 export default {
   name: 'LoginForm',
@@ -59,17 +60,18 @@ export default {
       }
 
       try {
-
         const response = await getLogin(this.form)
-
         // 处理登录成功
-        if (response.code === 200) {
-          // 存储token
-          // localStorage.setItem('token', response.data.data.token)
-          // 跳转到首页或其他页面
-          this.$router.push('/posts')
+        if (response.code === 200 && response.data) {
+          const userData = response.data;
+          const token = response.data.accessToken || 'default-token'; // 如果没有 accessToken，可设默认值或从其他字段取
+
+          const userStore = useUserStore();
+          userStore.setUserInfo(userData, token); // 更新全局状态
+
+          this.$router.push('/posts');
         } else {
-          this.errorMessage = response.data.message || '登录失败，请重试'
+          this.errorMessage = response.message || '登录失败，请重试';
         }
       } catch (error) {
         console.error('登录请求失败:', error)
@@ -85,10 +87,8 @@ export default {
   max-width: 500px;
   margin: 80px auto;
   padding: 30px;
-  background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .big {
