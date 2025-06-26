@@ -87,10 +87,8 @@ export default {
   max-width: 500px;
   margin: 80px auto;
   padding: 30px;
-  background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .big {
