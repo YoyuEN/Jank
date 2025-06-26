@@ -2,7 +2,8 @@ package com.team.backend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.team.backend.domain.User;
-import com.team.backend.domain.vo.UserVO;
+import com.team.backend.domain.vo.LoginUserVO;
+import com.team.backend.domain.vo.RegisterUserVO;
 
 /**
  * @Author: YoyuEN
@@ -11,5 +12,7 @@ import com.team.backend.domain.vo.UserVO;
  * @Description:
  */
 public interface IUserService extends IService<User> {
-    void login(UserVO userVO);
+    void login(LoginUserVO userVO);
+
+    long register(RegisterUserVO userVO);
 }
