@@ -26,20 +26,26 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import { getUserByUserId } from '@/api/user/user.js'
 
 const isDarkMode = ref(false);
 
 const user = ref({
-  avatar: '/YoyuEN.png', // 示例头像地址，可替换为真实数据
+  avatar: '', // 示例头像地址，可替换为真实数据
   username: 'test_user'
 });
 
 onMounted(async () => {
-  const userData = await fetchUserInfo(); // 假设这是你的用户信息接口
-  if (userData) {
-    user.value = userData;
+  try {
+    const response = await getUserByUserId("32131221312"); // axios 返回 AxiosResponse
+    const userData = response.data; // 提取 data 部分
+    if (userData) {
+      user.value = userData; // 正确赋值
+    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
   }
-})
+});
 
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;

@@ -23,6 +23,8 @@ public class User {
     private String username;
     // 用户邮箱
     private String email;
+    // 用户头像
+    private String avatar;
     // 用户密码
     private String password;
     // 用户手机号

@@ -6,18 +6,18 @@
     </div>
 
     <div>
-      <form @submit.prevent="handleLogin" >
-        <div >
-          <label for="username" >用户名:</label>
+      <form @submit.prevent="handleLogin">
+        <div>
+          <label for="username">用户名:</label>
           <input
             class="form-group"
             type="text"
             id="username"
             v-model="form.username"
             placeholder="请输入用户名"
-          >
+          />
         </div>
-        <div >
+        <div>
           <label for="password">密码:</label>
           <input
             class="form-group"
@@ -25,7 +25,7 @@
             id="password"
             v-model="form.password"
             placeholder="请输入密码"
-          >
+          />
         </div>
         <div class="big">
           <a href="#" class="big2">注册?</a>
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import {getLogin} from '@/api/user/user.js'
+import { getLogin } from '@/api/user/user.js'
 
 export default {
   name: 'LoginForm',
@@ -47,38 +47,38 @@ export default {
     return {
       //表单数据
       form: {},
-      errorMessage: ''
+      errorMessage: '',
     }
   },
   methods: {
     async handleLogin() {
       // 表单验证
       if (!this.form.username || !this.form.password) {
-        this.errorMessage = '用户名和密码不能为空';
-        return;
+        this.errorMessage = '用户名和密码不能为空'
+        return
       }
 
       try {
-        getLogin(this.form).then(response => {
-          response.data = response.data.data;
-        });
-        const response = await getLogin(this.form);
+        // getLogin(this.form).then((response) => {
+        //   response.data = response.data.data
+        // })
+        const response = await getLogin(this.form)
 
         // 处理登录成功
-        if (response.data.code === 200) {
+        if (response.code === 200) {
           // 存储token
-          localStorage.setItem('token', response.data.data.token);
+          // localStorage.setItem('token', response.data.data.token)
           // 跳转到首页或其他页面
-          this.$router.push('/post/getPostList');
+          this.$router.push('/posts')
         } else {
-          this.errorMessage = response.data.message || '登录失败，请重试';
+          this.errorMessage = response.data.message || '登录失败，请重试'
         }
       } catch (error) {
-        console.error('登录请求失败:', error);
-        this.errorMessage = '服务器错误，请稍后再试';
+        console.error('登录请求失败:', error)
+        this.errorMessage = '服务器错误，请稍后再试'
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -91,19 +91,20 @@ export default {
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
 }
 
-.big{
+.big {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
-.big2{
+
+.big2 {
   color: #000; /* 黑色 */
   text-decoration: none; /* 可选：去除下划线 */
   font-size: 14px;
 }
+
 .Tegra {
   text-align: center;
   margin-bottom: 20px;
@@ -144,11 +145,13 @@ input {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 16px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 input:focus {
-  border-color: #4CAF50;
+  border-color: #4caf50;
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
   outline: none;
 }
@@ -177,4 +180,3 @@ button:hover {
   font-size: 14px;
 }
 </style>
-
