@@ -48,6 +48,11 @@ const routes = [
     name: 'Message',
     component: () => import('@/views/Message.vue'),
   },
+  {
+    path: '/publish',
+    name: 'Publish',
+    component: () => import('@/views/PublishPost.vue'),
+  },
 ];
 
 const router = createRouter({

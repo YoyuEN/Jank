@@ -13,3 +13,7 @@ export function getPostDetail(postId) {
     }
   })
 }
+//新增帖子
+export function addPostDetail(data) {
+  return service.post('/post/addPostDetail', data)
+}
