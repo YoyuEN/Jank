@@ -14,7 +14,6 @@ import java.util.List;
  * @Description:
  */
 public interface IPostService extends IService<Post> {
-    Page<Post> getPosts(int pageSize, int page);
     //新增帖子
     int addPost(PostVO postVO);
 }

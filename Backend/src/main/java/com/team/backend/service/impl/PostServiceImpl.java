@@ -32,31 +32,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     public PostServiceImpl(PostMapper postMapper) {
         this.postMapper = postMapper;
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Post> getPosts(int pageSize, int page) {
-        // 确保 page 从 1 开始，MyBatis-Plus 默认 page 从 1 开始
-        int validPage = Math.max(1, page);
-        int validPageSize = Math.max(1, pageSize);
-
-        // 创建分页对象
-        Page<Post> pageData = new Page<>(validPage, validPageSize);
-
-        // 添加查询条件，过滤已删除记录
-        QueryWrapper<Post> wrapper = new QueryWrapper<>();
-        wrapper.eq("deleted", 0);
-
-        // 执行分页查询
-        pageData = postMapper.selectPage(pageData, wrapper);
-
-        // 打印调试信息
-        System.out.println("总记录数: " + pageData.getTotal());
-        System.out.println("计算的总页数: " + pageData.getPages());
-        System.out.println("当前页记录: " + pageData.getRecords().size());
-
-        return pageData;
-    }
     //新增帖子
     @Override
     public int addPost(PostVO postVO) {
