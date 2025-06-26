@@ -25,22 +25,59 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
+import { getUserByUserId } from '@/api/user/user.js'
+import router from '@/router/index.js'
+import { useUserStore } from '@/store/userStore.js'
 
 const isDarkMode = ref(false);
+const userStore = useUserStore()
 
-const user = ref({
-  avatar: '/YoyuEN.png', // 示例头像地址，可替换为真实数据
-  username: 'test_user'
-});
-
-onMounted(async () => {
-  const userData = await fetchUserInfo(); // 假设这是你的用户信息接口
-  if (userData) {
-    user.value = userData;
+// 使用 userStore 中的用户数据
+const user = ref(userStore.user || {
+  avatar: '/img1.png',
+  username: '游客',
+  userId: ''
+})
+// 监听 store 的变化（响应式更新头像）
+watchEffect(() => {
+  if (userStore.user) {
+    user.value = userStore.user
   }
 })
 
+// 页面加载时恢复用户状态（例如刷新页面）
+onMounted(() => {
+  userStore.restoreFromLocalStorage()
+})
+
+onMounted(async () => {
+  try {
+    const userId = userStore.user?.userId; // 从 Pinia store 获取 userId
+    if (!userId) {
+      console.warn('用户未登录或缺少 userId');
+      return;
+    }
+
+    const response = await getUserByUserId(userId); // 正确传入 userId 参数
+    const userData = response.data;
+
+    if (userData) {
+      user.value = userData; // 更新本地 user 响应式数据
+    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+  }
+});
+
+
+// 可选：监听 storage 事件，跨标签页同步用户信息
+window.addEventListener('storage', () => {
+  const storedUser = localStorage.getItem('user')
+  if (storedUser) {
+    user.value = JSON.parse(storedUser)
+  }
+})
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
   document.body.classList.toggle('dark', isDarkMode.value);
@@ -55,7 +92,7 @@ onMounted(() => {
   }
 });
 const goToProfile = () => {
-  alert('跳转到用户中心（可替换为路由）');
+  router.push('/login');
 };
 </script>
 

@@ -12,8 +12,6 @@ import com.team.backend.utils.ResponseCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/24
@@ -28,7 +26,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
     @Override
     @Transactional
-    public void login(LoginUserVO userVO) {
+    public User login(LoginUserVO userVO) {
         String username = userVO.getUsername();
         String password = userVO.getPassword();
         if(username == null){
@@ -41,6 +39,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!user.getPassword().equals(password)) {
             throw new ServiceExceptionHandler(ResponseCode.USER_PASSWORD_ERROR);
         }
+        return user;
     }
 
     @Override

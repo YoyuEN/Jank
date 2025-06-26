@@ -21,6 +21,8 @@ public class User {
     private String nickname;
     // 用户名称
     private String username;
+    // 用户头像
+    private String avatar;
     // 用户邮箱
     private String email;
     // 用户密码
