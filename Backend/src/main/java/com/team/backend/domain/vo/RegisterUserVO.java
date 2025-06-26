@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/24
@@ -13,7 +15,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserVO {
+public class RegisterUserVO implements Serializable {
     private String email;
+    private String nickname;
+    private String username;
     private String password;
+    private String checkPassword;
 }
