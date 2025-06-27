@@ -157,28 +157,35 @@ export default {
 
     async handlePublish() {
       if (!this.validateForm()) {
-        return '发布失败'
+        return;
       }
 
-      this.publishing = true
+      this.publishing = true;
 
       try {
-        // 发送请求发布帖子
-        const response = await addPostDetail(this.postForm)
+        const formData = new FormData();
+        formData.append('title', this.postForm.title);
+        formData.append('contentHtml', this.postForm.contentHtml);
+        formData.append('categoryIds', this.postForm.categoryIds);
 
-        if (response.data.code === 200) {
-          // 发布成功
-          ElMessage.success('帖子发布成功！')
-          // 跳转到帖子列表或帖子详情页
-          this.$router.push('/posts')
+        // 如果有图片，则追加到 formData 中
+        if (this.postForm.image) {
+          formData.append('image', this.postForm.image); // 确保字段名与后端接口一致（如 MultipartFile image）
+        }
+
+        const response = await addPostDetail(formData);
+
+        if (response.code === 200) {
+          ElMessage.success('帖子发布成功！');
+          this.$router.push('/posts');
         } else {
-          ElMessage.error(response.data.message || '发布失败，请重试')
+          ElMessage.error(response.message || '发布失败，请重试');
         }
       } catch (error) {
-        console.error('发布帖子失败:', error)
-        ElMessage.error('服务器错误，请稍后重试')
+        console.error('发布帖子失败:', error);
+        ElMessage.error('服务器错误，请稍后重试');
       } finally {
-        this.publishing = false
+        this.publishing = false;
       }
     },
 
