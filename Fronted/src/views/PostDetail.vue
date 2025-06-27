@@ -1,5 +1,4 @@
 <template>
-
   <div class="post-detail-container">
     <!-- 左侧浮动按钮 -->
     <div class="sidebar-buttons">
@@ -85,6 +84,7 @@ const submitComment = () => {
     showCommentPanel.value = false
   }
 }
+
 const generateTOC = (htmlContent) => {
   const parser = new DOMParser()
   const doc = parser.parseFromString(htmlContent, 'text/html')
@@ -97,7 +97,7 @@ const generateTOC = (htmlContent) => {
     return {
       id,
       text: heading.textContent.trim(),
-      level: parseInt(heading.tagName[1], 10)
+      level: parseInt(heading.tagName[1], 10),
     }
   })
 
@@ -106,7 +106,6 @@ const generateTOC = (htmlContent) => {
 
   return toc
 }
-
 
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -122,7 +121,7 @@ const scrollToHeading = (item) => {
   if (targetElement) {
     window.scrollTo({
       top: targetElement.offsetTop - 80,
-      behavior: 'smooth'
+      behavior: 'smooth',
     })
   }
 }
@@ -169,7 +168,7 @@ const handleScroll = () => {
 }
 
 .sidebar-btn {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   width: 48px;
@@ -211,6 +210,7 @@ const handleScroll = () => {
   display: flex;
   justify-content: space-between;
 }
+
 .comment-panel h3 {
   margin-top: 0;
   font-size: 1.2em;
@@ -220,7 +220,7 @@ const handleScroll = () => {
 .submit-comment-btn {
   margin-top: 10px;
   padding: 8px 16px;
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
@@ -242,6 +242,7 @@ const handleScroll = () => {
 .slide-leave-active {
   transition: transform 0.3s ease;
 }
+
 .slide-enter-from,
 .slide-leave-to {
   transform: translateX(100%);
@@ -322,6 +323,7 @@ const handleScroll = () => {
 .post-body {
   width: 70%;
 }
+
 .author-avatar {
   width: 80px;
   height: 80px;
@@ -338,7 +340,7 @@ const handleScroll = () => {
 .ai-summary {
   padding: 20px;
   background-color: #f9f9f9;
-  border-left: 4px solid #007BFF; /* 高亮边框 */
+  border-left: 4px solid #007bff; /* 高亮边框 */
   flex: none; /* 不要占满剩余高度 */
   position: sticky; /* 固定定位 */
   top: 60px; /* 距离顶部位置 */
@@ -347,7 +349,7 @@ const handleScroll = () => {
 
 .summary-title {
   font-size: 1.5em;
-  color: #007BFF;
+  color: #007bff;
   margin-bottom: 12px;
 }
 
@@ -385,7 +387,7 @@ const handleScroll = () => {
 }
 
 .card blockquote {
-  border-left: 4px solid #007BFF;
+  border-left: 4px solid #007bff;
   padding-left: 16px;
   color: #555;
   font-style: italic;
@@ -414,7 +416,7 @@ const handleScroll = () => {
 }
 
 .toc-list a {
-  color: #007BFF;
+  color: #007bff;
   text-decoration: none;
   font-size: 0.95em;
   display: block;
@@ -431,9 +433,11 @@ const handleScroll = () => {
 .toc-level-3 {
   padding-left: 20px;
 }
+
 .toc-level-4 {
   padding-left: 30px;
 }
+
 .toc-level-5 {
   padding-left: 40px;
 }

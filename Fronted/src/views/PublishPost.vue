@@ -14,7 +14,7 @@
           v-model="postForm.title"
           placeholder="请输入帖子标题"
           class="form-input"
-        >
+        />
         <span class="error-text" v-if="errors.title">{{ errors.title }}</span>
       </div>
       <div class="form-group">
@@ -25,7 +25,7 @@
           accept="image/*"
           @change="handleImageUpload"
           class="form-input"
-        >
+        />
         <div class="el-upload__tip">只能上传jpg/png文件，且不超过1mb</div>
         <span v-if="errors.image">{{ errors.image }}</span>
       </div>
@@ -67,10 +67,10 @@
 </template>
 
 <script>
-import * as marked from 'marked';
-import DOMPurify from 'dompurify';
+import * as marked from 'marked'
+import DOMPurify from 'dompurify'
 import { addPostDetail } from '@/api/posts/posts.js'
-import { ElMessage } from 'element-plus';
+import { ElMessage } from 'element-plus'
 
 export default {
   name: 'PublishPost',
@@ -80,50 +80,50 @@ export default {
         title: '',
         image: '',
         contentHtml: '',
-        categoryIds: ''
+        categoryIds: '',
       },
       errors: {
         title: '',
         contentHtml: '',
-        categoryIds: ''
+        categoryIds: '',
       },
-      publishing: false
+      publishing: false,
     }
   },
   computed: {
     markedContent() {
       const sanitize = (html) => {
-        return DOMPurify.sanitize(html);
-      };
+        return DOMPurify.sanitize(html)
+      }
 
       return marked.parse(this.postForm.contentHtml || '', {
         renderer: new marked.Renderer(),
         sanitize: true,
-        sanitizer: sanitize
-      });
-    }
+        sanitizer: sanitize,
+      })
+    },
   },
   methods: {
     handleImageUpload(event) {
-      const file = event.target.files[0];
+      const file = event.target.files[0]
       if (file) {
         // 校验文件类型
         if (!['image/jpeg', 'image/png'].includes(file.type)) {
-          this.errors.image = '只能上传 jpg/png 格式的图片';
-          event.target.value = ''; // 清空选择的文件
-          return;
+          this.errors.image = '只能上传 jpg/png 格式的图片'
+          event.target.value = '' // 清空选择的文件
+          return
         }
 
         // 校验文件大小（不超过 500KB）
-        if (file.size > 1024*1024) {
-          this.errors.image = '图片大小不能超过 500KB';
-          event.target.value = ''; // 清空选择的文件
-          return;
+        if (file.size > 1024 * 1024) {
+          this.errors.image = '图片大小不能超过 500KB'
+          event.target.value = '' // 清空选择的文件
+          return
         }
 
         // 清除错误信息并保存选中的文件
-        this.errors.image = '';
-        this.postForm.image = file;
+        this.errors.image = ''
+        this.postForm.image = file
       }
     },
     validateForm() {
@@ -131,7 +131,7 @@ export default {
       this.errors = {
         title: '',
         contentHtml: '',
-        categoryIds: ''
+        categoryIds: '',
       }
 
       if (!this.postForm.title || !this.postForm.title.trim()) {
@@ -157,7 +157,7 @@ export default {
 
     async handlePublish() {
       if (!this.validateForm()) {
-        return "发布失败"
+        return '发布失败'
       }
 
       this.publishing = true
@@ -171,7 +171,6 @@ export default {
           ElMessage.success('帖子发布成功！')
           // 跳转到帖子列表或帖子详情页
           this.$router.push('/posts')
-
         } else {
           ElMessage.error(response.data.message || '发布失败，请重试')
         }
@@ -188,23 +187,25 @@ export default {
       this.$confirm('确定要放弃编辑吗？未保存的内容将会丢失', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$router.back()
-      }).catch(() => {})
-    }
-  }
+        type: 'warning',
+      })
+        .then(() => {
+          this.$router.back()
+        })
+        .catch(() => {})
+    },
+  },
 }
 </script>
 
 <style scoped>
 .publish-container {
   max-width: 800px;
-  margin: 20px auto;
+  margin: 100px auto;
   padding: 20px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .publish-header {
@@ -235,7 +236,7 @@ export default {
 }
 
 .form-input,
-.form-textarea{
+.form-textarea {
   width: 97%;
   padding: 10px;
   border: 1px solid #dcdfe6;
@@ -243,6 +244,7 @@ export default {
   font-size: 14px;
   transition: border-color 0.2s;
 }
+
 .form-select {
   width: 100%;
   padding: 10px;

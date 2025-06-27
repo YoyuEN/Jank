@@ -16,8 +16,8 @@
 defineProps({
   post: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
 </script>
 
@@ -41,17 +41,21 @@ defineProps({
   object-fit: cover;
   border-radius: 8px;
 }
+
 .post-title {
   font-size: 1.2em;
   margin: 10px 0;
 }
+
 .post-meta {
   font-size: 0.9em;
 }
+
 .category-tag {
   margin-left: 6px;
   color: #007acc;
 }
+
 .post-content {
   margin-top: 10px;
 }

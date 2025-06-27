@@ -1,15 +1,14 @@
-<template >
+<template>
   <div>
-  <div class="posts-container">
-    <div v-if="posts.length === 0 && !loading">暂无岗位信息</div>
-    <PostCard v-for="post in posts" :key="post.postId" :post="post" />
-  </div>
+    <div class="posts-container">
+      <div v-if="posts.length === 0 && !loading">暂无岗位信息</div>
+      <PostCard v-for="post in posts" :key="post.postId" :post="post" />
+    </div>
     <div class="sidebar-buttons">
-      <button @click="showCommentPanel = true" title="发布帖子" class="sidebar-btn" >📝</button>
+      <button @click="$router.push('/publish')" title="发布帖子" class="sidebar-btn">📝</button>
       <button @click="scrollToTop" title="回到顶部" class="sidebar-btn">⬆️</button>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -40,8 +39,8 @@ export default {
     },
     post: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   created() {
     this.getPostList()
@@ -52,11 +51,14 @@ export default {
       this.loading = true
       getPostList(this.form).then((response) => {
         // 过滤出未删除且可见的文章
-        const list = Array.isArray(response.data) ? response.data : [];
-        this.posts = list.filter(post => post.deleted === 0 && post.visibility);
+        const list = Array.isArray(response.data) ? response.data : []
+        this.posts = list.filter((post) => post.deleted === 0 && post.visibility)
         this.loading = false
       })
     },
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   },
 }
 </script>
@@ -67,8 +69,9 @@ export default {
   max-width: 1400px;
   margin: 40px auto 0; /* 距离顶部 100px，左右自动居中 */
 }
+
 .sidebar-btn {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   width: 48px;
@@ -79,6 +82,7 @@ export default {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
 }
+
 .sidebar-buttons {
   position: fixed;
   left: 20px;

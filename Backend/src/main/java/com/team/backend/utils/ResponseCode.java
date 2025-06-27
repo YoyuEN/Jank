@@ -18,7 +18,8 @@ public enum ResponseCode {
     USER_NOT_EXIST(500, "用户是空的"),
     USER_PASSWORD_ERROR(600, "密码错误"),
     USER_HAVE_EXIST(700, "用户已存在"),
-    USER_NOT_FOUND(800, "用户不存在");
+    USER_NOT_FOUND(800, "用户不存在"),
+    UPLOAD_FILE_FAIL(900, "上传文件失败");
 
     private final Integer code;
     private final String message;
