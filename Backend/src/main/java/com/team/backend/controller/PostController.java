@@ -6,6 +6,7 @@ import com.team.backend.service.IPostService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,7 +38,19 @@ public class PostController {
     }
 
     @PostMapping("/addPostDetail")
-    public Result<PostVO> addPost(@RequestBody PostVO postVO) throws Exception {
+    public Result<?> addPost(
+            @RequestParam("title") String title,
+            @RequestParam("contentHtml") String contentHtml,
+            @RequestParam("categoryIds") List<String> categoryIds,
+            @RequestParam("image") MultipartFile image) throws Exception {
+
+        // 构造 PostVO 或直接调用 service
+        PostVO postVO = new PostVO();
+        postVO.setTitle(title);
+        postVO.setContentHtml(contentHtml);
+        postVO.setCategoryIds(categoryIds);
+        postVO.setImage(image);
+
         postService.addPost(postVO);
         return Result.success(ResponseCode.SUCCESS);
     }

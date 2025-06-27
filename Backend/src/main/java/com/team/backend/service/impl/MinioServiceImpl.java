@@ -13,8 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+
 
 @Slf4j
 @Service
@@ -41,7 +40,7 @@ public class MinioServiceImpl implements MinioService {
      */
     @Override
     public String uploadFile(MultipartFile file, String folder) throws Exception {
-        String objectName = folder + "/" + file.getOriginalFilename();
+        String objectName = file.getOriginalFilename();
 
         try (InputStream inputStream = file.getInputStream()) {
             // 检查存储桶是否存在
@@ -58,9 +57,12 @@ public class MinioServiceImpl implements MinioService {
                             .contentType(file.getContentType())
                             .build()
             );
+            minioEndpoint = minioEndpoint.replace("5", "0");
 
             // 返回文件访问 URL
-            return minioEndpoint + "/" + bucketName + "/" + objectName;
+            return minioEndpoint + "/api/v1/buckets/" + bucketName +
+                    "/objects/download?preview=true&prefix=" + objectName +
+                    "&version_id=null";
         } catch (Exception e) {
             throw new RuntimeException("文件上传失败: " + e.getMessage(), e);
         }

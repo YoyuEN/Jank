@@ -22,15 +22,15 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     }
     //新增帖子
     @Override
-    public int addPost(PostVO postVO) throws Exception {
+    public void addPost(PostVO postVO) throws Exception {
         String imageUrl = "https://pic.imgdb.cn/item/64cf07a61ddac507cc7501cc.jpg"; // 默认图
 
         if (postVO.getImage() != null && !postVO.getImage().isEmpty()) {
-            imageUrl = minioService.uploadFile(postVO.getImage(), "posts/images");
+            imageUrl = minioService.uploadFile(postVO.getImage(), "");
         }
 
         if (postVO.getTitle() == null && postVO.getContentHtml() == null && postVO.getCategoryIds() == null) {
-            return 0;
+            return;
         }
 
         Post post = new Post();
@@ -38,8 +38,9 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         post.setImage(imageUrl); // ✅ 正确：Post.setImage(String)
         post.setContentHtml(postVO.getContentHtml());
         post.setCategoryIds(postVO.getCategoryIds());
+        post.setVisibility(true);
 
-        return super.save(post) ? 1 : 0;
+        super.save(post);
     }
 
 }
