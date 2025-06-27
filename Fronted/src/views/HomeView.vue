@@ -9,11 +9,15 @@
         <p>探索 AI 与数字未来</p>
         <button class="button-say" type="primary" @click="navigateToSay">说说</button>
       </div>
+      <div>
+        <!-- 添加一个小页面 -->
+        <SmallPage />
+      </div>
       <!-- 近期博客区域 -->
       <div class="blog-section">
         <div class="blog-header">
           <h3>近期博客</h3>
-          <button class="button-posts"  type="primary" @click="navigateToPosts">查看所有</button>
+          <button class="button-posts" type="primary" @click="navigateToPosts">查看所有</button>
         </div>
 
         <div class="posts-container">
@@ -42,12 +46,11 @@
 import PostCard from '@/components/PostCard.vue'
 import { getPostList } from '@/api/posts/posts.js'
 import { useRouter } from 'vue-router'
-
-
+import AIagent from '@/views/AIagent.vue'
 
 export default {
   name: 'PostList',
-  components: { PostCard },
+  components: { SmallPage: AIagent, PostCard },
   data() {
     return {
       posts: [],
@@ -69,26 +72,24 @@ export default {
     },
     post: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   setup() {
-    const router = useRouter();
-    const router1 = useRouter();// 获取路由实例
+    const router = useRouter()
+    const router1 = useRouter() // 获取路由实例
 
     const navigateToPosts = () => {
       router.push({ name: 'Posts' }) // 使用获取到的路由实例
-    };
+    }
     const navigateToSay = () => {
-      router1.push({ name: 'say' });
-    };
+      router1.push({ name: 'say' })
+    }
     return {
       navigateToPosts,
-      navigateToSay
-    };
-
-  }
-  ,
+      navigateToSay,
+    }
+  },
   created() {
     this.getPostList()
   },
@@ -98,8 +99,8 @@ export default {
       this.loading = true
       getPostList(this.form).then((response) => {
         // 过滤出未删除且可见的文章
-        const list = Array.isArray(response.data) ? response.data : [];
-        this.posts = list.filter(post => post.deleted === 0 && post.visibility).slice(0, 2);
+        const list = Array.isArray(response.data) ? response.data : []
+        this.posts = list.filter((post) => post.deleted === 0 && post.visibility).slice(0, 2)
         this.loading = false
       })
     },
@@ -107,7 +108,6 @@ export default {
     //   const router = useRouter()
     //   router.push('/all')
     // }
-
   },
 }
 </script>
@@ -156,40 +156,39 @@ export default {
   font-size: 20px;
   font-weight: bold;
 }
- .posts-container {
-   padding: 24px;
-   max-width: 1400px;
-   margin: 40px auto 0; /* 距离顶部 100px，左右自动居中 */
- }
- .button-say{
-   padding: 12px 24px;
-   border: none;
-   border-radius: 12px;
-   font-size: 16px;
-   font-weight: 500;
-   cursor: pointer;
-   background: rgba(255, 255, 255, 0.25);
-   backdrop-filter: blur(10px);
-   -webkit-backdrop-filter: blur(10px);
-   border: 1px solid rgba(255, 255, 255, 0.18);
-   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-   transition: all 0.3s ease;
-   color: #333;
- }
- .button-posts{
-   padding: 12px 24px;
-   border: none;
-   border-radius: 12px;
-   font-size: 16px;
-   font-weight: 500;
-   cursor: pointer;
-   background: rgba(255, 255, 255, 0.25);
-   backdrop-filter: blur(10px);
-   -webkit-backdrop-filter: blur(10px);
-   border: 1px solid rgba(255, 255, 255, 0.18);
-   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-   transition: all 0.3s ease;
-   color: #333;
- }
-
+.posts-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 40px auto 0; /* 距离顶部 100px，左右自动居中 */
+}
+.button-say {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  color: #333;
+}
+.button-posts {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  color: #333;
+}
 </style>
