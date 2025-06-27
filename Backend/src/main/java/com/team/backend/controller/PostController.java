@@ -35,11 +35,11 @@ public class PostController {
         Post post = postService.getById(postId);
         return Result.success(ResponseCode.SUCCESS, post);
     }
+
     @PostMapping("/addPostDetail")
-    public Result<PostVO> addPost(@RequestBody PostVO postVO) {
+    public Result<PostVO> addPost(@RequestBody PostVO postVO) throws Exception {
         postService.addPost(postVO);
         return Result.success(ResponseCode.SUCCESS);
-
     }
 
 }

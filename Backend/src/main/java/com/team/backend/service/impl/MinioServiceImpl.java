@@ -1,14 +1,68 @@
 package com.team.backend.service.impl;
 
 import com.team.backend.service.MinioService;
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.errors.MinioException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 @Service
 public class MinioServiceImpl implements MinioService {
+    private final MinioClient minioClient;
+
+    @Value("${minio.endpoint}")
+    private String minioEndpoint;
+
+    @Value("${minio.bucket-name}")
+    private String bucketName;
+
+    public MinioServiceImpl(MinioClient minioClient) {
+        this.minioClient = minioClient;
+    }
 
 
+    /*
+     * 上传文件到 MinIO
+     *
+     * @param file 上传的文件
+     * @param objectName 存储在 MinIO 中的对象名称
+     * @throws Exception 如果上传失败
+     */
+    @Override
+    public String uploadFile(MultipartFile file, String folder) throws Exception {
+        String objectName = folder + "/" + file.getOriginalFilename();
 
+        try (InputStream inputStream = file.getInputStream()) {
+            // 检查存储桶是否存在
+            if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+            }
+
+            // 上传文件
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .stream(inputStream, file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
+
+            // 返回文件访问 URL
+            return minioEndpoint + "/" + bucketName + "/" + objectName;
+        } catch (Exception e) {
+            throw new RuntimeException("文件上传失败: " + e.getMessage(), e);
+        }
+    }
 }

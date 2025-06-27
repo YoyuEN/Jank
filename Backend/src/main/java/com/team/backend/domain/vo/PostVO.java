@@ -5,6 +5,7 @@ import com.team.backend.handler.CategoryIdsTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class PostVO {
     // 帖子标题
     private String title;
     // 帖子封面图片 URL
-    private String image;
+    private MultipartFile image;
     // 帖子 HTML 格式内容
     @TableField("content_html")
     private String contentHtml;

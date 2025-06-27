@@ -5,6 +5,7 @@ import com.team.backend.domain.Post;
 import com.team.backend.domain.vo.PostVO;
 import com.team.backend.mapper.PostMapper;
 import com.team.backend.service.IPostService;
+import com.team.backend.service.MinioService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,21 +16,30 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IPostService {
+    private final MinioService minioService;
+    public PostServiceImpl(MinioService minioService) {
+        this.minioService = minioService;
+    }
     //新增帖子
     @Override
-    public int addPost(PostVO postVO) {
-        if(postVO.getImage() == null){
-            postVO.setImage("https://pic.imgdb.cn/item/64cf07a61ddac507cc7501cc.jpg");
+    public int addPost(PostVO postVO) throws Exception {
+        String imageUrl = "https://pic.imgdb.cn/item/64cf07a61ddac507cc7501cc.jpg"; // 默认图
+
+        if (postVO.getImage() != null && !postVO.getImage().isEmpty()) {
+            imageUrl = minioService.uploadFile(postVO.getImage(), "posts/images");
         }
-        if(postVO.getTitle() == null&&postVO.getContentHtml() == null&&postVO.getCategoryIds() == null){
+
+        if (postVO.getTitle() == null && postVO.getContentHtml() == null && postVO.getCategoryIds() == null) {
             return 0;
         }
+
         Post post = new Post();
         post.setTitle(postVO.getTitle());
-        post.setImage(postVO.getImage());
+        post.setImage(imageUrl); // ✅ 正确：Post.setImage(String)
         post.setContentHtml(postVO.getContentHtml());
         post.setCategoryIds(postVO.getCategoryIds());
-        super.save(post);
-        return 1;
+
+        return super.save(post) ? 1 : 0;
     }
+
 }

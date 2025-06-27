@@ -31,7 +31,7 @@ public class MinioController {
     @Autowired
     private MinioClient minioClient;
 
-    @Value("${minio.bucketName}")
+    @Value("${minio.bucket-name}")
     private String bucketName;
 
     // 上传图片

@@ -12,5 +12,5 @@ import com.team.backend.domain.vo.PostVO;
  */
 public interface IPostService extends IService<Post> {
     //新增帖子
-    int addPost(PostVO postVO);
+    int addPost(PostVO postVO) throws Exception;
 }
