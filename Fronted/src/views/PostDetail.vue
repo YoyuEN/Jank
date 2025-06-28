@@ -56,6 +56,7 @@
           </div>
         </div>
       </div>
+      <CommentList/>
     </div>
     <div v-else class="no-data">未找到该岗位信息</div>
   </div>
@@ -66,6 +67,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPostDetail } from '@/api/posts/posts.js'
 import { marked } from 'marked'
+import CommentList from '@/components/CommentList.vue'
 
 const route = useRoute()
 const postId = route.params.postId
