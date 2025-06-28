@@ -77,7 +77,7 @@ export default {
     const router1 = useRouter();// 获取路由实例
 
     const navigateToPosts = () => {
-      router.push({ name: 'Posts' }) // 使用获取到的路由实例
+      router.push({ name: 'PostList' }) // 使用获取到的路由实例
     };
     const navigateToSay = () => {
       router1.push({ name: 'say' });

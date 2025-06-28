@@ -66,8 +66,10 @@ export default {
 
         // 处理登录成功
         if (response.code === 200) {
-          // 存储token
-          // localStorage.setItem('token', response.data.data.token)
+          // 存储用户信息
+          localStorage.setItem('userId', response.data.userId)
+          localStorage.setItem('username', response.data.username)
+          localStorage.setItem('avatar', response.data.avatar || '')
           // 跳转到首页或其他页面
           this.$router.push('/posts')
         } else {
