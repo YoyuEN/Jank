@@ -7,7 +7,7 @@
       <div class="title-box">
         <h1>博客系统</h1>
         <p>探索 AI 与数字未来</p>
-        <button class="button-say" type="primary" @click="navigateToSay">说说</button>
+<!--        <button class="button-say" type="primary" @click="navigateToSay">说说</button>-->
       </div>
       <div>
         <!-- 添加一个小页面 -->
@@ -80,7 +80,7 @@ export default {
     const router1 = useRouter() // 获取路由实例
 
     const navigateToPosts = () => {
-      router.push({ name: 'Posts' }) // 使用获取到的路由实例
+      router.push({ name: 'PostList' }) // 使用获取到的路由实例
     }
     const navigateToSay = () => {
       router1.push({ name: 'say' })
