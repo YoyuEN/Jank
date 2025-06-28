@@ -8,18 +8,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
-@Tag(name = "爽爽医院精神科挂号小助手")
+@Tag(name = "博客小助手")
 @RestController
 @RequestMapping("/agent")
 public class JankController {
     @Autowired
     private Assistant assistant;
 
-    @Operation(summary = "预约挂号聊天")
+    @Operation(summary = "博客聊天")
     //输出是设置@PostMapping的输出类型
     @PostMapping(value = "/chat",produces = "text/stream;charset=UTF-8")
     public Flux<String> chat(@RequestBody ChatForm chatForm){
         return assistant.chat(chatForm.getMemoryId(),chatForm.getMessage());
     }
+
+//    @Operation(summary = "ai摘要聊天")
+//    //输出是设置@PostMapping的输出类型
+//    @PostMapping(value = "/chat",produces = "text/stream;charset=UTF-8")
+//    public Flux<String> chatSimple(@RequestBody ChatForm chatForm){
+//        return assistant.chat(chatForm.getMemoryId(),chatForm.getMessage());
+//    }
 }
 

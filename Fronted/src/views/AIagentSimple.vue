@@ -8,12 +8,6 @@
             :key="index"
             :class="message.isUser ? 'message user-message' : 'message bot-message'"
           >
-            <!-- 会话图标 -->
-            <i
-              :class="
-                message.isUser ? 'fa-solid fa-user message-icon' : 'fa-solid fa-robot message-icon'
-              "
-            ></i>
             <!-- 会话内容 -->
             <span>
               <span v-html="message.content"></span>
@@ -25,27 +19,31 @@
             </span>
           </div>
         </div>
-        <div class="input-container">
-          <el-button class="new-chat-button" @click="newChat" type="primary">
-            <i class="fa-solid fa-plus"></i>
-            &nbsp;新会话
-          </el-button>
-          <el-input
-            v-model="inputMessage"
-            placeholder="请输入您的问题"
-            @keyup.enter="sendMessage"
-          ></el-input>
-          <el-button @click="sendMessage" :disabled="isSending" type="primary">发送 </el-button>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, defineProps } from 'vue'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
+
+// 定义接收的props
+const props = defineProps({
+  postTitle: {
+    type: String,
+    default: ''
+  },
+  postContent: {
+    type: String,
+    default: ''
+  },
+  postId: {
+    type: [String, Number],
+    default: ''
+  }
+})
 
 const messaggListRef = ref()
 const isSending = ref(false)
@@ -64,9 +62,28 @@ const scrollToBottom = () => {
     messaggListRef.value.scrollTop = messaggListRef.value.scrollHeight
   }
 }
-
+// 修改打招呼语，将前页面传过来的数据替换默认的打招呼语。
 const hello = () => {
-  sendRequest('你好')
+  // 使用文章标题和内容生成初始消息
+  if (props.postTitle && props.postContent) {
+    // 从HTML内容中提取纯文本
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = props.postContent
+    const textContent = tempDiv.textContent || tempDiv.innerText || ''
+
+    // 限制内容长度，避免请求过大
+    const maxLength = 1000
+    const truncatedContent = textContent.length > maxLength
+      ? textContent.substring(0, maxLength) + '...'
+      : textContent
+
+    // 构建请求消息
+    const message = `请根据以下文章内容生成一个简短的摘要：\n标题：${props.postTitle}\n内容：${truncatedContent}`
+    sendRequest(message)
+  } else {
+    // 如果没有文章内容，则发送默认消息
+    sendRequest('你好，请问有什么可以帮助你的？')
+  }
 }
 
 const sendMessage = () => {
@@ -107,7 +124,9 @@ const sendRequest = (message) => {
         onDownloadProgress: (e) => {
           const fullText = e.event.target.responseText
           let newText = fullText.substring(lastMsg.content.length)
-          lastMsg.content += newText
+          // 将新接收的文本转换为HTML
+          const convertedText = convertMarkdownToHtml(newText)
+          lastMsg.content += convertedText
           console.log(lastMsg)
           scrollToBottom()
         },
@@ -143,13 +162,30 @@ const uuidToNumber = (uuid) => {
   return number % 1000000
 }
 
-const convertStreamOutput = (output) => {
-  return output
+const convertMarkdownToHtml = (text) => {
+  if (!text) return ''
+
+  return text
+    // 处理标题 (# Header)
+    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+    // 处理加粗 (**text**)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // 处理斜体 (*text*)
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // 处理代码块 (```code```)
+    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+    // 处理行内代码 (`code`)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // 处理无序列表 (- item)
+    .replace(/^- (.*$)/gm, '<li>$1</li>')
+    // 处理有序列表 (1. item)
+    .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+    // 处理换行
     .replace(/\n/g, '<br>')
+    // 处理制表符
     .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
 }
 
 const newChat = () => {
@@ -162,11 +198,11 @@ const newChat = () => {
 <style scoped>
 .app-layout {
   display: flex;
-  height: 20vh; /* 缩小为原来的四分之一 */
-  max-height: 150px; /* 缩小为原来的四分之一 */
+  height: 100vh; /* 缩小为原来的四分之一 */
+  max-height: 500px; /* 缩小为原来的四分之一 */
   margin: 10px auto;
   width: 90%; /* 增加宽度为原来的四倍 */
-  max-width: 900px; /* 增加最大宽度为原来的四倍 */
+  max-width: 300px; /* 增加最大宽度为原来的四倍 */
 }
 
 .main-content {

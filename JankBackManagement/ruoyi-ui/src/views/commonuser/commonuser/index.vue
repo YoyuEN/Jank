@@ -68,6 +68,7 @@
       <el-table-column label="用户邮箱" align="center" prop="email" />
       <el-table-column label="用户名" align="center" prop="username" />
       <el-table-column label="用户手机号" align="center" prop="phone" />
+      <el-table-column label="用户状态" align="center" prop="freeze"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -184,6 +185,7 @@ export default {
         phone: null,
         accessToken: null,
         refreshToken: null,
+        freeze: null,
         createTime: null,
         updateTime: null,
         deleted: null

@@ -39,6 +39,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!user.getPassword().equals(password)) {
             throw new ServiceExceptionHandler(ResponseCode.USER_PASSWORD_ERROR);
         }
+        if(user.getFreeze() == 0){
+            throw new ServiceExceptionHandler(ResponseCode.USER_HAVE_EXIST);
+        }
         return user;
     }
 

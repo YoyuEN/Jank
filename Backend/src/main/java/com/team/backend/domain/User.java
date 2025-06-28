@@ -29,6 +29,8 @@ public class User {
     private String password;
     // 用户手机号
     private String phone;
+    // 冻结状态
+    private Integer freeze;
     // 访问令牌
     private String accessToken;
     // 刷新令牌
