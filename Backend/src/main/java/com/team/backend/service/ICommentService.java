@@ -32,4 +32,6 @@ public interface ICommentService extends IService<Comment> {
      * @return 带有子评论的评论列表（树状结构）
      */
     List<Comment> getNestedCommentsListByPostId(Long postId);
+
+    List<Comment> getCommentsListByUserId(String userId);
 }

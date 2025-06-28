@@ -58,4 +58,15 @@ public class CommentController {
         List<Comment> commentsList = commentService.getNestedCommentsListByPostId(postId);
         return Result.success(ResponseCode.SUCCESS, commentsList);
     }
+
+    /**
+     * 根据用户id查询评论
+     * @param userId 用户ID
+     * @return 删除结果
+     */
+    @GetMapping("/userIdComment/{userId}")
+    public Result<List<Comment>> getCommentsListByUserId(@PathVariable String userId) {
+        List<Comment> commentsList = commentService.getCommentsListByUserId(userId);
+        return Result.success(ResponseCode.SUCCESS, commentsList);
+    }
 }

@@ -15,6 +15,8 @@ import java.util.List;
 public interface IPostService extends IService<Post> {
     //新增帖子
     void addPost(PostVO postVO) throws Exception;
+
+    List<Post> getUserIdPost(String userId);
     //获取帖子列表
     List<Post> getPostList();
 }

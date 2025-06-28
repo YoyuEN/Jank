@@ -1,5 +1,6 @@
 package com.team.backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.team.backend.domain.Comment;
 import com.team.backend.mapper.CommentMapper;
@@ -59,5 +60,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 });
 
         return rootComments;
+    }
+
+    //根据用户id查询评论
+    @Override
+    public List<Comment> getCommentsListByUserId(String userId) {
+        if(userId == null) {
+            return null;
+        }
+        return super.list(new LambdaQueryWrapper<Comment>().eq(Comment::getUserId, userId));
     }
 }
