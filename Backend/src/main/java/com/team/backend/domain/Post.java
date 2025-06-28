@@ -22,6 +22,8 @@ public class Post {
     // 帖子唯一标识
     @TableId
     private String postId;
+    // 帖子作者用户 ID
+    private String userId;
     // 帖子标题
     private String title;
     // 帖子封面图片 URL
@@ -32,7 +34,7 @@ public class Post {
     @TableField("content_html")
     private String contentHtml;
     // 帖子所属分类 ID
-    @TableField(value = "category_ids", typeHandler = CategoryIdsTypeHandler.class)
+    @TableField(exist = false)
     private List<String> categoryIds;
     // 创建时间
     private String createTime;

@@ -25,13 +25,10 @@ public class Category {
     private String name;
     // 类目描述
     private String description;
-    // 父类目ID
-    private String parentID;
+    // 帖子ID
+    private String postId;
     // 类目图标
     private String path;
-    // 子类目列表
-    @TableField(exist = false)
-    private List<Category> children;
     // 创建时间
     private String createTime;
     //修改时间
