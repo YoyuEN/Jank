@@ -44,7 +44,7 @@ export function deleteMoment(momentId) {
  * @param {string} momentId - 朋友圈唯一标识
  */
 export function likeMoment(momentId) {
-  return service.post('/moment/likeMoment', {
+  return service.get('/moment/likeMoment', {
     momentId
   });
 }

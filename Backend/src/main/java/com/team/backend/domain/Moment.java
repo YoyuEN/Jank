@@ -23,6 +23,7 @@ public class Moment {
     private String content;            // 文字内容
     private String userId;             // 发布用户ID
     private String username;           // 用户名
+    private String category;           // 类目
     @TableField(exist = false)
     private String avatarUrl;          // 用户头像URL
     @TableField(exist = false)

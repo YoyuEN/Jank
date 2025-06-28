@@ -5,7 +5,7 @@
       <nav class="menu">
         <router-link to="/home" active-class="active">首页</router-link>
         <router-link to="/posts" active-class="active">帖子</router-link>
-        <router-link to="/say" active-class="active">说说</router-link>
+        <router-link to="/moments" active-class="active">说说</router-link>
         <router-link to="/message" active-class="active">留言</router-link>
         <router-link to="/about" active-class="active">关于</router-link>
       </nav>

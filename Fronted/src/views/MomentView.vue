@@ -1,5 +1,7 @@
 <template>
+  <div v-if="loading" class="loading">正在加载朋友圈...</div>
   <div class="moment-container">
+<!--    <button @click="fetchMoments">🔄 刷新</button>-->
     <!-- 左侧目录 -->
     <div class="category-menu">
       <ul>
@@ -13,7 +15,8 @@
     <div class="moment-list">
       <div v-for="(moment, index) in filteredMoments" :key="index" class="moment-card">
         <div class="moment-header">
-          <img :src="moment.avatarUrl" alt="头像" class="avatar" />
+<!--          <img :src="moment.avatarUrl" alt="头像" class="avatar" />-->
+          <img src="@/assets/YoyuEN.png" alt="头像" class="avatar" />
           <div class="user-info">
             <span class="username">{{ moment.username }}</span>
             <span class="time">{{ moment.createTime }}</span>
@@ -27,12 +30,13 @@
 
         <!-- 图片展示 -->
         <div v-if="moment.imageUrls && moment.imageUrls.length > 0" class="moment-images">
-          <img v-for="(img, idx) in moment.imageUrls.slice(0, 9)" :key="idx" :src="img" alt="图片" class="moment-image" />
+<!--          <img v-for="(img, idx) in moment.imageUrls.slice(0, 9)" :key="idx" :src="img" alt="图片" class="moment-image" />-->
+          <img v-for="(img, idx) in moment.imageUrls.slice(0, 9)" :key="idx" src="@/assets/YoyuEN.png" alt="图片" class="moment-image" />
         </div>
 
         <!-- 点赞和评论 -->
         <div class="moment-actions">
-          <button @click="likeMoment(index)">👍 点赞 {{ moment.likeCount }}</button>
+          <button @click="handleLike(index)">👍 点赞 {{ moment.likeCount }}</button>
           <button @click="toggleComments(index)">💬 评论 {{ moment.comments.length }}</button>
         </div>
 
@@ -48,48 +52,16 @@
 </template>
 
 <script>
+import { addMoment, getMomentList, likeMoment } from '@/api/moments/moments.js'
+
 export default {
   name: 'MomentView',
   data() {
     return {
       categories: ['全部', '好友圈', '我的'],
       selectedCategory: '全部',
-      moments: [
-        {
-          momentId: '1',
-          content: '今天天气真好！出去踏青啦～',
-          userId: 'u1',
-          username: '小明',
-          avatarUrl: 'https://via.placeholder.com/50',
-          imageUrls: [
-            'https://via.placeholder.com/300x200?text=1',
-            'https://via.placeholder.com/300x200?text=2',
-            'https://via.placeholder.com/300x200?text=3'
-          ],
-          likeCount: 15,
-          comments: [
-            { nickname: '小红', content: '好开心的样子！' },
-            { nickname: '小刚', content: '我也想去！' }
-          ],
-          createTime: '2小时前',
-          showComments: false
-        },
-        {
-          momentId: '2',
-          content: '学习 Vue + Spring Boot 的第一天！',
-          userId: 'u2',
-          username: '前端开发者',
-          avatarUrl: 'https://via.placeholder.com/50',
-          imageUrls: [
-            'https://via.placeholder.com/300x200?text=4',
-            'https://via.placeholder.com/300x200?text=5'
-          ],
-          likeCount: 8,
-          comments: [],
-          createTime: '3小时前',
-          showComments: false
-        }
-      ]
+      moments: [],
+      loading: false
     };
   },
   computed: {
@@ -97,32 +69,101 @@ export default {
       if (this.selectedCategory === '全部') {
         return this.moments;
       } else if (this.selectedCategory === '好友圈') {
-        return this.moments.filter(m => m.userId !== 'u2'); // 示例逻辑
+        return this.moments.filter(m => m.category !== '生活'); // 示例逻辑
       } else if (this.selectedCategory === '我的') {
-        return this.moments.filter(m => m.userId === 'u1'); // 示例逻辑
+        return this.moments.filter(m => m.category === '趣事'); // 示例逻辑
       }
       return this.moments;
+    }
+  },
+  // 获取朋友圈列表
+  async mounted() {
+    console.log('mounted 被调用了');
+    this.loading = true;
+    try {
+      const response = await getMomentList();
+      if (response.code === 200) {
+        this.moments = response.data.map(moment => ({
+          ...moment,
+          showComments: false,
+          likeCount: moment.likeCount || 0,
+          comments: moment.comments || []
+        }));
+      } else {
+        this.$message.error('获取朋友圈失败');
+      }
+    } catch (error) {
+      console.error('获取朋友圈出错:', error);
+      this.$message.error('网络异常，请稍后再试');
+    } finally {
+      this.loading = false;
     }
   },
   methods: {
     selectCategory(category) {
       this.selectedCategory = category;
     },
-    likeMoment(index) {
-      const moment = this.moments[index];
-      moment.likeCount += 1;
-    },
     toggleComments(index) {
       const moment = this.moments[index];
       moment.showComments = !moment.showComments;
+    },
+
+    // 发布新朋友圈
+    async publishMoment() {
+      const newMoment = {
+        content: this.content,
+        userId: 'currentUserId',
+        username: '当前用户',
+        avatarUrl: 'https://example.com/avatar.jpg',
+        imageUrls: this.selectedImages
+      };
+      await addMoment(newMoment);
+      this.$message.success('发布成功');
+      await this.fetchMoments(); // 刷新列表
+    },
+
+    async fetchMoments() {
+      this.loading = true;
+      try {
+        const res = await getMomentList();
+        if (res.code === 200) {
+          this.moments = res.data.map(moment => ({
+            ...moment,
+            showComments: false,
+            likeCount: moment.likeCount || 0,
+            comments: moment.comments || []
+          }));
+        } else {
+          this.$message.error('获取朋友圈失败');
+        }
+      } catch (error) {
+        console.error('获取朋友圈出错:', error);
+        this.$message.error('网络异常，请稍后再试');
+      } finally {
+        this.loading = false;
+      }
+    },
+    // 点赞朋友圈
+    async handleLike(index) {
+      const moment = this.moments[index];
+      await likeMoment(moment.momentId);
+      moment.likeCount += 1;
     }
   }
 };
 </script>
 
 <style scoped>
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
 .moment-container {
   display: flex;
+  padding: 24px;
+  margin: 40px auto 0;
 }
 
 .category-menu {
