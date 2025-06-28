@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/24
@@ -67,6 +70,17 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
             post.setImage(minioService.getPresignedUrl(image));
         }
         return postList;
+    }
+
+    //根据用户id查询帖子
+    @Override
+    public List<Post> getUserIdPost(String userId) {
+        if(userId == null){
+            return null;
+        }
+        LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Post::getUserId, userId);
+        return super.list(queryWrapper);
     }
 
 }

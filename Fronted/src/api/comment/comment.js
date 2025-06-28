@@ -14,3 +14,11 @@ export function getNestedCommentList(postId) {
 export function submitComment(data) {
   return service.post('/comment/add', data)
 }
+//根据用户id查询评论
+export function getCommentByUserId(userId) {
+  return service.get(`/comment/userIdComment`,{
+    params:{
+      userId:userId
+    }
+  })
+}

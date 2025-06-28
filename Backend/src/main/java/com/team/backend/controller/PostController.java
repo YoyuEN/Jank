@@ -59,4 +59,10 @@ public class PostController {
         return Result.success(ResponseCode.SUCCESS);
     }
 
+    //根据用户id查询帖子
+    @GetMapping("/getUserIdPost")
+    public Result<List<Post>> getUserIdPost(@RequestParam("userId") String userId) {
+        List<Post> post = postService.getUserIdPost(userId);
+        return Result.success(ResponseCode.SUCCESS, post);
+    }
 }

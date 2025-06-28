@@ -17,3 +17,11 @@ export function getPostDetail(postId) {
 export function addPostDetail(data) {
   return service.post('/post/addPostDetail', data)
 }
+
+//根据用户id获取帖子列表
+export function getUserIdPost(userId) {
+  return service.get('/post/getUserIdPost', {
+    params: {
+      userId
+    }})
+}

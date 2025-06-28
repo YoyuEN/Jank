@@ -2,24 +2,29 @@
   <div class="user-container">
     <div class="user-dashboard">
       <!-- 左侧：用户基本信息 -->
-      <div class="user-info-panel">
-        <div class="avatar-section">
-          <div class="avatar-wrapper">
-            <img
-              :src="user.avatar || 'https://via.placeholder.com/150'"
-              alt="用户头像"
-              class="avatar-image"
-            />
+      <div>
+        <div class="user-info-panel">
+          <div class="avatar-section">
+            <div class="avatar-wrapper">
+              <img
+                :src="user.avatar || 'https://via.placeholder.com/150'"
+                alt="用户头像"
+                class="avatar-image"
+              />
+            </div>
+          </div>
+          <div class="info-section">
+            <h2 class="username">{{ user.nickname || '用户昵称' }}</h2>
+            <p class="user-detail"><span class="label">用户名：</span>{{ user.username || 'username123' }}</p>
+            <p class="user-detail"><span class="label">邮箱：</span>{{ user.email || 'example@email.com' }}</p>
+            <p class="user-detail"><span class="label">加入时间：</span>{{ user.createTime }}</p>
           </div>
         </div>
-
-        <div class="info-section">
-          <h2 class="username">{{ user.nickname || '用户昵称' }}</h2>
-          <p class="user-detail"><span class="label">用户名：</span>{{ user.username || 'username123' }}</p>
-          <p class="user-detail"><span class="label">邮箱：</span>{{ user.email || 'example@email.com' }}</p>
-          <p class="user-detail"><span class="label">加入时间：</span>{{ user.createTime }}</p>
+        <div>
+          <h3>说说</h3>
         </div>
       </div>
+
 
       <!-- 右侧：帖子和评论 -->
       <div class="user-activity-panel">
@@ -32,10 +37,10 @@
             </div>
             <div v-else v-for="(post, index) in posts" :key="index" class="post-item">
               <h4 class="post-title">{{ post.title }}</h4>
-              <p class="post-excerpt">{{ post.excerpt }}</p>
+              <p class="post-excerpt">{{ post.contentHtml }}</p>
               <div class="post-meta">
-                <span class="post-date">{{ formatDate(post.createDate) }}</span>
-                <span class="post-stats">{{ post.views }} 浏览 · {{ post.comments }} 评论</span>
+                <span class="post-date">{{post.createTime}}</span>
+<!--                <span class="post-stats">{{ post.views }} 浏览 · {{ post.comments }} 评论</span>-->
               </div>
             </div>
           </div>
@@ -52,7 +57,7 @@
               <p class="comment-content">{{ comment.content }}</p>
               <div class="comment-meta">
                 <span class="comment-post">评论于：{{ comment.postTitle }}</span>
-                <span class="comment-date">{{ formatDate(comment.createDate) }}</span>
+                <span class="comment-date">{{comment.createTime}}</span>
               </div>
             </div>
           </div>
@@ -62,10 +67,11 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+<script setup>
+import { ref, watchEffect, onMounted } from 'vue'
 import { useUserStore } from '@/store/userStore.js'
-
+import { getUserIdPost } from '@/api/posts/posts.js'
+import {getCommentByUserId} from '@/api/comment/comment.js'
 // 用户基本信息
 const userStore = useUserStore()
 
@@ -83,45 +89,69 @@ watchEffect(() => {
 })
 
 // 用户帖子数据
-const posts = ref([
-  {
-    title: '这是一个示例帖子标题',
-    excerpt: '这是帖子的摘要内容，展示部分帖子内容...',
-    createDate: new Date(2023, 5, 15),
-    views: 42,
-    comments: 5
-  },
-  {
-    title: '另一个有趣的话题讨论',
-    excerpt: '这是另一个帖子的摘要，包含一些有趣的讨论内容...',
-    createDate: new Date(2023, 4, 28),
-    views: 37,
-    comments: 3
-  }
-])
+const posts = ref([])
+//用户评论数据
+const comments = ref([])
 
-// 用户评论数据
-const comments = ref([
-  {
-    content: '这是一条评论内容，表达了我对这个帖子的看法和观点。',
-    postTitle: '关于某某话题的讨论',
-    createDate: new Date(2023, 5, 20)
-  },
-  {
-    content: '非常赞同楼主的观点，这个问题确实需要更多关注。',
-    postTitle: '社会热点话题分析',
-    createDate: new Date(2023, 5, 10)
+// 获取用户帖子数据
+const fetchUserPosts = async () => {
+  if (user.value && user.value.userId) {
+    try {
+      const response = await getUserIdPost(user.value.userId)
+      if (response && response.data && response.data.length > 0) {
+        // 将API返回的数据映射到我们需要的格式
+        posts.value = response.data.map(post => ({
+          title: post.title || '无标题',
+          contentHtml: post.contentHtml ? post.contentHtml.substring(0, 100) + '...' : '无内容',
+          createTime: new Date(post.createTime || Date.now()),
+          image: post.image || '/img1.png',
+          // views: post.views || 0,
+          // comments: post.commentCount || 0
+        }))
+      } else {
+        posts.value = []
+      }
+    } catch (error) {
+      console.error('获取用户帖子失败:', error)
+      posts.value = []
+    }
   }
-])
-
-// 格式化日期
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
 }
+
+//获取评论
+const fetchUserComment = async () => {
+  if (user.value && user.value.userId) {
+    try {
+      const response = await getCommentByUserId(user.value.userId)
+      if (response && response.data && response.data.length > 0) {
+        // 将API返回的数据映射到我们需要的格式
+        comments.value = response.data.map(comment => ({
+          content:comment.content || '无内容',
+          createTime: new Date(comment.createTime || Date.now()),
+        }))
+      } else {
+        comments.value = []
+      }
+    } catch (error) {
+      console.error('获取用户评论失败:', error)
+      comments.value = []
+    }
+  }
+}
+// 在组件挂载时获取用户帖子
+onMounted(() => {
+  fetchUserPosts()
+  fetchUserComment()
+})
+
+// 当用户信息变化时重新获取帖子
+watchEffect(() => {
+  if (user.value && user.value.userId) {
+    fetchUserPosts()
+    fetchUserComment()
+  }
+})
+
 </script>
 
 <style scoped>

@@ -21,6 +21,7 @@
         @click="goToProfile"
       />
     </div>
+
   </header>
 </template>
 
@@ -92,7 +93,11 @@ onMounted(() => {
   }
 });
 const goToProfile = () => {
-  router.push('/login');
+  if (userStore.user) {
+    router.push('/user');
+  } else {
+    router.push('/login');
+  }
 };
 </script>
 
