@@ -121,9 +121,9 @@ export default {
 <style scoped>
 /* 页面最外层容器的背景渐变样式，可根据喜好调整颜色值 */
 .home-container {
+  margin-top: 60px;
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(to right, #e6f7ff, #f9f0ff);
 }
 .blog-section {
   padding: 24px;
