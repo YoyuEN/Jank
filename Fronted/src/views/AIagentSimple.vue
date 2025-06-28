@@ -124,9 +124,7 @@ const sendRequest = (message) => {
         onDownloadProgress: (e) => {
           const fullText = e.event.target.responseText
           let newText = fullText.substring(lastMsg.content.length)
-          // 将新接收的文本转换为HTML
-          const convertedText = convertMarkdownToHtml(newText)
-          lastMsg.content += convertedText
+          lastMsg.content += newText
           console.log(lastMsg)
           scrollToBottom()
         },

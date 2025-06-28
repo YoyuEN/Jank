@@ -50,6 +50,11 @@ const routes = [
     component: () => import('@/views/Message.vue'),
   },
   {
+    path: '/user',
+    name: 'User',
+    component: () => import('@/views/UserInformation.vue'),
+  },
+  {
     path: '/publish',
     name: 'Publish',
     component: () => import('@/views/PublishPost.vue'),

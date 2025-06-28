@@ -40,7 +40,7 @@
           <div class="ai-summary card">
             <div>
               <h2 class="summary-title">AI 摘要</h2>
-<!--              将页面数据传到ai摘要中-->
+<!--              将页面数据传到ai摘要中 -->
               <AIagentSimple
                 :postTitle="post.title"
                 :postContent="post.contentHtml"
