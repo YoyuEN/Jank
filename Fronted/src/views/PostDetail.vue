@@ -38,22 +38,28 @@
         <div class="right-panel">
           <!-- AI 摘要卡片 -->
           <div class="ai-summary card">
-            <h2 class="summary-title">AI 摘要</h2>
-            <div class="summary-content">
-              <p>这里是 AI 根据文章内容自动生成的摘要文字。</p>
+            <div>
+              <h2 class="summary-title">AI 摘要</h2>
+<!--              将页面数据传到ai摘要中-->
+              <AIagentSimple
+                :postTitle="post.title"
+                :postContent="post.contentHtml"
+                :postId="postId"
+              />
+            </div>
+            <div class="toc-card card" v-if="tocItems.length > 0">
+              <h3 class="toc-title">目录</h3>
+              <ul class="toc-list">
+                <li v-for="item in tocItems" :key="item.id" :class="`toc-level-${item.level}`">
+                  <a :href="`#${item.id}`" @click.prevent="scrollToHeading(item)">
+                    {{ item.text }}
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
           <!-- 目录卡片：与 ai-summary 平级 -->
-          <div class="toc-card card" v-if="tocItems.length > 0">
-            <h3 class="toc-title">目录</h3>
-            <ul class="toc-list">
-              <li v-for="item in tocItems" :key="item.id" :class="`toc-level-${item.level}`">
-                <a :href="`#${item.id}`" @click.prevent="scrollToHeading(item)">
-                  {{ item.text }}
-                </a>
-              </li>
-            </ul>
-          </div>
+
         </div>
       </div>
     </div>
@@ -66,6 +72,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPostDetail } from '@/api/posts/posts.js'
 import { marked } from 'marked'
+import AIagentSimple from '@/views/AIagentSimple.vue'
 
 const route = useRoute()
 const postId = route.params.postId
