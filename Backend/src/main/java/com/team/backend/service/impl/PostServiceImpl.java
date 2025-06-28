@@ -43,7 +43,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 
         Post post = new Post();
         post.setTitle(postVO.getTitle());
-        post.setImage(imageUrl); // ✅ 正确：Post.setImage(String)
+        post.setImage(imageUrl);
         post.setContentHtml(postVO.getContentHtml());
         post.setCategoryNames(postVO.getCategoryNames());
         post.setVisibility(true);
@@ -57,12 +57,14 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
         List<Post> postList = this.list(wrapper);
 
-        // 遍历每个 Moment，为其设置对应的图片 URL 列表
         for (Post post : postList) {
             String postId = post.getPostId();
 
             List<String> categoryNames = categoryService.getCategoryNamesByPostId(postId);
             post.setCategoryNames(categoryNames);
+
+            String image = post.getImage();
+            post.setImage(minioService.getPresignedUrl(image));
         }
         return postList;
     }

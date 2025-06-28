@@ -9,7 +9,7 @@
           <h1 class="post-title">{{ post.title }}</h1>
           <div class="post-meta">
             <span>发布时间：{{ post.createTime }}</span>
-            <span v-for="id in post.categoryIds" :key="id" class="category-tag">#{{ id }}</span>
+            <span v-for="id in post.categoryNames" :key="id" class="category-tag">#{{ id }}</span>
           </div>
         </div>
       </div>

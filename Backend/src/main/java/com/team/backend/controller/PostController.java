@@ -3,6 +3,7 @@ package com.team.backend.controller;
 import com.team.backend.domain.Post;
 import com.team.backend.domain.vo.PostVO;
 import com.team.backend.service.IPostService;
+import com.team.backend.service.MinioService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,10 @@ import java.util.List;
 public class PostController {
 
     private final IPostService postService;;
-    public PostController(IPostService postService) {
+    private final MinioService minioService;
+    public PostController(IPostService postService, MinioService minioService) {
         this.postService = postService;
+        this.minioService = minioService;
     }
 
     @GetMapping("/getPostList")
@@ -34,6 +37,7 @@ public class PostController {
     @GetMapping("/getPostDetail")
     public Result<Post> getPostDetail(@RequestParam("postId") String postId) {
         Post post = postService.getById(postId);
+        post.setImage(minioService.getPresignedUrl(post.getImage()));
         return Result.success(ResponseCode.SUCCESS, post);
     }
 

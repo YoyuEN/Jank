@@ -166,7 +166,7 @@ export default {
         const formData = new FormData();
         formData.append('title', this.postForm.title);
         formData.append('contentHtml', this.postForm.contentHtml);
-        formData.append('categoryIds', this.postForm.categoryNames);
+        formData.append('categoryNames', this.postForm.categoryNames);
 
         // 如果有图片，则追加到 formData 中
         if (this.postForm.image) {

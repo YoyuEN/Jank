@@ -86,7 +86,7 @@ export default {
       router.push({ name: 'PostList' }) // 使用获取到的路由实例
     }
     const navigateToSay = () => {
-      router1.push({ name: 'say' });
+      router1.push({ name: 'moments' });
     };
     return {
       navigateToPosts,

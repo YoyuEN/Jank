@@ -1,11 +1,9 @@
 package com.team.backend.service.impl;
 
 import com.team.backend.service.MinioService;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
 import io.minio.errors.MinioException;
+import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -60,11 +58,32 @@ public class MinioServiceImpl implements MinioService {
             minioEndpoint = minioEndpoint.replace("5", "0");
 
             // 返回文件访问 URL
-            return minioEndpoint + "/api/v1/buckets/" + bucketName +
-                    "/objects/download?preview=true&prefix=" + objectName +
-                    "&version_id=null";
+            return objectName;
         } catch (Exception e) {
             throw new RuntimeException("文件上传失败: " + e.getMessage(), e);
         }
     }
+
+
+    /**
+     * 获取 MinIO 文件的预签名访问 URL
+     *
+     * @param objectName 文件对象名称
+     * @return 可访问的 URL 地址
+     */
+    @Override
+    public String getPresignedUrl(String objectName) {
+        try {
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("获取预签名URL失败: " + e.getMessage(), e);
+        }
+    }
+
 }

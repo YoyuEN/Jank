@@ -3,6 +3,8 @@ package com.team.backend.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/26
@@ -11,4 +13,5 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface MinioService {
     String  uploadFile(MultipartFile file, String folder) throws Exception;
+    String getPresignedUrl(String objectName);
 }

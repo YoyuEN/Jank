@@ -1,5 +1,6 @@
 package com.team.backend.controller;
 
+import com.team.backend.service.MinioService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
 import io.minio.MinioClient;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +32,8 @@ import static java.lang.System.in;
 public class MinioController {
     @Autowired
     private MinioClient minioClient;
+    @Autowired
+    private MinioService minioService;
 
     @Value("${minio.bucket-name}")
     private String bucketName;
@@ -64,4 +68,10 @@ public class MinioController {
         data.put("fileName", orgsFileNameList);
         return Result.success(ResponseCode.SUCCESS, data);
     }
+
+    @GetMapping("/url")
+    public String getUrl(@RequestParam String objectName) {
+        return minioService.getPresignedUrl(objectName);
+    }
+
 }
