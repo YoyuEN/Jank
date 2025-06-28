@@ -40,7 +40,7 @@
           <div class="ai-summary card">
             <div>
               <h2 class="summary-title">AI 摘要</h2>
-<!--              将页面数据传到ai摘要中 -->
+              <!--              将页面数据传到ai摘要中 -->
               <AIagentSimple
                 :postTitle="post.title"
                 :postContent="post.contentHtml"
@@ -65,9 +65,7 @@
       <div class="comments-section">
         <h2 class="comments-title">评论区</h2>
 
-        <div v-if="loadingComments" class="loading-comments">
-          加载评论中...
-        </div>
+        <div v-if="loadingComments" class="loading-comments">加载评论中...</div>
 
         <div v-else-if="comments.length === 0" class="no-comments">
           暂无评论，快来发表第一条评论吧！
@@ -78,7 +76,11 @@
           <div v-for="comment in comments" :key="comment.id" class="comment-item">
             <div class="comment-content">
               <div class="comment-header">
-                <img :src="comment.avatar || 'https://via.placeholder.com/40'" alt="头像" class="comment-avatar">
+                <img
+                  :src="comment.avatar || 'https://via.placeholder.com/40'"
+                  alt="头像"
+                  class="comment-avatar"
+                />
                 <div class="comment-info">
                   <div class="comment-author">{{ comment.username || '匿名用户' }}</div>
                   <div class="comment-time">{{ comment.createTime }}</div>
@@ -89,31 +91,42 @@
                 <button @click="toggleReplyInput(comment.id)" class="reply-btn">
                   {{ replyTo === comment.id ? '取消回复' : '回复' }}
                 </button>
-                <button @click="toggleReplies(comment.id)" class="show-replies-btn" v-if="comment.replyCount > 0">
+                <button
+                  @click="toggleReplies(comment.id)"
+                  class="show-replies-btn"
+                  v-if="comment.replyCount > 0"
+                >
                   {{ comment.showReplies ? '收起回复' : `查看回复(${comment.replyCount})` }}
                 </button>
               </div>
 
               <!-- 回复输入框 -->
               <div v-if="replyTo === comment.id" class="reply-input-container">
-                <textarea v-model="replyContent" placeholder="写下你的回复..." rows="3" class="reply-textarea"></textarea>
+                <textarea
+                  v-model="replyContent"
+                  placeholder="写下你的回复..."
+                  rows="3"
+                  class="reply-textarea"
+                ></textarea>
                 <div class="reply-actions">
-                  <button @click="submitReply(comment.id)" class="submit-reply-btn">提交回复</button>
+                  <button @click="submitReply(comment.id)" class="submit-reply-btn">
+                    提交回复
+                  </button>
                 </div>
               </div>
 
               <!-- 回复列表 -->
               <div v-if="comment.showReplies" class="replies-container">
-                <div v-if="comment.loadingReplies" class="loading-replies">
-                  加载回复中...
-                </div>
-                <div v-else-if="comment.replies.length === 0" class="no-replies">
-                  暂无回复
-                </div>
+                <div v-if="comment.loadingReplies" class="loading-replies">加载回复中...</div>
+                <div v-else-if="comment.replies.length === 0" class="no-replies">暂无回复</div>
                 <div v-else class="replies-list">
                   <div v-for="reply in comment.replies" :key="reply.id" class="reply-item">
                     <div class="reply-header">
-                      <img :src="reply.avatar || 'https://via.placeholder.com/30'" alt="头像" class="reply-avatar">
+                      <img
+                        :src="reply.avatar || 'https://via.placeholder.com/30'"
+                        alt="头像"
+                        class="reply-avatar"
+                      />
                       <div class="reply-info">
                         <div class="reply-author">{{ reply.username || '匿名用户' }}</div>
                         <div class="reply-time">{{ reply.createTime }}</div>
@@ -127,7 +140,7 @@
           </div>
         </div>
       </div>
-      <CommentList/>
+      <CommentList />
     </div>
     <div v-else class="no-data">未找到该岗位信息</div>
   </div>
@@ -178,7 +191,7 @@ const submitComment = async () => {
         content: newComment.value,
         userId: localStorage.getItem('userId'),
         username: localStorage.getItem('username'),
-        avatar: localStorage.getItem('avatar')
+        avatar: localStorage.getItem('avatar'),
       }
 
       // 如果是回复其他评论，添加父评论ID
@@ -216,7 +229,7 @@ const submitReply = async (commentId) => {
         parentId: commentId,
         userId: localStorage.getItem('userId'),
         username: localStorage.getItem('username'),
-        avatar: localStorage.getItem('avatar')
+        avatar: localStorage.getItem('avatar'),
       })
 
       if (response.code === 200) {
@@ -248,13 +261,13 @@ const fetchComments = async () => {
 
         // 递归处理子评论
         if (comment.replies && comment.replies.length > 0) {
-          comment.replies.forEach(reply => addUIProperties(reply))
+          comment.replies.forEach((reply) => addUIProperties(reply))
         }
         return comment
       }
 
       // 处理所有评论
-      comments.value = response.data.map(comment => addUIProperties(comment))
+      comments.value = response.data.map((comment) => addUIProperties(comment))
     }
   } catch (error) {
     console.error('获取评论列表失败:', error)
@@ -275,7 +288,7 @@ const toggleReplyInput = (commentId) => {
 
 // 切换显示回复列表
 const toggleReplies = (commentId) => {
-  const comment = comments.value.find(c => c.id === commentId)
+  const comment = comments.value.find((c) => c.id === commentId)
   if (!comment) return
 
   comment.showReplies = !comment.showReplies
@@ -367,7 +380,7 @@ const handleScroll = () => {
 }
 
 .sidebar-btn {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   width: 48px;
@@ -409,6 +422,7 @@ const handleScroll = () => {
   display: flex;
   justify-content: space-between;
 }
+
 .comment-panel h3 {
   margin-top: 0;
   font-size: 1.2em;
@@ -418,7 +432,7 @@ const handleScroll = () => {
 .submit-comment-btn {
   margin-top: 10px;
   padding: 8px 16px;
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
@@ -517,9 +531,11 @@ const handleScroll = () => {
   gap: 5%;
   margin-top: 32px;
 }
+
 .post-body {
   width: 70%;
 }
+
 .author-avatar {
   width: 80px;
   height: 80px;
@@ -535,7 +551,7 @@ const handleScroll = () => {
 
 .ai-summary {
   padding: 20px;
-  width: 20%;
+  width: 88%;
   background-color: #f9f9f9;
   border-left: 4px solid #007bff; /* 高亮边框 */
   flex: none; /* 不要占满剩余高度 */
@@ -546,7 +562,7 @@ const handleScroll = () => {
 
 .summary-title {
   font-size: 1.5em;
-  color: #007BFF;
+  color: #007bff;
   margin-bottom: 12px;
 }
 
@@ -569,7 +585,8 @@ const handleScroll = () => {
   color: #333;
 }
 
-.loading-comments, .no-comments {
+.loading-comments,
+.no-comments {
   text-align: center;
   padding: 20px;
   color: #666;
@@ -628,16 +645,18 @@ const handleScroll = () => {
   gap: 12px;
 }
 
-.reply-btn, .show-replies-btn {
+.reply-btn,
+.show-replies-btn {
   background: none;
   border: none;
-  color: #007BFF;
+  color: #007bff;
   cursor: pointer;
   font-size: 0.9em;
   padding: 0;
 }
 
-.reply-btn:hover, .show-replies-btn:hover {
+.reply-btn:hover,
+.show-replies-btn:hover {
   text-decoration: underline;
 }
 
@@ -663,7 +682,7 @@ const handleScroll = () => {
 }
 
 .submit-reply-btn {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
@@ -677,7 +696,8 @@ const handleScroll = () => {
   border-left: 2px solid #e1e1e1;
 }
 
-.loading-replies, .no-replies {
+.loading-replies,
+.no-replies {
   padding: 10px;
   color: #888;
   font-style: italic;
@@ -730,5 +750,4 @@ const handleScroll = () => {
   font-size: 0.95em;
   line-height: 1.4;
 }
-
 </style>
