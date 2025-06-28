@@ -10,11 +10,8 @@ import reactor.core.publisher.Flux;
 
 /**
  *     String chatModel() default ""; // 指定模型名称
- *
  *     String streamingChatModel() default ""; //指定使用流失输出，默认使用非流失输出
- *
  *     String chatMemory() default ""; // 配置模型记忆属性，默认在内存中记忆
- *
  *     String chatMemoryProvider() default ""; // 配置模型隔离属性，默认是在内存中隔离
  */
 @AiService(wiringMode = AiServiceWiringMode.EXPLICIT
