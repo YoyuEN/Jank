@@ -57,6 +57,7 @@
       </el-table-column>
       <el-table-column label="帖子所属分类" align="center" prop="categoryIds" />
       <el-table-column label="帖子可见性状态" align="center" prop="visibility" />
+      <el-table-column label="用户" align="center" prop="userId" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -198,6 +199,7 @@ export default {
         visibility: null,
         contentHtml: null,
         categoryIds: null,
+        userId: null,
         createTime: null,
         updateTime: null,
         deleted: null

@@ -34,6 +34,8 @@ public class Post {
     // 帖子所属分类 ID
     @TableField(value = "category_ids", typeHandler = CategoryIdsTypeHandler.class)
     private List<String> categoryIds;
+    //用户id
+    private String userId;
     // 创建时间
     private String createTime;
     //修改时间

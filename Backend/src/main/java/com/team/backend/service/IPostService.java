@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.team.backend.domain.Post;
 import com.team.backend.domain.vo.PostVO;
 
+import java.util.List;
+
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/24
@@ -13,4 +15,6 @@ import com.team.backend.domain.vo.PostVO;
 public interface IPostService extends IService<Post> {
     //新增帖子
     void addPost(PostVO postVO) throws Exception;
+
+    List<Post> getUserIdPost(String userId);
 }

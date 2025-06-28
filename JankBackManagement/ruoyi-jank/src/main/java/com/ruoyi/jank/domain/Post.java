@@ -25,6 +25,8 @@ public class Post implements Serializable {
     private Integer visibility;
     private String contentHtml;
     private String categoryIds;
+    //用户id
+    private String userId;
     private String createTime;
     private String updateTime;
     @TableLogic

@@ -1,5 +1,6 @@
 package com.team.backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.team.backend.domain.Post;
 import com.team.backend.domain.vo.PostVO;
@@ -7,6 +8,9 @@ import com.team.backend.mapper.PostMapper;
 import com.team.backend.service.IPostService;
 import com.team.backend.service.MinioService;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author: YoyuEN
@@ -41,6 +45,17 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         post.setVisibility(true);
 
         super.save(post);
+    }
+
+    //根据用户id查询帖子
+    @Override
+    public List<Post> getUserIdPost(String userId) {
+        if(userId == null){
+            return null;
+        }
+        LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Post::getUserId, userId);
+        return super.list(queryWrapper);
     }
 
 }
