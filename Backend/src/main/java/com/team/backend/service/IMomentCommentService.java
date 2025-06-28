@@ -3,6 +3,8 @@ package com.team.backend.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.team.backend.domain.MomentComment;
 
+import java.util.List;
+
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/28
@@ -10,4 +12,5 @@ import com.team.backend.domain.MomentComment;
  * @Description:
  */
 public interface IMomentCommentService extends IService<MomentComment> {
+    List<MomentComment> getCommentsByMomentId(String momentId);
 }

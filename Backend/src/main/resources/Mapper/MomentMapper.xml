@@ -8,5 +8,10 @@
         SET like_count = like_count + 1
         WHERE moment_id = #{momentId}
     </update>
+    <update id="decreaseLikeCount">
+        UPDATE moment
+        SET like_count = like_count - 1
+        WHERE moment_id = #{momentId}
+    </update>
 
 </mapper>

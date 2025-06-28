@@ -1,10 +1,10 @@
-import service from '@/utils/request.js';
+import service from '@/utils/request.js'
 
 /**
  * 获取朋友圈列表
  */
 export function getMomentList() {
-  return service.get('/moment/getMomentList');
+  return service.get('/moment/getMomentList')
 }
 
 /**
@@ -14,9 +14,9 @@ export function getMomentList() {
 export function getMomentDetail(momentId) {
   return service.get('/moment/getMomentDetail', {
     params: {
-      momentId
-    }
-  });
+      momentId,
+    },
+  })
 }
 
 /**
@@ -24,7 +24,7 @@ export function getMomentDetail(momentId) {
  * @param {Object} data - 朋友圈数据对象
  */
 export function addMoment(data) {
-  return service.post('/moment/addMoment', data);
+  return service.post('/moment/addMoment', data)
 }
 
 /**
@@ -34,9 +34,9 @@ export function addMoment(data) {
 export function deleteMoment(momentId) {
   return service.delete('/moment/deleteMoment', {
     params: {
-      momentId
-    }
-  });
+      momentId,
+    },
+  })
 }
 
 /**
@@ -45,6 +45,17 @@ export function deleteMoment(momentId) {
  */
 export function likeMoment(momentId) {
   return service.get('/moment/likeMoment', {
-    momentId
-  });
+    params: {
+      momentId,
+    },
+  })
+}
+
+// 取消点赞
+export function cancelLike(momentId) {
+  return service.get('/moment/cancelLike', {
+    params: {
+      momentId,
+    },
+  })
 }

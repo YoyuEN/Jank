@@ -1,5 +1,6 @@
 package com.team.backend.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MomentComment {
     // 评论ID
+    @TableId
     private String commentId;
     // 对应的朋友圈ID
     private String momentId;

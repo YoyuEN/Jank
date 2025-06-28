@@ -6,6 +6,7 @@ import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +40,15 @@ public class MomentController {
     public Result<String> likeMoment(String momentId){
         momentService.likeMoment(momentId);
         return Result.success(ResponseCode.SUCCESS, "点赞成功");
+    }
+
+    /*
+    * cancelLike 取消点赞
+    * */
+    @GetMapping("/cancelLike")
+    public Result<String> cancelLike(String momentId){
+        momentService.cancelLike(momentId);
+        return Result.success(ResponseCode.SUCCESS, "取消点赞成功");
     }
 
 }

@@ -6,7 +6,10 @@ import com.team.backend.domain.Comment;
 import com.team.backend.domain.Moment;
 import com.team.backend.domain.MomentComment;
 import com.team.backend.mapper.MomentMapper;
+import com.team.backend.service.IMomentCommentService;
+import com.team.backend.service.IMomentImageService;
 import com.team.backend.service.IMomentService;
+import com.team.backend.service.IUserService;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,14 +26,20 @@ import java.util.List;
 @Service
 public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> implements IMomentService{
     @Autowired
-    private final MomentImageServiceImpl momentImageService;
+    private final IMomentImageService momentImageService;
 
     @Autowired
-    private final MomentCommentServiceImpl momentCommentService;
+    private final IMomentCommentService momentCommentService;
 
-    public MomentServiceImpl(MomentImageServiceImpl momentImageService, MomentCommentServiceImpl momentCommentService) {
+    @Autowired
+    private final IUserService userService;
+
+
+
+    public MomentServiceImpl(MomentImageServiceImpl momentImageService, MomentCommentServiceImpl momentCommentService, UserServiceImpl userService) {
         this.momentImageService = momentImageService;
         this.momentCommentService = momentCommentService;
+        this.userService = userService;
     }
 
     @Override
@@ -50,8 +59,17 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
             // 获取评论列表
             List<MomentComment> comments = momentCommentService.getCommentsByMomentId(momentId);
             moment.setComments(comments);
+
+            // 根据用户ID查询头像URL
+            String avatarUrl = userService.getAvatarUrlByUserId(moment.getUserId());
+            moment.setAvatarUrl(avatarUrl);
         }
         return momentList;
+    }
+
+    @Override
+    public void cancelLike(String momentId) {
+        this.baseMapper.decreaseLikeCount(momentId);
     }
 
 

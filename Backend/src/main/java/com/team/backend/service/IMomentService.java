@@ -13,5 +13,6 @@ import java.util.List;
  */
 public interface IMomentService extends IService<Moment> {
     List<Moment> getMomentList();
+    void cancelLike(String momentId);
     void likeMoment(String momentId);
 }

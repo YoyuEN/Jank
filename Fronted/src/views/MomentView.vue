@@ -16,7 +16,6 @@
       <div v-for="(moment, index) in filteredMoments" :key="index" class="moment-card">
         <div class="moment-header">
           <img :src="moment.avatarUrl" alt="头像" class="avatar" />
-<!--          <img src="@/assets/YoyuEN.png" alt="头像" class="avatar" />-->
           <div class="user-info">
             <span class="username">{{ moment.username }}</span>
             <span class="time">{{ moment.createTime }}</span>
@@ -35,7 +34,10 @@
 
         <!-- 点赞和评论 -->
         <div class="moment-actions">
-          <button @click="handleLike(index)">👍 点赞 {{ moment.likeCount }}</button>
+          <button @click="handleLike(moment.momentId)">
+            {{ moment.likedByUser ? '💔 取消点赞' : '👍 点赞' }} {{ moment.likeCount }}
+          </button>
+
           <button @click="toggleComments(index)">💬 评论 {{ moment.comments.length }}</button>
         </div>
 
@@ -51,7 +53,7 @@
 </template>
 
 <script>
-import { addMoment, getMomentList, likeMoment } from '@/api/moments/moments.js'
+import { addMoment, cancelLike, getMomentList, likeMoment } from '@/api/moments/moments.js'
 
 export default {
   name: 'MomentView',
@@ -59,9 +61,7 @@ export default {
     return {
       categories: ['全部', '生活', '趣事'],
       selectedCategory: '全部',
-      moments: [
-
-      ],
+      moments: [],
       loading: false
     };
   },
@@ -78,25 +78,41 @@ export default {
     }
   },
 
-  // 获取朋友圈列表
+
   async mounted() {
     console.log('mounted 被调用了');
     this.loading = true;
     try {
       const response = await getMomentList();
-      if (response.code === 200) {
+      console.log('原始响应:', response); // 打印整个响应
+      console.log('映射前的 data:', response.data); // 打印原始数据
+
+      if (response.code === 200 && Array.isArray(response.data)) {
         this.moments = response.data.map(moment => ({
-          ...moment,
-          showComments: false,
+          momentId: moment.momentId,
+          content: moment.content,
+          userId: moment.userId,
+          username: moment.username,
+          category: moment.category,
+          avatarUrl: moment.avatarUrl,
+          imageUrls: moment.imageUrls || [],
           likeCount: moment.likeCount || 0,
-          comments: moment.comments || []
+          likedByUser: !!moment.likedByUser,
+          comments: moment.comments || [],
+          createTime: moment.createTime,
+          showComments: false
         }));
+        // 打印第一条朋友圈查看是否包含 momentId
+        console.log('第一条朋友圈:', this.moments[0]);
+
       } else {
+        this.moments = [];
         this.$message.error('获取朋友圈失败');
       }
     } catch (error) {
       console.error('获取朋友圈出错:', error);
       this.$message.error('网络异常，请稍后再试');
+      this.moments = [];
     } finally {
       this.loading = false;
     }
@@ -107,8 +123,9 @@ export default {
       this.selectedCategory = category;
     },
     toggleComments(index) {
-      const moment = this.moments[index];
-      moment.showComments = !moment.showComments;
+      this.moments = this.moments.map((m, i) =>
+        i === index ? { ...m, showComments: !m.showComments } : m
+      );
     },
 
     // 发布新朋友圈
@@ -147,12 +164,33 @@ export default {
       }
     },
 
-    // 点赞朋友圈
-    async handleLike(index) {
-      const moment = this.moments[index];
-      await likeMoment(moment.momentId);
-      moment.likeCount += 1;
+    async handleLike(momentId) {
+      const moment = this.moments.find(m => m.momentId === momentId);
+      if (!moment) {
+        console.error('找不到对应的朋友圈:', momentId);
+        return;
+      }
+      const isLiked = !moment.likedByUser;
+
+      try {
+        if (isLiked) {
+          // 点赞
+          await likeMoment(moment.momentId); // 调用点赞接口
+          console.log(momentId)
+          console.log(moment.momentId)
+          moment.likeCount += 1;
+        } else {
+          // 取消点赞
+          await cancelLike(moment.momentId); // 调用取消点赞接口
+          moment.likeCount -= 1;
+        }
+        moment.likedByUser = isLiked;
+      } catch (error) {
+        console.error('点赞失败:', error);
+        this.$message.error('操作失败，请重试');
+      }
     }
+
   }
 };
 </script>

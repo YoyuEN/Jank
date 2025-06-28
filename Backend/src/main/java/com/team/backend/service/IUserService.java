@@ -15,4 +15,6 @@ public interface IUserService extends IService<User> {
     User login(LoginUserVO userVO);
 
     long register(RegisterUserVO userVO);
+
+    String getAvatarUrlByUserId(String userId);
 }

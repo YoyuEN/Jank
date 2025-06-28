@@ -50,6 +50,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if(userVO.getUsername()== null&& userVO.getPassword()== null&& userVO.getCheckPassword()== null){
             throw new ServiceExceptionHandler(ResponseCode.USER_NAME_NULL);
         }
+        assert userVO.getPassword() != null;
         if(!userVO.getPassword().equals(userVO.getCheckPassword())){
             throw new ServiceExceptionHandler(ResponseCode.USER_PASSWORD_ERROR);
         }
@@ -64,5 +65,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setPassword(userVO.getPassword());
         super.save(user);
         return 0;
+    }
+
+    @Override
+    public String getAvatarUrlByUserId(String userId) {
+        User user = userMapper.selectById(userId);
+        if(user != null){
+            return user.getAvatar();
+        } else {
+            return null;
+        }
     }
 }

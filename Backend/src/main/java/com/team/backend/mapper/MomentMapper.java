@@ -14,5 +14,5 @@ import org.springframework.data.repository.query.Param;
 @Mapper
 public interface MomentMapper extends BaseMapper<Moment> {
     void increaseLikeCount(@Param("momentId") String momentId);
-
+    void decreaseLikeCount(@Param("momentId") String momentId);
 }

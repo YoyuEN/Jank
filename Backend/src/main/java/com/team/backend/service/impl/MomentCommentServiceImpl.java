@@ -19,6 +19,7 @@ import java.util.List;
  */
 @Service
 public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, MomentComment> implements IMomentCommentService {
+    @Override
     public List<MomentComment> getCommentsByMomentId(String momentId) {
         return this.list(new QueryWrapper<MomentComment>().eq("moment_id", momentId));
     }

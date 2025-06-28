@@ -1,5 +1,6 @@
 package com.team.backend.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MomentImage {
     // 图片ID
+    @TableId
     private String imageId;
     // 对应的朋友圈ID
     private String momentId;
