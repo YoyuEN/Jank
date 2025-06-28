@@ -46,14 +46,14 @@
 
       <div class="form-group">
         <label for="category">分类</label>
-        <select id="category" v-model="postForm.categoryIds" class="form-select">
+        <select id="category" v-model="postForm.categoryNames" class="form-select">
           <option value="">请选择分类</option>
           <option value="technology">技术</option>
           <option value="life">生活</option>
           <option value="discussion">讨论</option>
           <option value="question">问答</option>
         </select>
-        <span class="error-text" v-if="errors.categoryIds">{{ errors.categoryIds }}</span>
+        <span class="error-text" v-if="errors.categoryNames">{{ errors.categoryNames }}</span>
       </div>
 
       <div class="form-actions">
@@ -80,12 +80,12 @@ export default {
         title: '',
         image: '',
         contentHtml: '',
-        categoryIds: '',
+        categoryNames: '',
       },
       errors: {
         title: '',
         contentHtml: '',
-        categoryIds: '',
+        categoryNames: '',
       },
       publishing: false,
     }
@@ -131,7 +131,7 @@ export default {
       this.errors = {
         title: '',
         contentHtml: '',
-        categoryIds: '',
+        categoryNames: '',
       }
 
       if (!this.postForm.title || !this.postForm.title.trim()) {
@@ -147,8 +147,8 @@ export default {
         isValid = false
       }
 
-      if (!this.postForm.categoryIds) {
-        this.errors.categoryIds = '请选择帖子分类'
+      if (!this.postForm.categoryNames) {
+        this.errors.categoryNames = '请选择帖子分类'
         isValid = false
       }
 
@@ -166,7 +166,7 @@ export default {
         const formData = new FormData();
         formData.append('title', this.postForm.title);
         formData.append('contentHtml', this.postForm.contentHtml);
-        formData.append('categoryIds', this.postForm.categoryIds);
+        formData.append('categoryIds', this.postForm.categoryNames);
 
         // 如果有图片，则追加到 formData 中
         if (this.postForm.image) {

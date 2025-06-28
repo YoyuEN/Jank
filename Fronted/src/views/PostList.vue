@@ -1,8 +1,20 @@
 <template>
   <div>
     <div class="posts-container">
+      <!-- 分类筛选 -->
+      <div class="category-filter">
+        <button
+          v-for="category in categories"
+          :key="category"
+          @click="selectedCategory = category"
+          :class="{ active: selectedCategory === category }"
+          class="category-btn"
+        >
+          {{ category }}
+        </button>
+      </div>
       <div v-if="posts.length === 0 && !loading">暂无岗位信息</div>
-      <PostCard v-for="post in posts" :key="post.postId" :post="post" />
+      <PostCard v-for="post in filteredPosts" :key="post.postId" :post="post" />
     </div>
     <div class="sidebar-buttons">
       <button @click="$router.push('/publish')" title="发布帖子" class="sidebar-btn">📝</button>
@@ -29,6 +41,21 @@ export default {
       showToolbar: true,
       // 表单参数
       form: {},
+      selectedCategory: '全部', // 新增：当前选中的分类
+      categories: ['全部', '前端', '后端', '算法', '运维', 'AI'] // 示例分类列表
+    }
+  },
+  computed: {
+    filteredPosts() {
+      if (this.selectedCategory === '全部') {
+        return this.posts;
+      } else {
+        return this.posts.filter(post => {
+          return Array.isArray(post.categoryNames)
+            ? post.categoryNames.includes(this.selectedCategory)
+            : false;
+        });
+      }
     }
   },
   props: {
@@ -71,8 +98,6 @@ export default {
 }
 
 .sidebar-btn {
-  background-color: #007bff;
-  color: white;
   border: none;
   width: 48px;
   height: 48px;
@@ -92,4 +117,23 @@ export default {
   gap: 10px;
   z-index: 999;
 }
+
+.category-filter {
+  display: flex;
+  gap: 10px;
+  margin: 20px auto;
+}
+
+.category-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-btn.active {
+  background-color: #77787c;
+}
+
 </style>

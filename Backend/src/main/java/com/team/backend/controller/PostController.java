@@ -27,7 +27,7 @@ public class PostController {
 
     @GetMapping("/getPostList")
     public Result<List<Post>> getPostList() {
-        List<Post> posts = postService.list();
+        List<Post> posts = postService.getPostList();
         return Result.success(ResponseCode.SUCCESS, posts);
     }
 
@@ -41,14 +41,14 @@ public class PostController {
     public Result<?> addPost(
             @RequestParam("title") String title,
             @RequestParam("contentHtml") String contentHtml,
-            @RequestParam("categoryIds") List<String> categoryIds,
+            @RequestParam("categoryNames") List<String> categoryNames,
             @RequestParam("image") MultipartFile image) throws Exception {
 
         // 构造 PostVO 或直接调用 service
         PostVO postVO = new PostVO();
         postVO.setTitle(title);
         postVO.setContentHtml(contentHtml);
-        postVO.setCategoryIds(categoryIds);
+        postVO.setCategoryNames(categoryNames);
         postVO.setImage(image);
 
         postService.addPost(postVO);

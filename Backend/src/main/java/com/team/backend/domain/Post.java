@@ -33,9 +33,9 @@ public class Post {
     // 帖子 HTML 格式内容
     @TableField("content_html")
     private String contentHtml;
-    // 帖子所属分类 ID
+    // 帖子所属分类
     @TableField(exist = false)
-    private List<String> categoryIds;
+    private List<String> categoryNames;
     // 创建时间
     private String createTime;
     //修改时间
