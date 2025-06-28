@@ -25,7 +25,7 @@ public class AssistantTools {
      * 查询帖子
      */
     @Tool(name = "查询帖子", value = "调用该方法进行数据库查询数据")
-    public String querypost(@P("查询Post表中对应数据") String title) {
+    public String queryPost(@P("查询Post表中对应数据") String title) {
         LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Post::getTitle, title);
         List<Post> posts = postService.list(wrapper);
