@@ -1,17 +1,16 @@
 package com.team.backend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.team.backend.domain.Moment;
+import com.team.backend.domain.MomentImage;
 
 import java.util.List;
 
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/28
- * @Time: 10:02
+ * @Time: 11:18
  * @Description:
  */
-public interface IMomentService extends IService<Moment> {
-    List<Moment> getMomentList();
-    void likeMoment(String momentId);
+public interface IMomentImageService extends IService<MomentImage>{
+    List<String> getImageUrlsByMomentId(String momentId);
 }

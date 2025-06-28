@@ -30,7 +30,7 @@ public class Moment {
     private List<String> imageUrls;    // 图片链接列表（最多9张）
     private Integer likeCount;         // 点赞数量
     @TableField(exist = false)
-    private List<Comment> comments;    // 评论列表
+    private List<MomentComment> comments;    // 评论列表
     private String createTime;         // 创建时间
     private Integer deleted;           // 删除状态（0：未删除，1：已删除）
 }

@@ -15,8 +15,8 @@
     <div class="moment-list">
       <div v-for="(moment, index) in filteredMoments" :key="index" class="moment-card">
         <div class="moment-header">
-<!--          <img :src="moment.avatarUrl" alt="头像" class="avatar" />-->
-          <img src="@/assets/YoyuEN.png" alt="头像" class="avatar" />
+          <img :src="moment.avatarUrl" alt="头像" class="avatar" />
+<!--          <img src="@/assets/YoyuEN.png" alt="头像" class="avatar" />-->
           <div class="user-info">
             <span class="username">{{ moment.username }}</span>
             <span class="time">{{ moment.createTime }}</span>
@@ -30,8 +30,7 @@
 
         <!-- 图片展示 -->
         <div v-if="moment.imageUrls && moment.imageUrls.length > 0" class="moment-images">
-<!--          <img v-for="(img, idx) in moment.imageUrls.slice(0, 9)" :key="idx" :src="img" alt="图片" class="moment-image" />-->
-          <img v-for="(img, idx) in moment.imageUrls.slice(0, 9)" :key="idx" src="@/assets/YoyuEN.png" alt="图片" class="moment-image" />
+          <img v-for="(img, idx) in moment.imageUrls.slice(0, 9)" :key="idx" :src="img" alt="图片" class="moment-image" />
         </div>
 
         <!-- 点赞和评论 -->
@@ -58,9 +57,11 @@ export default {
   name: 'MomentView',
   data() {
     return {
-      categories: ['全部', '好友圈', '我的'],
+      categories: ['全部', '生活', '趣事'],
       selectedCategory: '全部',
-      moments: [],
+      moments: [
+
+      ],
       loading: false
     };
   },
@@ -68,14 +69,15 @@ export default {
     filteredMoments() {
       if (this.selectedCategory === '全部') {
         return this.moments;
-      } else if (this.selectedCategory === '好友圈') {
-        return this.moments.filter(m => m.category !== '生活'); // 示例逻辑
-      } else if (this.selectedCategory === '我的') {
+      } else if (this.selectedCategory === '生活') {
+        return this.moments.filter(m => m.category === '生活'); // 示例逻辑
+      } else if (this.selectedCategory === '趣事') {
         return this.moments.filter(m => m.category === '趣事'); // 示例逻辑
       }
       return this.moments;
     }
   },
+
   // 获取朋友圈列表
   async mounted() {
     console.log('mounted 被调用了');
@@ -99,6 +101,7 @@ export default {
       this.loading = false;
     }
   },
+
   methods: {
     selectCategory(category) {
       this.selectedCategory = category;
@@ -125,9 +128,9 @@ export default {
     async fetchMoments() {
       this.loading = true;
       try {
-        const res = await getMomentList();
-        if (res.code === 200) {
-          this.moments = res.data.map(moment => ({
+        const response = await getMomentList();
+        if (response.code === 200) {
+          this.moments = response.data.map(moment => ({
             ...moment,
             showComments: false,
             likeCount: moment.likeCount || 0,
@@ -143,6 +146,7 @@ export default {
         this.loading = false;
       }
     },
+
     // 点赞朋友圈
     async handleLike(index) {
       const moment = this.moments[index];
@@ -233,20 +237,25 @@ export default {
 
 .moment-images {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
-  margin-bottom: 10px;
+  grid-template-columns: repeat(auto-fill, 300px); /* 固定每张图宽度为 300px */
+  gap: 15px; /* 图片之间的水平和垂直间距 */
+  justify-content: flex-start; /* 左对齐，避免拉伸 */
 }
 
 .moment-image {
-  width: 100%;
-  height: auto;
+  width: 300px;
+  height: 300px;
   object-fit: cover;
   border-radius: 4px;
 }
 
+.moment-image:hover {
+  transform: scale(1.05); /* 可选：鼠标悬停放大效果 */
+}
+
 .moment-actions button {
   margin-right: 10px;
+  margin-top: 10px;
   background: none;
   border: none;
   cursor: pointer;

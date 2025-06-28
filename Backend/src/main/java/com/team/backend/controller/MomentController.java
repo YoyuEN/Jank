@@ -29,7 +29,7 @@ public class MomentController {
     * */
     @GetMapping("/getMomentList")
     public Result<List<Moment>> getMomentList(){
-        return Result.success(ResponseCode.SUCCESS, momentService.list());
+        return Result.success(ResponseCode.SUCCESS, momentService.getMomentList());
     }
 
     /*
