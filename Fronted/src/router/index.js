@@ -1,12 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import PostList from '@/views/PostList.vue';
 import LoginForm from '@/views/LoginForm.vue';
-
+import Register from '@/views/Register.vue'
+import MomentView from '@/views/MomentView.vue'
 const routes = [
   {
     path: '/login',
     name: 'LoginForm',
     component: LoginForm
+  },
+  {
+    path:'/register',
+    name: 'Register',
+    component: Register
   },
   {
     path: '/posts',
@@ -24,9 +30,9 @@ const routes = [
     component: () => import('@/views/HomeView.vue'),
   },
   {
-    path: '/say',
-    name: 'say',
-    component: () => import('@/views/say.vue'),
+    path: '/moments',
+    name: 'Moments',
+    component: MomentView
   },
   {
     path: '/home',
@@ -42,6 +48,11 @@ const routes = [
     path: '/message',
     name: 'Message',
     component: () => import('@/views/Message.vue'),
+  },
+  {
+    path: '/publish',
+    name: 'Publish',
+    component: () => import('@/views/PublishPost.vue'),
   },
 ];
 

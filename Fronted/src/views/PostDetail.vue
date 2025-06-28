@@ -1,5 +1,4 @@
 <template>
-
   <div class="post-detail-container">
     <!-- 左侧浮动按钮 -->
     <div class="sidebar-buttons">
@@ -36,10 +35,28 @@
 
       <div class="post-body-wrapper">
         <div class="post-body card" v-html="post.contentHtml"></div>
-        <div class="ai-summary card">
-          <h2 class="summary-title">AI 摘要</h2>
-          <div class="summary-content">
-            <p>这里是 AI 根据文章内容自动生成的摘要文字。你可以将实际摘要内容通过接口获取后绑定到此处，或使用前端解析逻辑生成简要概述。</p>
+        <div class="right-panel">
+          <!-- AI 摘要卡片 -->
+          <div class="ai-summary card">
+            <div>
+              <h2 class="summary-title">AI 摘要</h2>
+<!--              将页面数据传到ai摘要中-->
+              <AIagentSimple
+                :postTitle="post.title"
+                :postContent="post.contentHtml"
+                :postId="postId"
+              />
+            </div>
+            <div class="toc-card card" v-if="tocItems.length > 0">
+              <h3 class="toc-title">目录</h3>
+              <ul class="toc-list">
+                <li v-for="item in tocItems" :key="item.id" :class="`toc-level-${item.level}`">
+                  <a :href="`#${item.id}`" @click.prevent="scrollToHeading(item)">
+                    {{ item.text }}
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -110,6 +127,7 @@
           </div>
         </div>
       </div>
+      <CommentList/>
     </div>
     <div v-else class="no-data">未找到该岗位信息</div>
   </div>
@@ -121,14 +139,19 @@ import { useRoute } from 'vue-router'
 import { getPostDetail } from '@/api/posts/posts.js'
 import { getNestedCommentList, submitComment as submitCommentApi } from '@/api/comment/comment.js'
 // getCommentList
+import { marked } from 'marked'
+import CommentList from '@/components/CommentList.vue'
+import AIagentSimple from '@/views/AIagentSimple.vue'
+
 const route = useRoute()
 const postId = route.params.postId
-
+const tocItems = ref([])
 const post = ref(null)
 const loading = ref(true)
 const comments = ref([])
 const loadingComments = ref(false)
 
+const activeTocItem = ref(null)
 const showCommentPanel = ref(false)
 const newComment = ref('')
 const replyTo = ref(null) // 当前回复的评论ID
@@ -258,8 +281,45 @@ const toggleReplies = (commentId) => {
   comment.showReplies = !comment.showReplies
 }
 
+const generateTOC = (htmlContent) => {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(htmlContent, 'text/html')
+  const headings = Array.from(doc.querySelectorAll('h1, h2, h3, h4'))
+
+  const toc = headings.map((heading, index) => {
+    // 生成唯一 id，如果没有则添加
+    const id = heading.id || `toc-${index}`
+    heading.id = id // 修改原始 DOM
+    return {
+      id,
+      text: heading.textContent.trim(),
+      level: parseInt(heading.tagName[1], 10),
+    }
+  })
+
+  // 替换 post.contentHtml 中的 heading（带上 id）
+  post.value.contentHtml = doc.body.innerHTML
+
+  return toc
+}
+
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// 使用 marked 将 Markdown 转换为 HTML
+const renderMarkdown = (markdown) => {
+  return marked.parse(markdown || '')
+}
+
+const scrollToHeading = (item) => {
+  const targetElement = document.getElementById(item.id)
+  if (targetElement) {
+    window.scrollTo({
+      top: targetElement.offsetTop - 80,
+      behavior: 'smooth',
+    })
+  }
 }
 
 onMounted(async () => {
@@ -267,6 +327,9 @@ onMounted(async () => {
     const response = await getPostDetail(postId)
     if (response.code === 200) {
       post.value = response.data
+      // 假设接口返回的是 Markdown 格式的 content 字段
+      post.value.contentHtml = renderMarkdown(post.value.contentHtml)
+      tocItems.value = generateTOC(post.value.contentHtml)
     }
   } catch (error) {
     console.error('获取岗位详情失败:', error)
@@ -277,6 +340,19 @@ onMounted(async () => {
   // 加载评论列表
   fetchComments()
 })
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+const handleScroll = () => {
+  const scrollPosition = window.scrollY + 100 // 加上 offset 值
+  for (const item of tocItems.value) {
+    const element = document.getElementById(item.id)
+    if (element && element.offsetTop <= scrollPosition + 20) {
+      activeTocItem.value = item.id
+    }
+  }
+}
 </script>
 
 <style>
@@ -364,6 +440,7 @@ onMounted(async () => {
 .slide-leave-active {
   transition: transform 0.3s ease;
 }
+
 .slide-enter-from,
 .slide-leave-to {
   transform: translateX(100%);
@@ -391,15 +468,6 @@ onMounted(async () => {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
   color: white;
   border-radius: 0 0 8px 8px;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-}
-
-.flex-column {
-  flex-direction: column;
 }
 
 .post-detail-container {
@@ -469,7 +537,11 @@ onMounted(async () => {
   padding: 20px;
   width: 20%;
   background-color: #f9f9f9;
-  border-left: 4px solid #007BFF; /* 高亮边框 */
+  border-left: 4px solid #007bff; /* 高亮边框 */
+  flex: none; /* 不要占满剩余高度 */
+  position: sticky; /* 固定定位 */
+  top: 60px; /* 距离顶部位置 */
+  align-self: flex-start; /* 避免 stretch 拉伸 */
 }
 
 .summary-title {

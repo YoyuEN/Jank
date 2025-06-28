@@ -12,7 +12,7 @@ import com.team.backend.domain.vo.RegisterUserVO;
  * @Description:
  */
 public interface IUserService extends IService<User> {
-    void login(LoginUserVO userVO);
+    User login(LoginUserVO userVO);
 
     long register(RegisterUserVO userVO);
 }

@@ -51,6 +51,7 @@ public class CommonUser implements Serializable {
     private String phone;
     private String accessToken;
     private String refreshToken;
+    private Integer freeze;
     private String createTime;
     private String updateTime;
     @TableLogic

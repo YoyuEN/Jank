@@ -1,17 +1,12 @@
 package com.team.backend.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.team.backend.domain.Post;
-import com.team.backend.domain.dto.PostPageResult;
+import com.team.backend.domain.vo.PostVO;
 import com.team.backend.service.IPostService;
-import com.team.backend.service.IUserService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,16 +25,6 @@ public class PostController {
         this.postService = postService;
     }
 
-    /*@GetMapping("/getAllPosts")
-    public Result<PostPageResult> getPosts(
-            @RequestParam int pageSize,
-            @RequestParam int page) {
-        Page<Post> pageData = postService.getPosts(pageSize, page);
-        PostPageResult result = new PostPageResult();
-        result.setPosts(pageData.getRecords());
-        result.setTotalPages((int) pageData.getPages());
-        return Result.success(ResponseCode.SUCCESS, result);
-    }*/
     @GetMapping("/getPostList")
     public Result<List<Post>> getPostList() {
         List<Post> posts = postService.list();
@@ -47,9 +32,27 @@ public class PostController {
     }
 
     @GetMapping("/getPostDetail")
-    public Result<Post> getPostDetail(@RequestParam String postId) {
+    public Result<Post> getPostDetail(@RequestParam("postId") String postId) {
         Post post = postService.getById(postId);
         return Result.success(ResponseCode.SUCCESS, post);
+    }
+
+    @PostMapping("/addPostDetail")
+    public Result<?> addPost(
+            @RequestParam("title") String title,
+            @RequestParam("contentHtml") String contentHtml,
+            @RequestParam("categoryIds") List<String> categoryIds,
+            @RequestParam("image") MultipartFile image) throws Exception {
+
+        // 构造 PostVO 或直接调用 service
+        PostVO postVO = new PostVO();
+        postVO.setTitle(title);
+        postVO.setContentHtml(contentHtml);
+        postVO.setCategoryIds(categoryIds);
+        postVO.setImage(image);
+
+        postService.addPost(postVO);
+        return Result.success(ResponseCode.SUCCESS);
     }
 
 }

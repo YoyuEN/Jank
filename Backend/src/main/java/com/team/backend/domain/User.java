@@ -21,14 +21,16 @@ public class User {
     private String nickname;
     // 用户名称
     private String username;
-    // 用户邮箱
-    private String email;
     // 用户头像
     private String avatar;
+    // 用户邮箱
+    private String email;
     // 用户密码
     private String password;
     // 用户手机号
     private String phone;
+    // 冻结状态
+    private Integer freeze;
     // 访问令牌
     private String accessToken;
     // 刷新令牌
