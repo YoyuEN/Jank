@@ -58,10 +58,9 @@
               </ul>
             </div>
           </div>
-          <!-- 目录卡片：与 ai-summary 平级 -->
-
         </div>
       </div>
+      <CommentList/>
     </div>
     <div v-else class="no-data">未找到该岗位信息</div>
   </div>
@@ -72,6 +71,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPostDetail } from '@/api/posts/posts.js'
 import { marked } from 'marked'
+import CommentList from '@/components/CommentList.vue'
 import AIagentSimple from '@/views/AIagentSimple.vue'
 
 const route = useRoute()
