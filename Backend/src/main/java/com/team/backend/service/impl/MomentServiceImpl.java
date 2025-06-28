@@ -6,10 +6,7 @@ import com.team.backend.domain.Comment;
 import com.team.backend.domain.Moment;
 import com.team.backend.domain.MomentComment;
 import com.team.backend.mapper.MomentMapper;
-import com.team.backend.service.IMomentCommentService;
-import com.team.backend.service.IMomentImageService;
-import com.team.backend.service.IMomentService;
-import com.team.backend.service.IUserService;
+import com.team.backend.service.*;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +31,9 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
     @Autowired
     private final IUserService userService;
 
+    @Autowired
+    private MinioService minioService;
+
 
 
     public MomentServiceImpl(MomentImageServiceImpl momentImageService, MomentCommentServiceImpl momentCommentService, UserServiceImpl userService) {
@@ -52,9 +52,12 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
         for (Moment moment : momentList) {
             String momentId = moment.getMomentId();
 
-            // 假设你有一个 momentImageService 来查询 MomentImage 表
             List<String> imageUrls = momentImageService.getImageUrlsByMomentId(momentId);
-            moment.setImageUrls(imageUrls);
+            List<String> signedUrls = new ArrayList<>();
+            for (String url : imageUrls) {
+                signedUrls.add(minioService.getPresignedUrl(url));
+            }
+            moment.setImageUrls(signedUrls);
 
             // 获取评论列表
             List<MomentComment> comments = momentCommentService.getCommentsByMomentId(momentId);

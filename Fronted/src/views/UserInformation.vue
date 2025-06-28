@@ -159,7 +159,7 @@ watchEffect(() => {
   min-height: calc(100vh - 80px); /* 减去导航栏的高度 */
   background-color: #f5f5f5;
   padding: 30px; /* 统一内边距 */
-  margin-top: 20px; /* 减少顶部外边距 */
+  margin-top:50px; /* 减少顶部外边距 */
 }
 
 .user-dashboard {
@@ -190,7 +190,6 @@ watchEffect(() => {
   height: 150px;
   border-radius: 50%;
   overflow: hidden;
-  border: 4px solid #333;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease;
 }

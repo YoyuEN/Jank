@@ -19,14 +19,9 @@ import java.util.List;
  */
 @Service
 public class MomentImageServiceImpl extends ServiceImpl<MomentImageMapper, MomentImage> implements IMomentImageService {
-    @Autowired
-    private MinioService minioService;
+
     @Override
     public List<String> getImageUrlsByMomentId(String momentId) {
-        List<String> momentImages =  this.list(new QueryWrapper<MomentImage>().eq("moment_id", momentId)).stream().map(MomentImage::getImageUrl).toList();
-        momentImages.forEach(imageUrl -> {
-            imageUrl = minioService.getPresignedUrl(imageUrl);
-        });
-        return momentImages;
+        return this.list(new QueryWrapper<MomentImage>().eq("moment_id", momentId)).stream().map(MomentImage::getImageUrl).toList();
     }
 }
