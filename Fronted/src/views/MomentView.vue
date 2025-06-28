@@ -226,7 +226,6 @@ export default {
 
 .category-menu .active {
   font-weight: bold;
-  color: #42b983;
 }
 
 .moment-list {
@@ -239,7 +238,6 @@ export default {
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 20px;
-  background-color: #fff;
 }
 
 .moment-header {
@@ -265,7 +263,6 @@ export default {
 }
 
 .time {
-  color: #888;
   font-size: 12px;
 }
 
@@ -303,7 +300,6 @@ export default {
 .comments-section {
   margin-top: 10px;
   padding: 10px;
-  background-color: #f9f9f9;
   border-radius: 4px;
 }
 </style>

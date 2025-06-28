@@ -2,7 +2,7 @@
   <div class="app-layout">
     <div class="main-content">
       <div class="chat-container">
-        <div class="message-list" ref="messaggListRef">
+        <div class="message-list" ref="messageListRef">
           <div
             v-for="(message, index) in messages"
             :key="index"
@@ -47,7 +47,7 @@ import { onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 
-const messaggListRef = ref()
+const messageListRef = ref()
 const isSending = ref(false)
 const uuid = ref()
 const inputMessage = ref('')
@@ -60,8 +60,8 @@ onMounted(() => {
 })
 
 const scrollToBottom = () => {
-  if (messaggListRef.value) {
-    messaggListRef.value.scrollTop = messaggListRef.value.scrollHeight
+  if (messageListRef.value) {
+    messageListRef.value.scrollTop = messageListRef.value.scrollHeight
   }
 }
 
@@ -143,14 +143,14 @@ const uuidToNumber = (uuid) => {
   return number % 1000000
 }
 
-const convertStreamOutput = (output) => {
-  return output
-    .replace(/\n/g, '<br>')
-    .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-}
+// const convertStreamOutput = (output) => {
+//   return output
+//     .replace(/\n/g, '<br>')
+//     .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
+//     .replace(/&/g, '&amp;')
+//     .replace(/</g, '&lt;')
+//     .replace(/>/g, '&gt;')
+// }
 
 const newChat = () => {
   console.log('开始新会话')
@@ -178,8 +178,6 @@ const newChat = () => {
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  background: linear-gradient(to right, #e6f7ff, #f9f0ff);
   border-radius: 6px;
   box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
 }
@@ -190,7 +188,6 @@ const newChat = () => {
   padding: 4px;
   border: 1px solid #e0e0e0;
   border-radius: 3px;
-  background-color: #fff;
   margin-bottom: 4px;
   display: flex;
   flex-direction: column;
@@ -206,14 +203,12 @@ const newChat = () => {
 
 .user-message {
   max-width: 70%;
-  background: linear-gradient(to right, #d4edff, #e6f7ff);
   align-self: flex-end;
   flex-direction: row-reverse;
 }
 
 .bot-message {
   max-width: 100%;
-  background: linear-gradient(to right, #e6f7ff, #f0e6ff);
   align-self: flex-start;
 }
 
@@ -231,7 +226,6 @@ const newChat = () => {
   margin-left: 2px;
   width: 4px;
   height: 4px;
-  background-color: #000000;
   border-radius: 50%;
   animation: pulse 1.2s infinite ease-in-out both;
 }
@@ -250,10 +244,6 @@ const newChat = () => {
     transform: scale(1);
     opacity: 1;
   }
-}
-:deep(.el-button--primary) {
-  background: linear-gradient(to right, #a0cfff, #c9a8ff);
-  border-color: #a0cfff;
 }
 .input-container {
   display: flex;

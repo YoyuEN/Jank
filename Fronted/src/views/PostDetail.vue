@@ -1,6 +1,5 @@
 <template>
   <div class="post-detail-container">
-
     <div v-if="loading" class="loading">加载中...</div>
     <div v-else-if="post" class="post-content">
       <!-- 图片与标题组合 -->
@@ -14,31 +13,23 @@
           </div>
         </div>
       </div>
-
+      <!-- AI 摘要卡片 -->
+      <div class="ai-summary card">
+        <h2 class="summary-title">AI 摘要</h2>
+        <AIagentSimple :postTitle="post.title" :postContent="post.contentHtml" :postId="postId" />
+      </div>
       <div class="post-body-wrapper">
         <div class="post-body card" v-html="post.contentHtml"></div>
         <div class="right-panel">
-          <!-- AI 摘要卡片 -->
-          <div class="ai-summary card">
-            <div>
-              <h2 class="summary-title">AI 摘要</h2>
-              <!--              将页面数据传到ai摘要中-->
-              <AIagentSimple
-                :postTitle="post.title"
-                :postContent="post.contentHtml"
-                :postId="postId"
-              />
-            </div>
-            <div class="toc-card card" v-if="tocItems.length > 0">
-              <h3 class="toc-title">目录</h3>
-              <ul class="toc-list">
-                <li v-for="item in tocItems" :key="item.id" :class="`toc-level-${item.level}`">
-                  <a :href="`#${item.id}`" @click.prevent="scrollToHeading(item)">
-                    {{ item.text }}
-                  </a>
-                </li>
-              </ul>
-            </div>
+          <div class="toc-card card" v-if="tocItems.length > 0">
+            <h3 class="toc-title">目录</h3>
+            <ul class="toc-list">
+              <li v-for="item in tocItems" :key="item.id" :class="`toc-level-${item.level}`">
+                <a :href="`#${item.id}`" @click.prevent="scrollToHeading(item)">
+                  {{ item.text }}
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -314,9 +305,8 @@ const handleScroll = () => {
 .ai-summary {
   padding: 20px;
   background-color: #f9f9f9;
-  border-left: 4px solid #007bff; /* 高亮边框 */
+
   flex: none; /* 不要占满剩余高度 */
-  position: sticky; /* 固定定位 */
   top: 60px; /* 距离顶部位置 */
   align-self: flex-start; /* 避免 stretch 拉伸 */
 }
@@ -369,8 +359,7 @@ const handleScroll = () => {
 
 .toc-card {
   position: sticky;
-  top: 270px;
-  margin-top: 24px;
+  top: 60px; /* 距离顶部位置 */
   padding: 16px;
   background-color: #f9f9f9;
 }
@@ -420,5 +409,6 @@ const handleScroll = () => {
   display: flex;
   flex-direction: column;
   gap: 24px; /* 模块间距 */
+  width: 30%;
 }
 </style>
