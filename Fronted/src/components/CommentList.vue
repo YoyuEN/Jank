@@ -196,10 +196,6 @@ export default {
   font-size: 12px;
 }
 
-.comment-content {
-  margin: 10px 0;
-}
-
 .comment-actions button {
   margin-right: 10px;
   background: none;
