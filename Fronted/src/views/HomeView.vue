@@ -9,6 +9,12 @@
         <p>探索 AI 与数字未来</p>
         <button class="button-say" type="primary" @click="navigateToSay">说说</button>
       </div>
+
+      <div>
+        <!-- 添加一个小页面 -->
+        <SmallPage />
+      </div>
+
       <!-- 近期博客区域 -->
       <div class="blog-section">
         <div class="blog-header">
@@ -42,12 +48,12 @@
 import PostCard from '@/components/PostCard.vue'
 import { getPostList } from '@/api/posts/posts.js'
 import { useRouter } from 'vue-router'
-
+import AIagent from '@/views/AIagent.vue'
 
 
 export default {
   name: 'PostList',
-  components: { PostCard },
+  components: { SmallPage: AIagent, PostCard },
   data() {
     return {
       posts: [],
