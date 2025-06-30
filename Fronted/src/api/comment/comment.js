@@ -5,9 +5,9 @@ export function getCommentList(postId) {
   return service.get(`/comment/list/${postId}`)
 }
 
-// 获取文章评论列表（树状结构）
+// 获取文章评论列表（树状结构，包含用户信息）
 export function getNestedCommentList(postId) {
-  return service.get(`/comment/nested-list/${postId}`)
+  return service.get(`/comment/nested-list-with-user/${postId}`)
 }
 
 // 提交评论
@@ -22,3 +22,4 @@ export function getCommentByUserId(userId) {
     }
   })
 }
+
