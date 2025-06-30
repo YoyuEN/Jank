@@ -17,8 +17,22 @@ const newComment = ref('')
 const replyTo = ref(null) // 回复的目标评论 ID
 
 const checkLogin = () => {
+  const token = localStorage.getItem('token')
   const userId = localStorage.getItem('userId')
-  if (!userId) {
+
+  console.log('CommentBox - 检查登录状态 - Token:', token)
+  console.log('CommentBox - 检查登录状态 - UserId:', userId)
+
+  // 从userStore中获取用户信息
+  const userStore = JSON.parse(localStorage.getItem('user') || '{}')
+  console.log('CommentBox - 检查登录状态 - UserStore:', userStore)
+
+  // 尝试从多个可能的来源获取userId
+  const effectiveUserId = userId || userStore.userId || userStore.id || ''
+
+  console.log('CommentBox - 有效用户ID:', effectiveUserId)
+
+  if (!token || !effectiveUserId) {
     alert('请先登录后再评论')
     return false
   }
@@ -30,12 +44,23 @@ const submitComment = async () => {
 
   if (newComment.value.trim()) {
     try {
+      // 从userStore中获取用户信息
+      const userStore = JSON.parse(localStorage.getItem('user') || '{}')
+
+      // 尝试从多个可能的来源获取用户信息
+      const effectiveUserId = localStorage.getItem('userId') || userStore.userId || userStore.id || ''
+      const effectiveUsername = localStorage.getItem('username') || userStore.username || userStore.name || '匿名用户'
+      const effectiveAvatar = localStorage.getItem('avatar') || userStore.avatar || userStore.avatarUrl || 'https://via.placeholder.com/40'
+
+      console.log('CommentBox - 提交评论使用的有效用户ID:', effectiveUserId)
+      console.log('CommentBox - 提交评论使用的有效用户名:', effectiveUsername)
+
       const commentData = {
         postId: postId,
         content: newComment.value,
-        userId: localStorage.getItem('userId'),
-        username: localStorage.getItem('username'),
-        avatar: localStorage.getItem('avatar'),
+        userId: effectiveUserId,
+        username: effectiveUsername,
+        avatar: effectiveAvatar,
       }
 
       if (replyTo.value) {

@@ -10,9 +10,14 @@ service.interceptors.request.use(
   config => {
     // 从localStorage获取token
     const token = localStorage.getItem('token');
+    console.log('Current token:', token); // 调试日志
+
     if (token) {
       // 添加认证头
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers['Authorization'] = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+      console.log('Request headers:', config.headers); // 调试日志
+    } else {
+      console.warn('No token found in localStorage'); // 调试日志
     }
     return config;
   },

@@ -63,11 +63,47 @@ export default {
         const response = await getLogin(this.form)
         // 处理登录成功
         if (response.code === 200 && response.data) {
+          // 打印完整的响应数据，以便调试
+          console.log('登录响应数据:', response.data);
+
           const userData = response.data;
-          const token = response.data.accessToken || 'default-token'; // 如果没有 accessToken，可设默认值或从其他字段取
+
+          // 尝试从不同可能的字段名中获取用户信息
+          const token = userData.token || userData.accessToken || '';
+          const userId = userData.userId || userData.id || userData.user_id || '';
+          const username = userData.username || userData.name || '';
+          const avatar = userData.avatar || userData.avatarUrl || '';
+
+          console.log('解析后的token:', token);
+          console.log('解析后的userId:', userId);
+          console.log('解析后的username:', username);
+          console.log('解析后的avatar:', avatar);
+
+          // 构建规范化的用户信息对象
+          const normalizedUserData = {
+            ...userData,
+            token,
+            userId,
+            username,
+            avatar,
+            id: userId, // 为了兼容性，同时设置id字段
+            name: username, // 为了兼容性，同时设置name字段
+            avatarUrl: avatar // 为了兼容性，同时设置avatarUrl字段
+          };
+
+          console.log('规范化后的用户信息:', normalizedUserData);
 
           const userStore = useUserStore();
-          userStore.setUserInfo(userData, token); // 更新全局状态
+
+          // 更新全局状态
+          userStore.setUserInfo(normalizedUserData);
+
+          // 将完整的用户信息存储到localStorage
+          localStorage.setItem('user', JSON.stringify(normalizedUserData));
+          localStorage.setItem('token', token);
+          localStorage.setItem('userId', userId);
+          localStorage.setItem('username', username);
+          localStorage.setItem('avatar', avatar);
 
           this.$router.push('/posts');
         } else {

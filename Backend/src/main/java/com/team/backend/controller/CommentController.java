@@ -32,7 +32,7 @@ public class CommentController {
      * @return 添加结果
      */
     @PostMapping("/add")
-    public Result<Comment> addComment(@RequestBody Comment comment, HttpServletRequest request) {
+    public Result<CommentWithUserVO> addComment(@RequestBody Comment comment, HttpServletRequest request) {
         // 从请求属性中获取当前登录用户
         User currentUser = (User) request.getAttribute("currentUser");
         if (currentUser == null) {
@@ -45,7 +45,13 @@ public class CommentController {
         comment.setDeleted(0);
         
         boolean success = commentService.addComment(comment);
-        return success ? Result.success(ResponseCode.SUCCESS, comment) : Result.fail(ResponseCode.ERROR, "添加评论失败");
+        if (!success) {
+            return Result.fail(ResponseCode.ERROR, "添加评论失败");
+        }
+        
+        // 将Comment对象转换为CommentWithUserVO对象
+        CommentWithUserVO commentWithUser = CommentWithUserVO.fromComment(comment, currentUser);
+        return Result.success(ResponseCode.SUCCESS, commentWithUser);
     }
 
     /**
@@ -89,7 +95,7 @@ public class CommentController {
      * @return 回复结果
      */
     @PostMapping("/reply")
-    public Result<Comment> replyComment(@RequestBody Comment comment, HttpServletRequest request) {
+    public Result<CommentWithUserVO> replyComment(@RequestBody Comment comment, HttpServletRequest request) {
         // 从请求属性中获取当前登录用户
         User currentUser = (User) request.getAttribute("currentUser");
         if (currentUser == null) {
@@ -107,6 +113,12 @@ public class CommentController {
         comment.setDeleted(0);
 
         boolean success = commentService.addComment(comment);
-        return success ? Result.success(ResponseCode.SUCCESS, comment) : Result.fail(ResponseCode.ERROR, "回复评论失败");
+        if (!success) {
+            return Result.fail(ResponseCode.ERROR, "回复评论失败");
+        }
+
+        // 将Comment对象转换为CommentWithUserVO对象
+        CommentWithUserVO commentWithUser = CommentWithUserVO.fromComment(comment, currentUser);
+        return Result.success(ResponseCode.SUCCESS, commentWithUser);
     }
 }

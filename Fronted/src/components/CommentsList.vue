@@ -1,22 +1,42 @@
 <template>
   <!-- 左侧浮动按钮 -->
   <div class="sidebar-buttons">
-    <button @click="showCommentPanel = true" title="发表评论" class="sidebar-btn">💬</button>
+<!--    <button @click="showCommentPanel = true" title="发表评论" class="sidebar-btn">💬</button>-->
     <button @click="scrollToTop" title="回到顶部" class="sidebar-btn">⬆️</button>
   </div>
   <!-- 弹窗层 -->
-  <transition name="slide">
-    <div v-show="showCommentPanel" class="comment-panel">
-      <div>
-        <h3>发表评论</h3>
-        <textarea v-model="newComment" placeholder="写下你的评论..." rows="5"></textarea>
-      </div>
-      <div class="comment-actions">
-        <button @click="submitComment" class="submit-comment-btn">提交评论</button>
-        <button @click="showCommentPanel = false" class="close-btn">关闭</button>
-      </div>
-    </div>
-  </transition>
+<!--  <transition name="slide">-->
+<!--    <div v-show="showCommentPanel" class="comment-panel">-->
+<!--      <div>-->
+<!--        <h3>发表评论</h3>-->
+<!--        <textarea v-model="newComment" placeholder="写下你的评论..." rows="5"></textarea>-->
+<!--      </div>-->
+<!--      <div class="comment-actions">-->
+<!--        <button @click="submitComment" class="submit-comment-btn">提交评论</button>-->
+<!--        <button @click="showCommentPanel = false" class="close-btn">关闭</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </transition>-->
+  <!-- 评论输入区域 - 移动到评论列表上方 -->
+  <div class="comment-input-area">
+
+        <div class="comment-header">
+          <h3>发表评论</h3>
+          <button @click="showCommentPanel = false" class="close-btn">×</button>
+        </div>
+        <textarea
+          v-model="newComment"
+          placeholder="写下你的评论..."
+          rows="5"
+          class="comment-textarea"
+        ></textarea>
+        <div class="comment-actions">
+          <button @click="submitComment" class="submit-comment-btn">
+            <span>提交评论</span>
+          </button>
+        </div>
+
+  </div>
   <div class="comments-section">
     <h2>评论区</h2>
 
@@ -124,10 +144,27 @@ const newComment = ref('')
 // }
 const submitComment = async () => {
   // 检查用户是否登录
-  if (!localStorage.getItem('token')) {
-    alert('请先登录后再评论')
-    return
-  }
+  const token = localStorage.getItem('token')
+  const userId = localStorage.getItem('userId')
+  const username = localStorage.getItem('username')
+  const avatar = localStorage.getItem('avatar')
+
+  console.log('提交评论前检查 - Token:', token)
+  console.log('提交评论前检查 - UserId:', userId)
+  console.log('提交评论前检查 - Username:', username)
+  console.log('提交评论前检查 - Avatar:', avatar)
+
+  // 从userStore中获取用户信息
+  const userStore = JSON.parse(localStorage.getItem('user') || '{}')
+  console.log('提交评论前检查 - UserStore:', userStore)
+
+  // 尝试从多个可能的来源获取userId
+  const effectiveUserId = userId || userStore.userId || userStore.id || ''
+  const effectiveUsername = username || userStore.username || userStore.name || '匿名用户'
+  const effectiveAvatar = avatar || userStore.avatar || userStore.avatarUrl || 'https://via.placeholder.com/40'
+
+  console.log('提交评论使用的有效用户ID:', effectiveUserId)
+  console.log('提交评论使用的有效用户名:', effectiveUsername)
 
   // 检查评论内容是否为空
   if (!newComment.value.trim()) {
@@ -135,10 +172,12 @@ const submitComment = async () => {
     return
   }
 
-  try {
     const response = await submitCommentApi({
       postId: postId,
       content: newComment.value,
+      userId: effectiveUserId, // 使用有效的用户ID
+      username: effectiveUsername, // 添加用户名
+      avatar: effectiveAvatar, // 添加头像
       createTime: new Date().toISOString() // 添加创建时间，虽然后端会覆盖，但为了前端显示可以先设置
     })
 
@@ -150,10 +189,6 @@ const submitComment = async () => {
     } else {
       alert('评论提交失败: ' + response.message)
     }
-  } catch (error) {
-    console.error('提交评论出错:', error)
-    alert('评论提交失败，请稍后再试')
-  }
 }
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -237,7 +272,29 @@ const toggleReplies = (commentId) => {
 // 提交回复
 const submitReply = async (commentId) => {
   // 检查用户是否登录
-  if (!localStorage.getItem('token')) {
+  const token = localStorage.getItem('token')
+  const userId = localStorage.getItem('userId')
+  const username = localStorage.getItem('username')
+  const avatar = localStorage.getItem('avatar')
+
+  console.log('提交回复前检查 - Token:', token)
+  console.log('提交回复前检查 - UserId:', userId)
+  console.log('提交回复前检查 - Username:', username)
+  console.log('提交回复前检查 - Avatar:', avatar)
+
+  // 从userStore中获取用户信息
+  const userStore = JSON.parse(localStorage.getItem('user') || '{}')
+  console.log('提交回复前检查 - UserStore:', userStore)
+
+  // 尝试从多个可能的来源获取userId
+  const effectiveUserId = userId || userStore.userId || userStore.id || ''
+  const effectiveUsername = username || userStore.username || userStore.name || '匿名用户'
+  const effectiveAvatar = avatar || userStore.avatar || userStore.avatarUrl || 'https://via.placeholder.com/30'
+
+  console.log('提交回复使用的有效用户ID:', effectiveUserId)
+  console.log('提交回复使用的有效用户名:', effectiveUsername)
+
+  if (!token || !effectiveUserId) {
     alert('请先登录后再回复')
     return
   }
@@ -253,6 +310,9 @@ const submitReply = async (commentId) => {
       postId: postId,
       content: replyContent.value,
       replyToCommentId: commentId, // 使用正确的字段名
+      userId: effectiveUserId, // 使用有效的用户ID
+      username: effectiveUsername, // 添加用户名
+      avatar: effectiveAvatar, // 添加头像
       createTime: new Date().toISOString() // 添加创建时间，虽然后端会覆盖，但为了前端显示可以先设置
     })
 
@@ -620,5 +680,101 @@ const submitReply = async (commentId) => {
 .reply-text {
   font-size: 0.95em;
   line-height: 1.4;
+}
+.comment-input-area {
+  margin-bottom: 30px;
+}
+
+.comment-panel {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.comment-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #666;
+}
+
+.comment-textarea {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  resize: none;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+  transition: border-color 0.3s;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-comment-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.submit-comment-btn:hover {
+  background-color: #0069d9;
+  transform: translateY(-1px);
+}
+
+.submit-comment-btn:active {
+  transform: translateY(0);
+}
+
+/* 动画效果 */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* 调整评论区上边距 */
+.comments-section {
+  margin-top: 20px;
 }
 </style>
