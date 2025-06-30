@@ -12,48 +12,35 @@
 
       <div>
         <!-- 添加一个小页面 -->
-        <SmallPage />
+        <AIagent />
       </div>
 
       <!-- 近期博客区域 -->
       <div class="blog-section">
         <div class="blog-header">
           <h3>近期博客</h3>
-          <button class="button-posts"  type="primary" @click="navigateToPosts">查看所有</button>
+          <button class="button-posts" type="primary" @click="navigateToPosts">查看所有</button>
         </div>
 
         <div class="posts-container">
           <div v-if="posts.length === 0 && !loading">暂无岗位信息</div>
           <PostCard v-for="post in posts" :key="post.postId" :post="post" />
         </div>
-
-        <!-- 博客列表，用 Element Plus 的卡片组件展示，这里简单循环模拟数据，实际可从接口获取 -->
-        <!--        <el-row :gutter="20">-->
-        <!--          <el-col :span="8" v-for="(item, index) in blogList" :key="index">-->
-        <!--            <el-card :body-style="{ padding: '0px' }">-->
-        <!--              <img :src="item.img" class="blog-img" alt="blog" object-cover="fill" />-->
-        <!--              <div class="blog-info">-->
-        <!--                <p class="blog-title">{{ item.title }}</p>-->
-        <!--                <p class="blog-date">{{ item.date }}</p>-->
-        <!--              </div>-->
-        <!--            </el-card>-->
-        <!--          </el-col>-->
-        <!--        </el-row>-->
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import PostCard from '@/components/PostCard.vue'
+// import PostCard from '@/components/PostCard.vue'
 import { getPostList } from '@/api/posts/posts.js'
 import { useRouter } from 'vue-router'
 import AIagent from '@/views/AIagent.vue'
-
+import PostCard from '@/components/PostCard.vue'
 
 export default {
   name: 'PostList',
-  components: { SmallPage: AIagent, PostCard },
+  components: { PostCard, AIagent },
   data() {
     return {
       posts: [],
@@ -75,26 +62,24 @@ export default {
     },
     post: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   setup() {
-    const router = useRouter();
-    const router1 = useRouter();// 获取路由实例
+    const router = useRouter()
+    const router1 = useRouter() // 获取路由实例
 
     const navigateToPosts = () => {
       router.push({ name: 'PostList' }) // 使用获取到的路由实例
     }
     const navigateToSay = () => {
-      router1.push({ name: 'moments' });
-    };
+      router1.push({ name: 'moments' })
+    }
     return {
       navigateToPosts,
-      navigateToSay
-    };
-
-  }
-  ,
+      navigateToSay,
+    }
+  },
   created() {
     this.getPostList()
   },
@@ -104,8 +89,8 @@ export default {
       this.loading = true
       getPostList(this.form).then((response) => {
         // 过滤出未删除且可见的文章
-        const list = Array.isArray(response.data) ? response.data : [];
-        this.posts = list.filter(post => post.deleted === 0 && post.visibility).slice(0, 2);
+        const list = Array.isArray(response.data) ? response.data : []
+        this.posts = list.filter((post) => post.deleted === 0 && post.visibility).slice(0, 2)
         this.loading = false
       })
     },
@@ -113,7 +98,6 @@ export default {
     //   const router = useRouter()
     //   router.push('/all')
     // }
-
   },
 }
 </script>
@@ -162,40 +146,39 @@ export default {
   font-size: 20px;
   font-weight: bold;
 }
- .posts-container {
-   padding: 24px;
-   max-width: 1400px;
-   margin: 40px auto 0; /* 距离顶部 100px，左右自动居中 */
- }
- .button-say{
-   padding: 12px 24px;
-   border: none;
-   border-radius: 12px;
-   font-size: 16px;
-   font-weight: 500;
-   cursor: pointer;
-   background: rgba(255, 255, 255, 0.25);
-   backdrop-filter: blur(10px);
-   -webkit-backdrop-filter: blur(10px);
-   border: 1px solid rgba(255, 255, 255, 0.18);
-   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-   transition: all 0.3s ease;
-   color: #333;
- }
- .button-posts{
-   padding: 12px 24px;
-   border: none;
-   border-radius: 12px;
-   font-size: 16px;
-   font-weight: 500;
-   cursor: pointer;
-   background: rgba(255, 255, 255, 0.25);
-   backdrop-filter: blur(10px);
-   -webkit-backdrop-filter: blur(10px);
-   border: 1px solid rgba(255, 255, 255, 0.18);
-   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-   transition: all 0.3s ease;
-   color: #333;
- }
-
+.posts-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 40px auto 0; /* 距离顶部 100px，左右自动居中 */
+}
+.button-say {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  color: #333;
+}
+.button-posts {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  color: #333;
+}
 </style>

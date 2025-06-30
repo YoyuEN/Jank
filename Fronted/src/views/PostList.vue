@@ -93,7 +93,7 @@ export default {
 <style scoped>
 .posts-container {
   padding: 24px;
-  max-width: 1400px;
+  max-width: 1000px;
   margin: 40px auto 0; /* 距离顶部 100px，左右自动居中 */
 }
 

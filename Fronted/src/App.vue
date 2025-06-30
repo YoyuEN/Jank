@@ -26,6 +26,7 @@ import AppHeader from './components/AppHeader.vue'
   width: 85%;
   max-width: 1400px;
   margin: 0 auto;
+
 }
 
 .dark {

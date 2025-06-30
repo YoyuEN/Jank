@@ -77,7 +77,7 @@ const userStore = useUserStore()
 
 // 使用 userStore 中的用户数据
 const user = ref(userStore.user || {
-  avatar: '/img1.png',
+  avatar: '/YoyuEN.png',
   username: '游客',
   userId: ''
 })

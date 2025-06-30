@@ -8,7 +8,9 @@ import com.team.backend.domain.vo.RegisterUserVO;
 import com.team.backend.exception.ServiceExceptionHandler;
 import com.team.backend.mapper.UserMapper;
 import com.team.backend.service.IUserService;
+import com.team.backend.service.MinioService;
 import com.team.backend.utils.ResponseCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
+    @Autowired
+    private MinioService minioService;
     private final UserMapper userMapper;
     public UserServiceImpl(UserMapper userMapper) {
         this.userMapper = userMapper;
@@ -42,6 +46,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if(user.getFreeze() == 0){
             throw new ServiceExceptionHandler(ResponseCode.USER_HAVE_EXIST);
         }
+        user.setAvatar(minioService.getPresignedUrl(user.getAvatar()));
         return user;
     }
 
@@ -71,6 +76,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public String getAvatarUrlByUserId(String userId) {
         User user = userMapper.selectById(userId);
         if(user != null){
+            user.setAvatar(minioService.getPresignedUrl(user.getAvatar()));
             return user.getAvatar();
         } else {
             return null;
