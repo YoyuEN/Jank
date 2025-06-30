@@ -38,7 +38,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         return query()
                 .eq("post_id", postId)
                 .eq("deleted", 0)
-                .orderByDesc("comment_id")  // 使用comment_id替代create_time进行排序
+                .orderByDesc("comment_id")  // 使用comment_id字段进行排序
                 .list();
     }
 
@@ -48,7 +48,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<Comment> allComments = query()
                 .eq("post_id", postId)
                 .eq("deleted", 0)
-                .orderByDesc("comment_id")  // 使用comment_id替代create_time进行排序
+                .orderByDesc("comment_id")  // 使用comment_id字段进行排序
                 .list();
 
         // 2. 构建评论树
@@ -83,7 +83,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<Comment> allComments = query()
                 .eq("post_id", postId)
                 .eq("deleted", 0)
-                .orderByDesc("comment_id")  // 使用comment_id替代create_time进行排序
+                .orderByDesc("comment_id")  // 使用comment_id字段进行排序
                 .list();
 
         // 2. 获取所有相关用户ID

@@ -43,8 +43,6 @@ public class CommentController {
         comment.setUserId(currentUser.getUserId());
         // 设置删除标记为0（未删除）
         comment.setDeleted(0);
-        // 设置创建时间
-        comment.setCreateTime(LocalDateTime.now());
         
         boolean success = commentService.addComment(comment);
         return success ? Result.success(ResponseCode.SUCCESS, comment) : Result.fail(ResponseCode.ERROR, "添加评论失败");
@@ -107,8 +105,6 @@ public class CommentController {
         comment.setUserId(currentUser.getUserId());
         // 设置删除标记为0（未删除）
         comment.setDeleted(0);
-        // 设置创建时间
-        comment.setCreateTime(LocalDateTime.now());
 
         boolean success = commentService.addComment(comment);
         return success ? Result.success(ResponseCode.SUCCESS, comment) : Result.fail(ResponseCode.ERROR, "回复评论失败");

@@ -122,6 +122,39 @@ const newComment = ref('')
 //     showCommentPanel.value = false
 //   }
 // }
+const submitComment = async () => {
+  // 检查用户是否登录
+  if (!localStorage.getItem('token')) {
+    alert('请先登录后再评论')
+    return
+  }
+
+  // 检查评论内容是否为空
+  if (!newComment.value.trim()) {
+    alert('评论内容不能为空')
+    return
+  }
+
+  try {
+    const response = await submitCommentApi({
+      postId: postId,
+      content: newComment.value,
+      createTime: new Date().toISOString() // 添加创建时间，虽然后端会覆盖，但为了前端显示可以先设置
+    })
+
+    if (response.code === 200) {
+      // 提交成功后刷新评论列表
+      await fetchComments()
+      newComment.value = ''
+      showCommentPanel.value = false
+    } else {
+      alert('评论提交失败: ' + response.message)
+    }
+  } catch (error) {
+    console.error('提交评论出错:', error)
+    alert('评论提交失败，请稍后再试')
+  }
+}
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -136,9 +169,38 @@ const fetchComments = async () => {
         comment.showReplies = false
         comment.replyCount = comment.replies?.length || 0
 
+        // 设置默认头像
+        if (!comment.avatar) {
+          comment.avatar = 'https://via.placeholder.com/40'
+        }
+
+        // 设置默认用户名
+        if (!comment.username) {
+          comment.username = '匿名用户'
+        }
+
+        // 格式化时间
+        if (comment.createTime) {
+          const date = new Date(comment.createTime)
+          comment.createTime = date.toLocaleString()
+        }
+
         // 递归处理子评论
         if (comment.replies && comment.replies.length > 0) {
-          comment.replies.forEach((reply) => addUIProperties(reply))
+          comment.replies.forEach((reply) => {
+            // 为回复也添加默认值
+            if (!reply.avatar) {
+              reply.avatar = 'https://via.placeholder.com/30'
+            }
+            if (!reply.username) {
+              reply.username = '匿名用户'
+            }
+            if (reply.createTime) {
+              const date = new Date(reply.createTime)
+              reply.createTime = date.toLocaleString()
+            }
+            addUIProperties(reply)
+          })
         }
         return comment
       }
@@ -174,29 +236,37 @@ const toggleReplies = (commentId) => {
 
 // 提交回复
 const submitReply = async (commentId) => {
-  if (replyContent.value.trim()) {
-    try {
-      const response = await submitCommentApi({
-        postId: postId,
-        content: replyContent.value,
-        parentId: commentId,
-        userId: localStorage.getItem('userId'),
-        username: localStorage.getItem('username'),
-        avatar: localStorage.getItem('avatar'),
-      })
+  // 检查用户是否登录
+  if (!localStorage.getItem('token')) {
+    alert('请先登录后再回复')
+    return
+  }
 
-      if (response.code === 200) {
-        // 提交成功后刷新评论列表
-        fetchComments()
-        replyContent.value = ''
-        replyTo.value = null
-      } else {
-        alert('回复提交失败: ' + response.message)
-      }
-    } catch (error) {
-      console.error('提交回复出错:', error)
-      alert('回复提交失败，请稍后再试')
+  // 检查回复内容是否为空
+  if (!replyContent.value.trim()) {
+    alert('回复内容不能为空')
+    return
+  }
+
+  try {
+    const response = await submitCommentApi({
+      postId: postId,
+      content: replyContent.value,
+      replyToCommentId: commentId, // 使用正确的字段名
+      createTime: new Date().toISOString() // 添加创建时间，虽然后端会覆盖，但为了前端显示可以先设置
+    })
+
+    if (response.code === 200) {
+      // 提交成功后刷新评论列表
+      await fetchComments()
+      replyContent.value = ''
+      replyTo.value = null
+    } else {
+      alert('回复提交失败: ' + response.message)
     }
+  } catch (error) {
+    console.error('提交回复出错:', error)
+    alert('回复提交失败，请稍后再试')
   }
 }
 </script>

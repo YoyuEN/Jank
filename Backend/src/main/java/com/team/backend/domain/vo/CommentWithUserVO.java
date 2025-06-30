@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CommentWithUserVO {
     /**
-     * 评论ID
+     * 评论ID（对应数据库的comment_id字段）
      */
     private String id;
 
@@ -42,11 +43,6 @@ public class CommentWithUserVO {
     private String replyToCommentId;
 
     /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
      * 用户信息
      */
     private UserInfoVO userInfo;
@@ -63,14 +59,27 @@ public class CommentWithUserVO {
      * @return CommentWithUserVO对象
      */
     public static CommentWithUserVO fromComment(Comment comment, User user) {
+        if (comment == null) {
+            throw new IllegalArgumentException("Comment cannot be null");
+        }
+        
         CommentWithUserVO vo = new CommentWithUserVO();
-        vo.setId(comment.getId().toString());
+        vo.setId(comment.getId() != null ? comment.getId().toString() : null);
         vo.setContent(comment.getContent());
         vo.setUserId(comment.getUserId());
         vo.setPostId(comment.getPostId());
         vo.setReplyToCommentId(comment.getReplyToCommentId());
-        vo.setCreateTime(comment.getCreateTime());
-        vo.setUserInfo(UserInfoVO.fromUser(user));
+        
+        // 确保用户信息不为null
+        if (user != null) {
+            vo.setUserInfo(UserInfoVO.fromUser(user));
+        } else {
+            // 创建一个空的用户信息对象
+            vo.setUserInfo(new UserInfoVO());
+        }
+        
+        // 初始化replies列表
+        vo.setReplies(new ArrayList<>());
         return vo;
     }
 }

@@ -5,6 +5,23 @@ const service = axios.create({
   timeout: 5000,
 });
 
+// 请求拦截器
+service.interceptors.request.use(
+  config => {
+    // 从localStorage获取token
+    const token = localStorage.getItem('token');
+    if (token) {
+      // 添加认证头
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    console.error('请求配置错误:', error);
+    return Promise.reject(error);
+  }
+);
+
 // 响应拦截器
 service.interceptors.response.use(
   response => {

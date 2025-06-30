@@ -50,14 +50,14 @@ public class Comment {
 
     /**
      * 创建时间
-     * 数据库中不存在此字段
+     * 数据库中可能没有此字段
      */
     @TableField(exist = false)
     private LocalDateTime createTime;
 
     /**
      * 更新时间
-     * 数据库中不存在此字段
+     * 数据库中可能没有此字段
      */
     @TableField(exist = false)
     private LocalDateTime updateTime;
