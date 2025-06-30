@@ -2,6 +2,7 @@ package com.team.backend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.team.backend.domain.Comment;
+import com.team.backend.domain.vo.CommentWithUserVO;
 
 import java.util.List;
 
@@ -24,14 +25,19 @@ public interface ICommentService extends IService<Comment> {
      * @param postId 帖子ID
      * @return 评论列表
      */
-    List<Comment> getCommentsListByPostId(Long postId);
+    List<Comment> getCommentsListByPostId(String postId);
 
     /**
      * 根据帖子ID获取带有嵌套结构的评论列表
      * @param postId 帖子ID
      * @return 带有子评论的评论列表（树状结构）
      */
-    List<Comment> getNestedCommentsListByPostId(Long postId);
-
-    List<Comment> getCommentsListByUserId(String userId);
+    List<Comment> getNestedCommentsListByPostId(String postId);
+    
+    /**
+     * 根据帖子ID获取带有用户信息的嵌套评论列表
+     * @param postId 帖子ID
+     * @return 带有用户信息的评论列表（树状结构）
+     */
+    List<CommentWithUserVO> getNestedCommentsWithUserByPostId(String postId);
 }

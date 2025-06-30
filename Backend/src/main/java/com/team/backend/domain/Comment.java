@@ -23,7 +23,7 @@ public class Comment {
      * 使用AUTO策略，依赖数据库的自增功能
      */
     @TableId(value = "comment_id", type = IdType.AUTO)
-    private Long id;
+    private Long id;  // 保留Long类型，因为数据库使用自增ID
 
     /**
      * 评论内容
@@ -34,19 +34,19 @@ public class Comment {
      * 用户ID
      */
     @TableField("user_id")
-    private Long userId;
+    private String userId;
 
     /**
      * 帖子ID
      */
     @TableField("post_id")
-    private Long postId;
+    private String postId;
 
     /**
      * 回复的目标评论ID
      */
     @TableField("reply_to_comment_id")
-    private Long replyToCommentId;
+    private String replyToCommentId;
 
     /**
      * 创建时间
