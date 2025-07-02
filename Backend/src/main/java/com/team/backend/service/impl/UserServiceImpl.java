@@ -12,6 +12,8 @@ import com.team.backend.utils.ResponseCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 /**
  * @Author: YoyuEN
  * @Date: 2025/6/24
@@ -63,6 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User user = new User();
         user.setUsername(userVO.getUsername());
         user.setPassword(userVO.getPassword());
+        user.setUserId(UUID.randomUUID().toString());
         super.save(user);
         return 0;
     }

@@ -47,7 +47,7 @@ const routes = [
   {
     path: '/message',
     name: 'Message',
-    component: () => import('@/views/Message.vue'),
+    component: () => import('@/views/MessageS.vue'),
   },
   {
     path: '/user',
