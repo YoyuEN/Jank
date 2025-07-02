@@ -26,7 +26,7 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public List<Address> getProvinces() {
         LambdaQueryWrapper<Address> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Address::getLevel, 1); // 省级为1级
+        queryWrapper.eq(Address::getPId, 0);
         return addressMapper.selectList(queryWrapper);
     }
 

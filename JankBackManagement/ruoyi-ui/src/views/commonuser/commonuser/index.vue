@@ -68,9 +68,7 @@
       <el-table-column label="用户邮箱" align="center" prop="email" />
       <el-table-column label="用户名" align="center" prop="username" />
       <el-table-column label="用户手机号" align="center" prop="phone" />
-      <el-table-column label="用户状态" align="center" prop="freeze">
-      </el-table-column>
-
+      <el-table-column label="用户状态" align="center" prop="freeze"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -175,7 +173,7 @@ export default {
       },
       options: [], // 省份选项
       addressProps: {
-        value: 'address_id',
+        value: 'addressId',
         label: 'address',
         children: 'children',
         checkStrictly: true,
@@ -190,7 +188,6 @@ export default {
     this.loadProvinces();
   },
   methods: {
-
     /** 查询用户管理列表 */
     getList() {
       this.loading = true;
@@ -276,7 +273,7 @@ export default {
           const found = currentOptions.find(opt => opt.address === name);
 
           if (found) {
-            selectedIds.push(found.address_id);
+            selectedIds.push(found.addressId);
             if (i < addressNames.length - 1) {
               // 如果不是最后一级，加载下一级
               await new Promise((resolve) => {
@@ -339,9 +336,8 @@ export default {
       try {
         const response = await getProvinces();
         this.options = response.data.map(province => ({
-          address_id: province.address_id,
+          addressId: province.addressId,
           address: province.address,
-          level: 0,
           leaf: false
         }));
       } catch (error) {
@@ -352,24 +348,18 @@ export default {
     /** 懒加载子级地址 */
     async lazyLoadAddress(node, resolve) {
       const { level, data} = node;
-      // if (level === 0) {
-      //   // 第一次加载省份时无需请求子级
-      //   resolve([]);
-      //   return;
-      // }
-      if (level >= 2) {
+      console.log('lazyLoadAddress', level, data);
+
+      if (level >= 3) {
         resolve([]);
         return;
       }
       try {
-        const pId = data?.address_id; // 直接获取父ID
-        if (!pId) {
-          resolve([]);
-          return;
-        }
-        const response = await getChildrenByPId(data && data.address_id ? data.address_id : -1);
+        // 打印一下data的数据
+        console.log('address:', data.address);
+        const response = await getChildrenByPId(data && data.addressId ? data.addressId : -1);
         const children = response.data.map(item => ({
-          address_id: item.address_id,
+          addressId: item.addressId,
           address: item.address,
           leaf: level >= 2
         }));
@@ -388,6 +378,7 @@ export default {
       } else {
         this.form.address = '';
       }
-    }}
+    }
+  }
 };
 </script>
