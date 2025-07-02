@@ -79,7 +79,6 @@
 
     <el-table v-loading="loading" :data="commentList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-
       <el-table-column label="评论内容" align="center" prop="content" :formatter="removePTags" />
       <el-table-column label="评论所属用户ID" align="center" prop="userId" />
       <el-table-column label="评论所属文章ID" align="center" prop="postId" />
@@ -124,9 +123,7 @@
         <el-form-item label="评论所属文章ID" prop="postId">
           <el-input v-model="form.postId" placeholder="请输入评论所属文章ID" />
         </el-form-item>
-        <el-form-item label="回复目标评论ID" prop="replyToCommentId">
-          <el-input v-model="form.replyToCommentId" placeholder="请输入回复的目标评论ID" />
-        </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -171,7 +168,7 @@ export default {
         replyToCommentId: null,
         createdAt: null,
         updatedAt: null,
-        deleted: null
+        deleted: null,
       },
       // 表单参数
       form: {},
