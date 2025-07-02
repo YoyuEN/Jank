@@ -64,11 +64,10 @@ public class CommentWithUserVO {
         }
         
         CommentWithUserVO vo = new CommentWithUserVO();
-        vo.setId(comment.getId() != null ? comment.getId().toString() : null);
+        vo.setId(comment.getCommentId() != null ? comment.getCommentId().toString() : null);
         vo.setContent(comment.getContent());
         vo.setUserId(comment.getUserId());
         vo.setPostId(comment.getPostId());
-        vo.setReplyToCommentId(comment.getReplyToCommentId());
         
         // 确保用户信息不为null
         if (user != null) {

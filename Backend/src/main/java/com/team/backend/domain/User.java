@@ -1,9 +1,12 @@
 package com.team.backend.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * @Author: YoyuEN
@@ -14,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@TableName("user")
 public class User {
     @TableId
     private String userId;
@@ -36,9 +40,9 @@ public class User {
     // 刷新令牌
     private String refreshToken;
     // 创建时间
-    private String createTime;
+    private LocalDateTime createTime;
     //修改时间
-    private String updateTime;
+    private LocalDateTime updateTime;
     // 删除状态
     private int deleted;
 

@@ -82,4 +82,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return null;
         }
     }
+
+    @Override
+    public User login(String username, String password) {
+        User user = userMapper.findByUsername(username);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+        return null;
+    }
 }

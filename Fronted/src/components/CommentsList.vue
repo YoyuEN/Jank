@@ -48,7 +48,7 @@
 
     <div v-else class="comments-list">
       <!-- 评论列表 -->
-      <div v-for="comment in comments" :key="comment.id" class="comment-item">
+      <div v-for="comment in comments" :key="comment.id" class="comment-item" :data-comment-id="comment.id">
         <div class="comment-content">
           <div class="comment-header">
             <img
@@ -62,53 +62,53 @@
             </div>
           </div>
           <div class="comment-text">{{ comment.content }}</div>
-          <div class="comment-actions">
-            <button @click="toggleReplyInput(comment.id)" class="reply-btn">
-              {{ replyTo === comment.id ? '取消回复' : '回复' }}
-            </button>
-            <button
-              @click="toggleReplies(comment.id)"
-              class="show-replies-btn"
-              v-if="comment.replyCount > 0"
-            >
-              {{ comment.showReplies ? '收起回复' : `查看回复(${comment.replyCount})` }}
-            </button>
-          </div>
+<!--          <div class="comment-actions">-->
+<!--            <button @click="toggleReplyInput(comment.id)" class="reply-btn">-->
+<!--              {{ replyTo === comment.id ? '取消回复' : '回复' }}-->
+<!--            </button>-->
+<!--            <button-->
+<!--              @click="toggleReplies(comment.id)"-->
+<!--              class="show-replies-btn"-->
+<!--              v-if="comment.replyCount > 0"-->
+<!--            >-->
+<!--              {{ comment.showReplies ? '收起回复' : `查看回复(${comment.replyCount})` }}-->
+<!--            </button>-->
+<!--          </div>-->
 
-          <!-- 回复输入框 -->
-          <div v-if="replyTo === comment.id" class="reply-input-container">
-            <textarea
-              v-model="replyContent"
-              placeholder="写下你的回复..."
-              rows="3"
-              class="reply-textarea"
-            ></textarea>
-            <div class="reply-actions">
-              <button @click="submitReply(comment.id)" class="submit-reply-btn">提交回复</button>
-            </div>
-          </div>
+<!--          &lt;!&ndash; 回复输入框 &ndash;&gt;-->
+<!--          <div v-if="replyTo === comment.id" class="reply-input-container">-->
+<!--            <textarea-->
+<!--              v-model="replyContent"-->
+<!--              placeholder="写下你的回复..."-->
+<!--              rows="3"-->
+<!--              class="reply-textarea"-->
+<!--            ></textarea>-->
+<!--            <div class="reply-actions">-->
+<!--              <button @click="submitReply(comment.id)" class="submit-reply-btn">提交回复</button>-->
+<!--            </div>-->
+<!--          </div>-->
 
           <!-- 回复列表 -->
-          <div v-if="comment.showReplies" class="replies-container">
-            <div v-if="comment.loadingReplies" class="loading-replies">加载回复中...</div>
-            <div v-else-if="comment.replies.length === 0" class="no-replies">暂无回复</div>
-            <div v-else class="replies-list">
-              <div v-for="reply in comment.replies" :key="reply.id" class="reply-item">
-                <div class="reply-header">
-                  <img
-                    :src="reply.avatar || 'https://via.placeholder.com/30'"
-                    alt="头像"
-                    class="reply-avatar"
-                  />
-                  <div class="reply-info">
-                    <div class="reply-author">{{ reply.username || '匿名用户' }}</div>
-                    <div class="reply-time">{{ reply.createTime }}</div>
-                  </div>
-                </div>
-                <div class="reply-text">{{ reply.content }}</div>
-              </div>
-            </div>
-          </div>
+<!--          <div v-if="comment.showReplies" class="replies-container">-->
+<!--            <div v-if="comment.loadingReplies" class="loading-replies">加载回复中...</div>-->
+<!--            <div v-else-if="comment.replies.length === 0" class="no-replies">暂无回复</div>-->
+<!--            <div v-else class="replies-list">-->
+<!--              <div v-for="reply in comment.replies" :key="reply.id" class="reply-item">-->
+<!--                <div class="reply-header">-->
+<!--                  <img-->
+<!--                    :src="reply.avatar || 'https://via.placeholder.com/30'"-->
+<!--                    alt="头像"-->
+<!--                    class="reply-avatar"-->
+<!--                  />-->
+<!--                  <div class="reply-info">-->
+<!--                    <div class="reply-author">{{ reply.username || '匿名用户' }}</div>-->
+<!--                    <div class="reply-time">{{ reply.createTime }}</div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <div class="reply-text">{{ reply.content }}</div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
         </div>
       </div>
     </div>
@@ -116,8 +116,11 @@
 </template>
 
 <script setup>
-import { getNestedCommentList, submitComment as submitCommentApi } from '@/api/comment/comment.js'
-import { ref, onMounted } from 'vue'
+import {
+  getNestedCommentList,
+  submitComment as submitCommentApi
+} from '@/api/comment/comment.js'
+import { ref, onMounted} from 'vue'
 import { useRoute } from 'vue-router'
 // import { getPostDetail } from '@/api/posts/posts.js'
 // import { marked } from 'marked'
@@ -125,8 +128,9 @@ import { useRoute } from 'vue-router'
 const comments = ref([])
 const loadingComments = ref(false)
 
-const replyTo = ref(null) // 当前回复的评论ID
-const replyContent = ref('') // 回复内容
+// 用于跟踪当前正在回复的评论ID
+const replyTo = ref(null)
+const replyContent = ref('')
 const route = useRoute()
 const postId = route.params.postId
 // const post = ref(null)
@@ -251,84 +255,17 @@ const fetchComments = async () => {
 
 onMounted(fetchComments)
 
-// 切换回复输入框
-const toggleReplyInput = (commentId) => {
-  if (replyTo.value === commentId) {
-    replyTo.value = null
-  } else {
-    replyTo.value = commentId
-    replyContent.value = ''
-  }
-}
+// // 切换回复输入框
+// const toggleReplyInput = (commentId) => {
+//   if (replyTo.value === commentId) {
+//     replyTo.value = null
+//   } else {
+//     replyTo.value = commentId
+//     replyContent.value = ''
+//   }
+// }
 
-// 切换显示回复列表
-const toggleReplies = (commentId) => {
-  const comment = comments.value.find((c) => c.id === commentId)
-  if (!comment) return
 
-  comment.showReplies = !comment.showReplies
-}
-
-// 提交回复
-const submitReply = async (commentId) => {
-  // 检查用户是否登录
-  const token = localStorage.getItem('token')
-  const userId = localStorage.getItem('userId')
-  const username = localStorage.getItem('username')
-  const avatar = localStorage.getItem('avatar')
-
-  console.log('提交回复前检查 - Token:', token)
-  console.log('提交回复前检查 - UserId:', userId)
-  console.log('提交回复前检查 - Username:', username)
-  console.log('提交回复前检查 - Avatar:', avatar)
-
-  // 从userStore中获取用户信息
-  const userStore = JSON.parse(localStorage.getItem('user') || '{}')
-  console.log('提交回复前检查 - UserStore:', userStore)
-
-  // 尝试从多个可能的来源获取userId
-  const effectiveUserId = userId || userStore.userId || userStore.id || ''
-  const effectiveUsername = username || userStore.username || userStore.name || '匿名用户'
-  const effectiveAvatar = avatar || userStore.avatar || userStore.avatarUrl || 'https://via.placeholder.com/30'
-
-  console.log('提交回复使用的有效用户ID:', effectiveUserId)
-  console.log('提交回复使用的有效用户名:', effectiveUsername)
-
-  if (!token || !effectiveUserId) {
-    alert('请先登录后再回复')
-    return
-  }
-
-  // 检查回复内容是否为空
-  if (!replyContent.value.trim()) {
-    alert('回复内容不能为空')
-    return
-  }
-
-  try {
-    const response = await submitCommentApi({
-      postId: postId,
-      content: replyContent.value,
-      replyToCommentId: commentId, // 使用正确的字段名
-      userId: effectiveUserId, // 使用有效的用户ID
-      username: effectiveUsername, // 添加用户名
-      avatar: effectiveAvatar, // 添加头像
-      createTime: new Date().toISOString() // 添加创建时间，虽然后端会覆盖，但为了前端显示可以先设置
-    })
-
-    if (response.code === 200) {
-      // 提交成功后刷新评论列表
-      await fetchComments()
-      replyContent.value = ''
-      replyTo.value = null
-    } else {
-      alert('回复提交失败: ' + response.message)
-    }
-  } catch (error) {
-    console.error('提交回复出错:', error)
-    alert('回复提交失败，请稍后再试')
-  }
-}
 </script>
 <style scoped>
 /* 评论区样式 */

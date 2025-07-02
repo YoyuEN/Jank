@@ -4,13 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.team.backend.domain.Comment;
 import com.team.backend.domain.User;
+import com.team.backend.domain.vo.CommentVO;
 import com.team.backend.domain.vo.CommentWithUserVO;
 import com.team.backend.mapper.CommentMapper;
+import com.team.backend.mapper.UserMapper;
 import com.team.backend.service.ICommentService;
 import com.team.backend.service.IUserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +31,8 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements ICommentService {
     @Autowired
     private IUserService userService;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public boolean addComment(Comment comment) {
         return save(comment);
@@ -42,95 +48,166 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 .list();
     }
 
+//    @Override
+//    public List<Comment> getNestedCommentsListByPostId(String postId) {
+//        // 1. 获取指定帖子的所有未删除的评论，按ID倒序排序（较新的评论ID较大）
+//        List<Comment> allComments = query()
+//                .eq("post_id", postId)
+//                .eq("deleted", 0)
+//                .orderByDesc("comment_id")  // 使用comment_id字段进行排序
+//                .list();
+//
+//        // 2. 构建评论树
+//        // 2.1 找出所有顶级评论（没有回复目标的评论）
+//        List<Comment> rootComments = allComments.stream()
+//                .filter(comment -> comment.getReplyToCommentId() == null)
+//                .collect(Collectors.toList());
+//
+//        // 2.2 创建一个Map，key是评论ID，value是评论对象，方便快速查找
+//        Map<String, Comment> commentMap = new HashMap<>();
+//        allComments.forEach(comment -> commentMap.put(comment.getId().toString(), comment));
+//
+//        // 2.3 将子评论添加到父评论的replies列表中
+//        allComments.stream()
+//                .filter(comment -> comment.getReplyToCommentId() != null)
+//                .forEach(comment -> {
+//                    Comment parentComment = commentMap.get(comment.getReplyToCommentId());
+//                    if (parentComment != null) {
+//                        if (parentComment.getReplies() == null) {
+//                            parentComment.setReplies(new ArrayList<>());
+//                        }
+//                        parentComment.getReplies().add(comment);
+//                    }
+//                });
+//
+//        return rootComments;
+//    }
+
+//    @Override
+//    public List<CommentWithUserVO> getNestedCommentsWithUserByPostId(String postId) {
+//        // 1. 获取所有评论
+//        List<Comment> allComments = query()
+//                .eq("post_id", postId)
+//                .eq("deleted", 0)
+//                .orderByDesc("comment_id")  // 使用comment_id字段进行排序
+//                .list();
+//
+//        // 2. 获取所有相关用户ID
+//        List<String> userIds = allComments.stream()
+//                .map(Comment::getUserId)
+//                .distinct()
+//                .collect(Collectors.toList());
+//
+//        // 3. 获取所有相关用户信息并创建用户Map
+//        Map<String, User> userMap = new HashMap<>();
+//        for (String userId : userIds) {
+//            User user = userService.getById(userId);
+//            if (user != null) {
+//                userMap.put(userId, user);
+//            }
+//        }
+//
+//        // 4. 转换评论为带用户信息的VO对象
+//        Map<String, CommentWithUserVO> commentVOMap = new HashMap<>();
+//        List<CommentWithUserVO> rootComments = new ArrayList<>();
+//
+//        // 4.1 转换所有评论为VO对象
+//        for (Comment comment : allComments) {
+//            User user = userMap.get(comment.getUserId());
+//            CommentWithUserVO commentVO = CommentWithUserVO.fromComment(comment, user);
+//            commentVOMap.put(comment.getCommentId().toString(), commentVO);
+//
+//            // 如果是顶级评论，添加到根评论列表
+//            if (comment.getReplyToCommentId() == null) {
+//                rootComments.add(commentVO);
+//            }
+//        }
+//
+//        // 4.2 构建评论树
+//        for (Comment comment : allComments) {
+//            if (comment.getReplyToCommentId() != null) {
+//                CommentWithUserVO parentVO = commentVOMap.get(comment.getReplyToCommentId());
+//                CommentWithUserVO currentVO = commentVOMap.get(comment.getId().toString());
+//                if (parentVO != null && currentVO != null) {
+//                    if (parentVO.getReplies() == null) {
+//                        parentVO.setReplies(new ArrayList<>());
+//                    }
+//                    parentVO.getReplies().add(currentVO);
+//                }
+//            }
+//        }
+//
+//        return rootComments;
+//    }
+
     @Override
-    public List<Comment> getNestedCommentsListByPostId(String postId) {
-        // 1. 获取指定帖子的所有未删除的评论，按ID倒序排序（较新的评论ID较大）
-        List<Comment> allComments = query()
-                .eq("post_id", postId)
-                .eq("deleted", 0)
-                .orderByDesc("comment_id")  // 使用comment_id字段进行排序
+    public List<CommentVO> getCommentsByArticleId(String postId) {
+        // 查询文章下的所有评论
+        List<Comment> comments = lambdaQuery()
+                .eq(Comment::getPostId, postId)
+                .orderByAsc(Comment::getCreateAt)
                 .list();
 
-        // 2. 构建评论树
-        // 2.1 找出所有顶级评论（没有回复目标的评论）
-        List<Comment> rootComments = allComments.stream()
-                .filter(comment -> comment.getReplyToCommentId() == null)
-                .collect(Collectors.toList());
+        // 构建评论VO并关联用户信息
+        Map<Long, CommentVO> commentMap = new HashMap<>();
+        comments.forEach(comment -> {
+            CommentVO vo = new CommentVO();
+            BeanUtils.copyProperties(comment, vo);
 
-        // 2.2 创建一个Map，key是评论ID，value是评论对象，方便快速查找
-        Map<String, Comment> commentMap = new HashMap<>();
-        allComments.forEach(comment -> commentMap.put(comment.getId().toString(), comment));
-
-        // 2.3 将子评论添加到父评论的replies列表中
-        allComments.stream()
-                .filter(comment -> comment.getReplyToCommentId() != null)
-                .forEach(comment -> {
-                    Comment parentComment = commentMap.get(comment.getReplyToCommentId());
-                    if (parentComment != null) {
-                        if (parentComment.getReplies() == null) {
-                            parentComment.setReplies(new ArrayList<>());
-                        }
-                        parentComment.getReplies().add(comment);
-                    }
-                });
-
-        return rootComments;
-    }
-
-    @Override
-    public List<CommentWithUserVO> getNestedCommentsWithUserByPostId(String postId) {
-        // 1. 获取所有评论
-        List<Comment> allComments = query()
-                .eq("post_id", postId)
-                .eq("deleted", 0)
-                .orderByDesc("comment_id")  // 使用comment_id字段进行排序
-                .list();
-
-        // 2. 获取所有相关用户ID
-        List<String> userIds = allComments.stream()
-                .map(Comment::getUserId)
-                .distinct()
-                .collect(Collectors.toList());
-
-        // 3. 获取所有相关用户信息并创建用户Map
-        Map<String, User> userMap = new HashMap<>();
-        for (String userId : userIds) {
-            User user = userService.getById(userId);
+            // 查询用户信息
+            User user = userMapper.selectById(comment.getUserId());
             if (user != null) {
-                userMap.put(userId, user);
+                vo.setUsername(user.getUsername());
+                vo.setAvatar(user.getAvatar());
             }
-        }
 
-        // 4. 转换评论为带用户信息的VO对象
-        Map<String, CommentWithUserVO> commentVOMap = new HashMap<>();
-        List<CommentWithUserVO> rootComments = new ArrayList<>();
+            commentMap.put(comment.getCommentId(), vo);
+        });
 
-        // 4.1 转换所有评论为VO对象
-        for (Comment comment : allComments) {
-            User user = userMap.get(comment.getUserId());
-            CommentWithUserVO commentVO = CommentWithUserVO.fromComment(comment, user);
-            commentVOMap.put(comment.getId().toString(), commentVO);
-
-            // 如果是顶级评论，添加到根评论列表
-            if (comment.getReplyToCommentId() == null) {
+        // 构建评论层级结构
+        List<CommentVO> rootComments = new ArrayList<>();
+        commentMap.forEach((id, commentVO) -> {
+            if (commentVO.getParentId() == null) {
                 rootComments.add(commentVO);
-            }
-        }
-
-        // 4.2 构建评论树
-        for (Comment comment : allComments) {
-            if (comment.getReplyToCommentId() != null) {
-                CommentWithUserVO parentVO = commentVOMap.get(comment.getReplyToCommentId());
-                CommentWithUserVO currentVO = commentVOMap.get(comment.getId().toString());
-                if (parentVO != null && currentVO != null) {
-                    if (parentVO.getReplies() == null) {
-                        parentVO.setReplies(new ArrayList<>());
+            } else {
+                CommentVO parent = commentMap.get(commentVO.getParentId());
+                if (parent != null) {
+                    if (parent.getReplies() == null) {
+                        parent.setReplies(new ArrayList<>());
                     }
-                    parentVO.getReplies().add(currentVO);
+                    parent.getReplies().add(commentVO);
                 }
             }
-        }
+        });
 
         return rootComments;
     }
+
+
+    @Override
+    public CommentVO addComment(String userId, String postId, String content, String parentId) {
+        Comment comment = new Comment();
+        comment.setUserId(userId);
+        comment.setPostId(postId);
+        comment.setContent(content);
+        comment.setParentId(parentId);
+        comment.setCreateAt(LocalDateTime.now());
+        save(comment);
+
+        // 构建返回的VO对象
+        CommentVO vo = new CommentVO();
+        BeanUtils.copyProperties(comment, vo);
+
+        // 查询用户信息
+        User user = userMapper.selectById(userId);
+        if (user != null) {
+            vo.setUsername(user.getUsername());
+            vo.setAvatar(user.getAvatar());
+        }
+
+        return vo;
+    }
+
+
+
 }

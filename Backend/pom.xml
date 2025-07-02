@@ -132,7 +132,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-community-bom</artifactId>
