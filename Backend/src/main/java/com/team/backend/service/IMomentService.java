@@ -19,4 +19,5 @@ public interface IMomentService extends IService<Moment> {
     void cancelLike(String momentId);
     void likeMoment(String momentId);
 
+
 }

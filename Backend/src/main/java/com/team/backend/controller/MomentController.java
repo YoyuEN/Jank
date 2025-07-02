@@ -1,7 +1,9 @@
 package com.team.backend.controller;
 
 import com.team.backend.domain.Moment;
+import com.team.backend.domain.MomentComment;
 import com.team.backend.domain.vo.MomentVO;
+import com.team.backend.service.IMomentCommentService;
 import com.team.backend.service.IMomentService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
@@ -23,6 +25,9 @@ public class MomentController {
 
     @Autowired
     private IMomentService momentService;
+
+    @Autowired
+    private IMomentCommentService momentCommentService;
 
     /*
     * 获取朋友圈列表 getMomentList
@@ -67,4 +72,18 @@ public class MomentController {
         return Result.success(ResponseCode.SUCCESS, "取消点赞成功");
     }
 
+    /*
+    * 新增评论 addMomentComment
+    * */
+    @PostMapping("/addMomentComment")
+    public Result<String> addMomentComment(
+            @RequestParam("momentId") String momentId,
+            @RequestParam("content") String content,
+            @RequestParam("userId") String userId){
+        if (content == null || content.isEmpty()) {
+            return Result.fail(ResponseCode.ERROR, "内容不能为空");
+        }
+        momentCommentService.addMomentComment(momentId, content, userId);
+        return Result.success(ResponseCode.SUCCESS, "评论成功");
+    }
 }

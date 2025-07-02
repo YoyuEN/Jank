@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface IMomentCommentService extends IService<MomentComment> {
     List<MomentComment> getCommentsByMomentId(String momentId);
+    void addMomentComment(String momentId, String content, String userId);
 }

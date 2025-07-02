@@ -85,13 +85,14 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
         moment.setUserId(momentVO.getUserId());
 
         moment.setImageUrls(imageUrls);
+        int number = 0;
         for (String imageUrl : imageUrls) {
-            momentImageService.addMomentImage(moment.getMomentId(), imageUrl);
+            momentImageService.addMomentImage(moment.getMomentId(), imageUrl, number);
+            number++;
         }
         moment.setUsername(userService.getById(momentVO.getUserId()).getUsername());
         moment.setCategory(momentVO.getCategory());
 
-//        moment.setCreateTime(String.valueOf(System.currentTimeMillis()));
         moment.setAvatarUrl(userService.getAvatarUrlByUserId(momentVO.getUserId()));
         this.save(moment);
     }

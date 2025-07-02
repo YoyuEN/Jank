@@ -59,3 +59,11 @@ export function cancelLike(momentId) {
     },
   })
 }
+
+/*
+* 发布评论
+* */
+export function addMomentComment(data) {
+  return service.post('/moment/addMomentComment', data)
+}
+
