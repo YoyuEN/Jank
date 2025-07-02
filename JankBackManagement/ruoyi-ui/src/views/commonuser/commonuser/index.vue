@@ -98,7 +98,7 @@
     />
 
     <!-- 添加或修改用户管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="用户昵称" prop="nickname">
           <el-input v-model="form.nickname" placeholder="请输入用户昵称" />
@@ -108,6 +108,17 @@
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入用户名" />
+        </el-form-item>
+        <el-form-item label="用户所在地址" prop="address" label-width="100px">
+          <el-cascader
+            ref="addressCascader"
+            v-model="selectedAddress"
+            :options="options"
+            :props="addressProps"
+            @change="handleAddressChange"
+            placeholder="请选择所在地区"
+            clearable>
+          </el-cascader>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -120,6 +131,7 @@
 
 <script>
 import { listCommonuser, getCommonuser, delCommonuser, addCommonuser, updateCommonuser } from "@/api/commonuser/commonuser";
+import { getProvinces, getChildrenByPId } from "@/api/address/address";
 
 export default {
   name: "Commonuser",
@@ -148,16 +160,28 @@ export default {
         pageNum: 1,
         pageSize: 10,
         username: null,
+        address: null
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      options: [], // 省份选项
+      addressProps: {
+        value: 'address_id',
+        label: 'address',
+        children: 'children',
+        checkStrictly: true,
+        lazy: true,
+        lazyLoad: this.lazyLoadAddress
+      },
+      selectedAddress: [] // 选中的地址ID数组
     };
   },
   created() {
     this.getList();
+    this.loadProvinces();
   },
   methods: {
     /** 查询用户管理列表 */
@@ -188,8 +212,10 @@ export default {
         freeze: null,
         createTime: null,
         updateTime: null,
-        deleted: null
+        deleted: null,
+        address: null
       };
+      this.selectedAddress = [];
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -220,9 +246,50 @@ export default {
       const userId = row.userId || this.ids
       getCommonuser(userId).then(response => {
         this.form = response.data;
+        // 如果有地址数据，设置selectedAddress
+        if (this.form.address) {
+          // 将地址字符串拆分为数组
+          const addressNames = this.form.address.split('/');
+          // 在options中查找对应的地址ID
+          this.findAndSetAddressIds(addressNames);
+        }
         this.open = true;
         this.title = "修改用户管理";
       });
+    },
+
+    /** 根据地址名称查找并设置地址ID */
+    async findAndSetAddressIds(addressNames) {
+      try {
+        let currentOptions = this.options;
+        let selectedIds = [];
+
+        for (let i = 0; i < addressNames.length; i++) {
+          const name = addressNames[i];
+          const found = currentOptions.find(opt => opt.address === name);
+
+          if (found) {
+            selectedIds.push(found.address_id);
+            if (i < addressNames.length - 1) {
+              // 如果不是最后一级，加载下一级
+              await new Promise((resolve) => {
+                this.lazyLoadAddress({ level: i, data: found }, (children) => {
+                  currentOptions = children;
+                  resolve();
+                });
+              });
+            }
+          } else {
+            break;
+          }
+        }
+
+        if (selectedIds.length > 0) {
+          this.selectedAddress = selectedIds;
+        }
+      } catch (error) {
+        console.error('设置地址ID失败:', error);
+      }
     },
     /** 提交按钮 */
     submitForm() {
@@ -259,6 +326,60 @@ export default {
       this.download('commonuser/commonuser/export', {
         ...this.queryParams
       }, `commonuser_${new Date().getTime()}.xlsx`)
+    },
+    /** 加载省份数据 */
+    async loadProvinces() {
+      try {
+        const response = await getProvinces();
+        this.options = response.data.map(province => ({
+          address_id: province.address_id,
+          address: province.address,
+          leaf: false
+        }));
+      } catch (error) {
+        this.$message.error("加载省份数据失败");
+        console.error("加载省份数据失败:", error);
+      }
+    },
+    /** 懒加载子级地址 */
+    async lazyLoadAddress(node, resolve) {
+      const { level, data} = node;
+      // if (level === 0) {
+      //   // 第一次加载省份时无需请求子级
+      //   resolve([]);
+      //   return;
+      // }
+      // if (level > 2) {
+      //   resolve([]);
+      //   return;
+      // }
+      try {
+        const pId = data?.address_id; // 直接获取父ID
+        if (!pId) {
+          resolve([]);
+          return;
+        }
+        const response = await getChildrenByPId(data && data.address_id ? data.address_id : -1);
+        const children = response.data.map(item => ({
+          address_id: item.address_id,
+          address: item.address,
+          leaf: level >= 2
+        }));
+        resolve(children);
+      } catch (error) {
+        this.$message.error("加载地址数据失败");
+        console.error("加载地址数据失败:", error);
+        resolve([]);
+      }
+    },
+    /** 处理地址选择变化 */
+    handleAddressChange(value) {
+      if (value && value.length > 0) {
+        const selectedNames = this.$refs.addressCascader.getCheckedNodes()[0].pathLabels;
+        this.form.address = selectedNames.join('/');
+      } else {
+        this.form.address = '';
+      }
     }
   }
 };
