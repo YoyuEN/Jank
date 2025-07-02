@@ -68,7 +68,9 @@
       <el-table-column label="用户邮箱" align="center" prop="email" />
       <el-table-column label="用户名" align="center" prop="username" />
       <el-table-column label="用户手机号" align="center" prop="phone" />
-      <el-table-column label="用户状态" align="center" prop="freeze"/>
+      <el-table-column label="用户状态" align="center" prop="freeze">
+      </el-table-column>
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -166,6 +168,10 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        email: [
+          { required: true, message: '请输入用户邮箱', trigger: 'blur' },
+                { pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: '请输入正确的邮箱格式', trigger: 'blur' }
+        ],
       },
       options: [], // 省份选项
       addressProps: {
@@ -184,6 +190,7 @@ export default {
     this.loadProvinces();
   },
   methods: {
+
     /** 查询用户管理列表 */
     getList() {
       this.loading = true;
@@ -334,6 +341,7 @@ export default {
         this.options = response.data.map(province => ({
           address_id: province.address_id,
           address: province.address,
+          level: 0,
           leaf: false
         }));
       } catch (error) {
@@ -349,10 +357,10 @@ export default {
       //   resolve([]);
       //   return;
       // }
-      // if (level > 2) {
-      //   resolve([]);
-      //   return;
-      // }
+      if (level >= 2) {
+        resolve([]);
+        return;
+      }
       try {
         const pId = data?.address_id; // 直接获取父ID
         if (!pId) {
@@ -380,7 +388,6 @@ export default {
       } else {
         this.form.address = '';
       }
-    }
-  }
+    }}
 };
 </script>
