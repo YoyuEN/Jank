@@ -97,7 +97,19 @@ export default {
   margin: 40px auto 0; /* 距离顶部 100px，左右自动居中 */
 }
 
+.sidebar-buttons {
+  position: fixed;
+  left: 50px;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 999;
+}
+
 .sidebar-btn {
+  background-color: #007bff;
+  color: white;
   border: none;
   width: 48px;
   height: 48px;
@@ -106,16 +118,6 @@ export default {
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
-}
-
-.sidebar-buttons {
-  position: fixed;
-  left: 20px;
-  bottom: 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 999;
 }
 
 .category-filter {

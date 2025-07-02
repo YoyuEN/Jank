@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface IMomentImageService extends IService<MomentImage>{
     List<String> getImageUrlsByMomentId(String momentId);
+    void addMomentImage(String momentId, String imageUrl, int number);
 }

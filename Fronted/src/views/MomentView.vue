@@ -1,8 +1,10 @@
 <template>
+  <div class="sidebar-buttons">
+    <button @click="$router.push('/publishMoment')" title="发布说说" class="sidebar-btn">📝</button>
+    <button @click="scrollToTop" title="回到顶部" class="sidebar-btn">⬆️</button>
+  </div>
   <div v-if="loading" class="loading">正在加载朋友圈...</div>
   <div class="moment-container">
-<!--    <button @click="fetchMoments">🔄 刷新</button>-->
-    <!-- 左侧目录 -->
     <div class="category-menu">
       <ul>
         <li v-for="(category, index) in categories" :key="index" :class="{ active: selectedCategory === category }" @click="selectCategory(category)">
@@ -37,14 +39,17 @@
           <button @click="handleLike(moment.momentId)">
             {{ moment.likedByUser ? '💔 取消点赞' : '👍 点赞' }} {{ moment.likeCount }}
           </button>
-
-          <button @click="toggleComments(index)">💬 评论 {{ moment.comments.length }}</button>
+          <button @click="toggleComments(moment.momentId)">💬 评论 {{ moment.comments.length }}</button>
         </div>
 
         <!-- 子评论展开 -->
         <div v-if="moment.showComments && moment.comments.length > 0" class="comments-section">
           <div v-for="(comment, cIndex) in moment.comments" :key="cIndex" class="comment-item">
             <strong>{{ comment.nickname }}</strong>: {{ comment.content }}
+          </div>
+          <div class="comment-box">
+              <textarea v-model="newComment.content" placeholder="请输入评论内容"></textarea>
+              <button @click="submitComment">发布</button>
           </div>
         </div>
       </div>
@@ -53,7 +58,8 @@
 </template>
 
 <script>
-import { addMoment, cancelLike, getMomentList, likeMoment } from '@/api/moments/moments.js'
+import { addMomentComment, cancelLike, getMomentList, likeMoment } from '@/api/moments/moments.js'
+import { useUserStore } from '@/store/userStore.js'
 
 export default {
   name: 'MomentView',
@@ -62,7 +68,13 @@ export default {
       categories: ['全部', '生活', '趣事'],
       selectedCategory: '全部',
       moments: [],
-      loading: false
+      loading: false,
+      showCommentBox: false,
+      newComment: {
+        userId: '',     // 用户ID
+        content: '',    // 评论内容
+        momentId: ''    // 对应的朋友圈ID
+      }
     };
   },
   computed: {
@@ -119,27 +131,59 @@ export default {
   },
 
   methods: {
+    submitComment() {
+      if (!this.newComment.content.trim()) return;
+
+      const formData = new FormData();
+      formData.append('momentId', this.newComment.momentId);
+      formData.append('content', this.newComment.content);
+      formData.append('userId', this.newComment.userId);
+
+      // 调用 API 提交评论
+      addMomentComment(formData).then(() => {
+        console.log('评论已提交:', this.newComment);
+
+        // ✅ 找到对应的朋友圈并更新评论列表
+        this.moments = this.moments.map(m => {
+          if (m.momentId === this.newComment.momentId) {
+            return {
+              ...m,
+              comments: [
+                ...m.comments,
+                {
+                  nickname: useUserStore().user.username, // 可从 userStore 获取真实昵称
+                  content: this.newComment.content
+                }
+              ]
+            };
+          }
+          return m;
+        });
+
+        this.newComment.content = ''; // 清空输入框
+        this.showCommentBox = false;  // 隐藏评论框
+      });
+    },
+
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    },
     selectCategory(category) {
       this.selectedCategory = category;
     },
-    toggleComments(index) {
-      this.moments = this.moments.map((m, i) =>
-        i === index ? { ...m, showComments: !m.showComments } : m
-      );
-    },
-
-    // 发布新朋友圈
-    async publishMoment() {
-      const newMoment = {
-        content: this.content,
-        userId: 'currentUserId',
-        username: '当前用户',
-        avatarUrl: 'https://example.com/avatar.jpg',
-        imageUrls: this.selectedImages
+    toggleComments(momentId) {
+      const userStore = useUserStore()
+      this.newComment = {
+        userId: userStore.user.userId, // 假设从 Vuex 获取当前用户ID
+        content: '',
+        momentId: momentId
       };
-      await addMoment(newMoment);
-      this.$message.success('发布成功');
-      await this.fetchMoments(); // 刷新列表
+      this.moments = this.moments.map(m => {
+        if (m.momentId === momentId) {
+          return { ...m, showComments: !m.showComments };
+        }
+        return m;
+      });
     },
 
     async fetchMoments() {
@@ -196,6 +240,29 @@ export default {
 </script>
 
 <style scoped>
+.sidebar-buttons {
+  position: fixed;
+  left: 50px;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 999;
+}
+
+.sidebar-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
 .loading {
   text-align: center;
   padding: 20px;
@@ -209,7 +276,7 @@ export default {
 }
 
 .category-menu {
-  width: 200px;
+  width: 100px;
   border-right: 1px solid #ddd;
   padding: 20px;
 }
@@ -302,4 +369,40 @@ export default {
   padding: 10px;
   border-radius: 4px;
 }
+
+.comment-box {
+  margin-top: 20px;
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  gap: 10px; /* 控制输入框和按钮之间的间距 */
+}
+
+.comment-box textarea {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  flex: 1;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease; /* 边框颜色过渡效果 */
+}
+
+.comment-box textarea:focus {
+  outline: none; /* 去除默认聚焦轮廓线 */
+}
+
+.comment-box button {
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* 按钮背景色过渡效果 */
+}
+
+.comment-box button:hover {
+  background-color: #0056b3; /* 悬停时按钮颜色加深 */
+}
+
+
 </style>

@@ -10,6 +10,7 @@ import com.team.backend.mapper.PostMapper;
 import com.team.backend.service.ICategoryService;
 import com.team.backend.service.IPostService;
 import com.team.backend.service.MinioService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +32,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     //新增帖子
     @Override
     public void addPost(PostVO postVO) throws Exception {
-        String imageUrl = "https://pic.imgdb.cn/item/64cf07a61ddac507cc7501cc.jpg"; // 默认图
-
+        String imageUrl = null;
         if (postVO.getImage() != null && !postVO.getImage().isEmpty()) {
             imageUrl = minioService.uploadFile(postVO.getImage(), "");
         }
@@ -65,6 +65,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 
             String image = post.getImage();
             post.setImage(minioService.getPresignedUrl(image));
+//            BeanUtils.copyProperties(post, post);
         }
         return postList;
     }

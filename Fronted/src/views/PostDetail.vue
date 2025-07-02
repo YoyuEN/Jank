@@ -122,48 +122,7 @@ const handleScroll = () => {
 </script>
 
 <style>
-.sidebar-buttons {
-  position: fixed;
-  left: 20px;
-  bottom: 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 999;
-}
 
-.sidebar-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  width: 48px;
-  height: 48px;
-  font-size: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.sidebar-btn:hover {
-  transform: scale(1.1);
-}
-
-.comment-panel {
-  position: fixed;
-  right: 0;
-  top: 50px;
-  height: auto;
-  width: 20%;
-  background: white;
-  padding: 24px;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.3s ease;
-}
 
 .comment-panel textarea {
   width: 100%;
@@ -171,10 +130,6 @@ const handleScroll = () => {
   margin-bottom: 16px;
 }
 
-.comment-actions {
-  display: flex;
-  justify-content: space-between;
-}
 
 .comment-panel h3 {
   margin-top: 0;

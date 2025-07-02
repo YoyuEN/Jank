@@ -157,7 +157,6 @@ watchEffect(() => {
 <style scoped>
 .user-container {
   min-height: calc(100vh - 80px); /* 减去导航栏的高度 */
-  background-color: #f5f5f5;
   padding: 30px; /* 统一内边距 */
   margin-top:50px; /* 减少顶部外边距 */
 }
@@ -172,7 +171,6 @@ watchEffect(() => {
 
 /* 左侧：用户信息面板 */
 .user-info-panel {
-  background-color: white;
   border-radius: 15px;
   padding: 30px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -237,7 +235,6 @@ watchEffect(() => {
 
 .posts-section,
 .comments-section {
-  background-color: white;
   border-radius: 15px;
   padding: 25px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -261,7 +258,6 @@ watchEffect(() => {
 .post-item {
   padding: 15px;
   border-radius: 8px;
-  background-color: #f9f9f9;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -300,7 +296,6 @@ watchEffect(() => {
 .comment-item {
   padding: 15px;
   border-radius: 8px;
-  background-color: #f9f9f9;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -328,7 +323,6 @@ watchEffect(() => {
   text-align: center;
   color: #777;
   font-style: italic;
-  background-color: #f9f9f9;
   border-radius: 8px;
 }
 

@@ -151,7 +151,6 @@ export default {
         this.errors.categoryNames = '请选择帖子分类'
         isValid = false
       }
-
       return isValid
     },
 

@@ -2,17 +2,17 @@ package com.team.backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.team.backend.domain.Comment;
 import com.team.backend.domain.Moment;
 import com.team.backend.domain.MomentComment;
+import com.team.backend.domain.vo.MomentVO;
 import com.team.backend.mapper.MomentMapper;
 import com.team.backend.service.*;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Author: YoyuEN
@@ -68,6 +68,33 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
             moment.setAvatarUrl(avatarUrl);
         }
         return momentList;
+    }
+
+    @Override
+    public void addMoment(MomentVO momentVO) {
+        List<String> imageUrls = null;
+        if (!momentVO.getImageUrls().isEmpty()) {
+            imageUrls = minioService.uploadFile(momentVO.getImageUrls(), "moment");
+        }
+        if (momentVO.getContent() == null && momentVO.getUserId() == null && momentVO.getCategory() == null) {
+            return;
+        }
+        Moment moment = new Moment();
+        moment.setMomentId(UUID.randomUUID().toString());
+        moment.setContent(momentVO.getContent());
+        moment.setUserId(momentVO.getUserId());
+
+        moment.setImageUrls(imageUrls);
+        int number = 0;
+        for (String imageUrl : imageUrls) {
+            momentImageService.addMomentImage(moment.getMomentId(), imageUrl, number);
+            number++;
+        }
+        moment.setUsername(userService.getById(momentVO.getUserId()).getUsername());
+        moment.setCategory(momentVO.getCategory());
+
+        moment.setAvatarUrl(userService.getAvatarUrlByUserId(momentVO.getUserId()));
+        this.save(moment);
     }
 
     @Override
