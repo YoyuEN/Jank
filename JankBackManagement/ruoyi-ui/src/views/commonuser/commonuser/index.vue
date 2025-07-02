@@ -169,7 +169,7 @@ export default {
       },
       options: [], // 省份选项
       addressProps: {
-        value: 'address_id',
+        value: 'addressId',
         label: 'address',
         children: 'children',
         checkStrictly: true,
@@ -269,7 +269,7 @@ export default {
           const found = currentOptions.find(opt => opt.address === name);
 
           if (found) {
-            selectedIds.push(found.address_id);
+            selectedIds.push(found.addressId);
             if (i < addressNames.length - 1) {
               // 如果不是最后一级，加载下一级
               await new Promise((resolve) => {
@@ -327,12 +327,13 @@ export default {
         ...this.queryParams
       }, `commonuser_${new Date().getTime()}.xlsx`)
     },
+
     /** 加载省份数据 */
     async loadProvinces() {
       try {
         const response = await getProvinces();
         this.options = response.data.map(province => ({
-          address_id: province.address_id,
+          addressId: province.addressId,
           address: province.address,
           leaf: false
         }));
@@ -341,30 +342,26 @@ export default {
         console.error("加载省份数据失败:", error);
       }
     },
+
     /** 懒加载子级地址 */
     async lazyLoadAddress(node, resolve) {
       const { level, data} = node;
-      // if (level === 0) {
-      //   // 第一次加载省份时无需请求子级
-      //   resolve([]);
-      //   return;
-      // }
-      // if (level > 2) {
-      //   resolve([]);
-      //   return;
-      // }
+      console.log('lazyLoadAddress', level, data);
+
+      if (level >= 3) {
+        resolve([]);
+        return;
+      }
       try {
-        const pId = data?.address_id; // 直接获取父ID
-        if (!pId) {
-          resolve([]);
-          return;
-        }
-        const response = await getChildrenByPId(data && data.address_id ? data.address_id : -1);
+        // 打印一下data的数据
+        console.log('address:', data.address);
+        const response = await getChildrenByPId(data && data.addressId ? data.addressId : -1);
         const children = response.data.map(item => ({
-          address_id: item.address_id,
+          addressId: item.addressId,
           address: item.address,
           leaf: level >= 2
         }));
+        console.log('children:', children.address)
         resolve(children);
       } catch (error) {
         this.$message.error("加载地址数据失败");
@@ -372,6 +369,7 @@ export default {
         resolve([]);
       }
     },
+
     /** 处理地址选择变化 */
     handleAddressChange(value) {
       if (value && value.length > 0) {

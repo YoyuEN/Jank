@@ -5,9 +5,9 @@
 <mapper namespace="com.ruoyi.jank.mapper.AddressMapper">
 
     <resultMap type="com.ruoyi.jank.domain.Address" id="AddressResult">
-        <id     property="addressId"       column="addressId"        />
+        <id     property="addressId"       column="address_id"        />
         <result property="address"     column="address"      />
-        <result property="pId" column="pId" />
+        <result property="pId" column="p_id" />
         <result property="level"    column="level"     />
     </resultMap>
 
