@@ -1,14 +1,13 @@
 package com.team.backend.controller;
 
 import com.team.backend.domain.Moment;
+import com.team.backend.domain.vo.MomentVO;
 import com.team.backend.service.IMomentService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -31,6 +30,23 @@ public class MomentController {
     @GetMapping("/getMomentList")
     public Result<List<Moment>> getMomentList(){
         return Result.success(ResponseCode.SUCCESS, momentService.getMomentList());
+    }
+
+    /*
+    * 新增朋友圈 addMoment
+    * */
+    @PostMapping("/addMoment")
+    public Result<String> addMoment(
+            @RequestParam("content") String content,
+            @RequestParam("imageUrls") List<MultipartFile> imageUrls,
+            @RequestParam("userId") String userId,
+            @RequestParam("category") String category){
+        MomentVO momentVO = new MomentVO(content, imageUrls, userId, category);
+        if (momentVO.getContent() == null || momentVO.getContent().isEmpty()) {
+            return Result.fail(ResponseCode.ERROR, "内容不能为空");
+        }
+        momentService.addMoment(momentVO);
+        return Result.success(ResponseCode.SUCCESS, "发布成功");
     }
 
     /*

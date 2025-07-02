@@ -3,6 +3,7 @@ import PostList from '@/views/PostList.vue';
 import LoginForm from '@/views/LoginForm.vue';
 import Register from '@/views/Register.vue'
 import MomentView from '@/views/MomentView.vue'
+import PublishMoment from '@/views/PublishMoment.vue'
 const routes = [
   {
     path: '/login',
@@ -55,9 +56,14 @@ const routes = [
     component: () => import('@/views/UserInformation.vue'),
   },
   {
-    path: '/publish',
-    name: 'Publish',
+    path: '/publishPost',
+    name: 'PublishPost',
     component: () => import('@/views/PublishPost.vue'),
+  },
+  {
+    path: '/publishMoment',
+    name: 'PublishMoment',
+    component: PublishMoment
   },
 ];
 

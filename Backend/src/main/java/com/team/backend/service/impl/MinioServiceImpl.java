@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Slf4j
@@ -63,6 +65,34 @@ public class MinioServiceImpl implements MinioService {
             throw new RuntimeException("文件上传失败: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public List<String> uploadFile(List<MultipartFile> files, String folder) {
+        List<String> objectNames = new ArrayList<>();
+        for (MultipartFile multipartFile : files) {
+            try {
+                String objectName = uploadFile(multipartFile, folder);
+                objectNames.add(objectName);
+                minioClient.putObject(
+                        PutObjectArgs.builder()
+                                .bucket(bucketName)
+                                .object(objectName)
+                                .stream(multipartFile.getInputStream(), multipartFile.getSize(), -1)
+                                .contentType(multipartFile.getContentType())
+                                .build()
+                );
+                minioEndpoint = minioEndpoint.replace("5", "0");
+            } catch (Exception e) {
+                log.error("上传文件失败", e);
+            }
+        }
+        return objectNames;
+    }
+
+    /*
+    * 上传多个文件
+    * */
+
 
 
     /**

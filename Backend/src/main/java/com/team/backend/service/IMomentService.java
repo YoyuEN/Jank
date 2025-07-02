@@ -2,6 +2,7 @@ package com.team.backend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.team.backend.domain.Moment;
+import com.team.backend.domain.vo.MomentVO;
 
 import java.util.List;
 
@@ -13,6 +14,9 @@ import java.util.List;
  */
 public interface IMomentService extends IService<Moment> {
     List<Moment> getMomentList();
+    // 新增朋友圈
+    void addMoment(MomentVO momentVO);
     void cancelLike(String momentId);
     void likeMoment(String momentId);
+
 }

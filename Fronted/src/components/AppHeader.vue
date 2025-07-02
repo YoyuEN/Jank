@@ -39,10 +39,10 @@
               <li @click="goToSettings">
                 <i class="fa fa-cog"></i> 设置
               </li>
-              <li @click="login">
+              <li v-if="!userStore.user" @click="login">
                 <i class="fa fa-sign-out"></i> 登录
               </li>
-              <li @click="logout">
+              <li v-if="userStore.user" @click="logout">
                 <i class="fa fa-sign-out"></i> 退出
               </li>
             </ul>
@@ -171,10 +171,10 @@ const login = () => {
 
 const logout = () => {
   isDropdownOpen.value = false;
-  userStore.clearUserInfo();
-  router.push('/login');
-  window.location.reload(); // 强制刷新页面
+  userStore.clearUserInfo(); // 清除 Vuex 或 Pinia 中的用户信息
+  window.location.reload();
 };
+
 </script>
 
 <style scoped>

@@ -1,8 +1,10 @@
 <template>
+  <div class="sidebar-buttons">
+    <button @click="$router.push('/publishMoment')" title="发布说说" class="sidebar-btn">📝</button>
+    <button @click="scrollToTop" title="回到顶部" class="sidebar-btn">⬆️</button>
+  </div>
   <div v-if="loading" class="loading">正在加载朋友圈...</div>
   <div class="moment-container">
-<!--    <button @click="fetchMoments">🔄 刷新</button>-->
-    <!-- 左侧目录 -->
     <div class="category-menu">
       <ul>
         <li v-for="(category, index) in categories" :key="index" :class="{ active: selectedCategory === category }" @click="selectCategory(category)">
@@ -38,7 +40,7 @@
             {{ moment.likedByUser ? '💔 取消点赞' : '👍 点赞' }} {{ moment.likeCount }}
           </button>
 
-          <button @click="toggleComments(index)">💬 评论 {{ moment.comments.length }}</button>
+          <button @click="toggleComments(moment.momentId)">💬 评论 {{ moment.comments.length }}</button>
         </div>
 
         <!-- 子评论展开 -->
@@ -53,7 +55,7 @@
 </template>
 
 <script>
-import { addMoment, cancelLike, getMomentList, likeMoment } from '@/api/moments/moments.js'
+import { cancelLike, getMomentList, likeMoment } from '@/api/moments/moments.js'
 
 export default {
   name: 'MomentView',
@@ -119,27 +121,19 @@ export default {
   },
 
   methods: {
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    },
     selectCategory(category) {
       this.selectedCategory = category;
     },
-    toggleComments(index) {
-      this.moments = this.moments.map((m, i) =>
-        i === index ? { ...m, showComments: !m.showComments } : m
-      );
-    },
-
-    // 发布新朋友圈
-    async publishMoment() {
-      const newMoment = {
-        content: this.content,
-        userId: 'currentUserId',
-        username: '当前用户',
-        avatarUrl: 'https://example.com/avatar.jpg',
-        imageUrls: this.selectedImages
-      };
-      await addMoment(newMoment);
-      this.$message.success('发布成功');
-      await this.fetchMoments(); // 刷新列表
+    toggleComments(momentId) {
+      this.moments = this.moments.map(m => {
+        if (m.momentId === momentId) {
+          return { ...m, showComments: !m.showComments };
+        }
+        return m;
+      });
     },
 
     async fetchMoments() {
@@ -196,6 +190,29 @@ export default {
 </script>
 
 <style scoped>
+.sidebar-buttons {
+  position: fixed;
+  left: 50px;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 999;
+}
+
+.sidebar-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
 .loading {
   text-align: center;
   padding: 20px;
@@ -209,7 +226,7 @@ export default {
 }
 
 .category-menu {
-  width: 200px;
+  width: 100px;
   border-right: 1px solid #ddd;
   padding: 20px;
 }
