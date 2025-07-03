@@ -63,11 +63,13 @@
 
     <el-table v-loading="loading" :data="commonuserList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键ID" align="center" prop="userId" />
-      <el-table-column label="用户昵称" align="center" prop="nickname" />
+      <el-table-column label="序号" align="center" width="60">
+        <template slot-scope="scope">
+          {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
       <el-table-column label="用户邮箱" align="center" prop="email" />
       <el-table-column label="用户名" align="center" prop="username" />
-      <el-table-column label="用户手机号" align="center" prop="phone" />
       <el-table-column label="用户状态" align="center" prop="freeze"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -188,7 +190,11 @@ export default {
     getList() {
       this.loading = true;
       listCommonuser(this.queryParams).then(response => {
-        this.commonuserList = response.rows;
+        // 按创建时间从晚到早排序
+        const sortedList = response.rows.sort((a, b) => {
+          return new Date(b.createTime) - new Date(a.createTime);
+        });
+        this.commonuserList = sortedList;
         this.total = response.total;
         this.loading = false;
       });

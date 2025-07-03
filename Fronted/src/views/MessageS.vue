@@ -3,7 +3,7 @@
     <!-- 弹幕区域 -->
     <div class="danmu-area" ref="danmuArea">
       <div
-        v-for="(message, index) in displayMessages"
+        v-for="(message) in displayMessages"
         :key="message.id"
         class="danmu-item"
         :style="{
@@ -112,7 +112,7 @@ export default {
         ...msg,
         top: this.getRandomPosition(5, 80),
         duration: this.getRandomDuration(8, 15),
-        delay: this.getRandomDelay(0, 5),
+        delay: this.getRandomDelay(0, 2),
         color: this.getRandomColor(),
         isPlaying: true
       }));
@@ -180,7 +180,7 @@ export default {
       }, 3000);
     },
 
-    handleAnimationEnd(message, element) {//处理动画结束事件
+    handleAnimationEnd(message) {//处理动画结束事件
       message.isPlaying = false;
 
       if (this.animationEndTimeout) {
@@ -298,7 +298,7 @@ export default {
 
 .danmu-item {
   position: absolute;
-  left: -100%;
+  left: -50%;
   padding: 8px 16px;
   border: none;
   border-radius: 20px;

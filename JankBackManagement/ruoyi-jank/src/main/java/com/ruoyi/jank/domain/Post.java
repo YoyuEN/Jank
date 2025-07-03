@@ -1,5 +1,6 @@
 package com.ruoyi.jank.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * author: wuyinai
@@ -24,7 +26,8 @@ public class Post implements Serializable {
     private String image;
     private Integer visibility;
     private String contentHtml;
-    private String categoryIds;
+    @TableField(exist = false)
+    private List<String> categoryNames;
     //用户id
     private String userId;
     private String createTime;

@@ -13,7 +13,7 @@
         SET
             name = #{et.name},
             description = #{et.description},
-            updated_at = NOW()
+            update_time = NOW()
         WHERE
             category_id = #{et.categoryId}
     </update>

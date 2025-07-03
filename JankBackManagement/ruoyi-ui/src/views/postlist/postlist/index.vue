@@ -41,15 +41,19 @@
 
     <el-table v-loading="loading" :data="postList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column type="expand" align="center" prop="contentHtml" label="帖子内容" >
+      <el-table-column label="序号" align="center" width="60">
+        <template slot-scope="scope">
+          {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
+      <el-table-column type="expand" align="center" prop="contentHtml" label="">
         <template v-slot="scope">
           <el-card>
-            <div v-html="scope.row.contentHtml"></div>
+            <vue-markdown-it :source="scope.row.contentHtml" />
           </el-card>
         </template>
       </el-table-column>
-      <el-table-column label="帖子唯一标识" align="center" prop="postId" />
-      <el-table-column label="帖子标题" align="center" prop="title" />
+      <el-table-column label="帖子标题" align="center" prop="title" width="200"/>
       <el-table-column label="帖子封面图片URL" align="center" prop="image" width="100">
         <template slot-scope="scope">
           <image-preview :src="scope.row.image" :width="50" :height="50"/>
@@ -58,12 +62,12 @@
       <el-table-column label="帖子所属分类" align="center" prop="categoryIds" />
       <el-table-column label="帖子可见性状态" align="center" prop="visibility" />
       <el-table-column label="用户" align="center" prop="userId" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="100">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
+      <el-table-column label="更新时间" align="center" prop="updateTime" width="100">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
@@ -122,9 +126,13 @@
 
 <script>
 import { listPost, getPost, delPost, addPost, updatePost } from "@/api/postlist/postlist";
+import VueMarkdownIt from 'vue-markdown-it';
 
 export default {
   name: "Post",
+  components: {
+    VueMarkdownIt
+  },
   data() {
     return {
       // 遮罩层
@@ -180,7 +188,12 @@ export default {
     getList() {
       this.loading = true;
       listPost(this.queryParams).then(response => {
-        this.postList = response.rows;
+        // 按照创建时间降序排列（从晚到早）
+        const sortedList = response.rows.sort((a, b) => {
+          return new Date(b.createTime) - new Date(a.createTime);
+        });
+
+        this.postList = sortedList;
         this.total = response.total;
         this.loading = false;
       });
@@ -277,3 +290,14 @@ export default {
   }
 };
 </script>
+<style>
+.v-markdown-body h1 {
+  font-size: 1.5em;
+}
+
+.v-markdown-body pre {
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 4px;
+}
+</style>

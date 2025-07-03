@@ -50,11 +50,11 @@ public class Comment implements Serializable {
     @TableField("post_id")
     private String postId;
     @Excel(name = "创建时间")
-    @TableField("created_at")
-    private Date createdAt;
+    @TableField("create_time")
+    private Date createTime;
     @Excel(name = "更新时间")
-    @TableField("updated_at")
-    private Date updatedAt;
+    @TableField("update_time")
+    private Date updateTime;
     private Integer deleted;
 
 }
