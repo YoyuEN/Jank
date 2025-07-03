@@ -56,5 +56,6 @@ public class CommonUser implements Serializable {
     private String updateTime;
     @TableLogic
     private Integer deleted;
+    private String address; // 用户地址，存储省/市/区格式的地址字符串
 
 }

@@ -48,7 +48,7 @@
 
     <div v-else class="comments-list">
       <!-- 评论列表 -->
-      <div v-for="comment in comments" :key="comment.id" class="comment-item" :data-comment-id="comment.id">
+      <div v-for="comment in displayedComments" :key="comment.id" class="comment-item" :data-comment-id="comment.id">
         <div class="comment-content">
           <div class="comment-header">
             <img
@@ -111,6 +111,13 @@
 <!--          </div>-->
         </div>
       </div>
+
+      <!-- 加载更多按钮 -->
+      <div v-if="displayCount < comments.length" class="load-more-container">
+        <button @click="loadMore" class="load-more-btn">
+          加载更多评论
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -120,17 +127,26 @@ import {
   getNestedCommentList,
   submitComment as submitCommentApi
 } from '@/api/comment/comment.js'
-import { ref, onMounted} from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 // import { getPostDetail } from '@/api/posts/posts.js'
 // import { marked } from 'marked'
 
 const comments = ref([])
 const loadingComments = ref(false)
+const displayCount = ref(3)  // 初始显示3条评论
+
+// 计算要显示的评论
+const displayedComments = computed(() => {
+  return comments.value.slice(0, displayCount.value)
+})
+
+// 加载更多评论
+const loadMore = () => {
+  displayCount.value += 5  // 每次增加5条评论
+}
 
 // 用于跟踪当前正在回复的评论ID
-const replyTo = ref(null)
-const replyContent = ref('')
 const route = useRoute()
 const postId = route.params.postId
 // const post = ref(null)
@@ -218,10 +234,11 @@ const fetchComments = async () => {
           comment.username = '匿名用户'
         }
 
-        // 格式化时间
+        // 保存原始时间用于排序
         if (comment.createTime) {
-          const date = new Date(comment.createTime)
-          comment.createTime = date.toLocaleString()
+          comment.originalTime = new Date(comment.createTime).getTime()
+          // 格式化时间用于显示
+          comment.createTime = new Date(comment.createTime).toLocaleString()
         }
 
         // 递归处理子评论
@@ -244,7 +261,9 @@ const fetchComments = async () => {
         return comment
       }
 
-      comments.value = response.data.map((comment) => addUIProperties(comment))
+      comments.value = response.data
+        .map((comment) => addUIProperties(comment))
+            .sort((a, b) => b.originalTime - a.originalTime)
     }
   } catch (error) {
     console.error('获取评论列表失败:', error)

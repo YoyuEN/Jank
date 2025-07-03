@@ -64,11 +64,17 @@
     <el-table v-loading="loading" :data="commonuserList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="主键ID" align="center" prop="userId" />
-      <el-table-column label="用户昵称" align="center" prop="nickname" />
       <el-table-column label="用户邮箱" align="center" prop="email" />
       <el-table-column label="用户名" align="center" prop="username" />
       <el-table-column label="用户手机号" align="center" prop="phone" />
-      <el-table-column label="用户状态" align="center" prop="freeze"/>
+      <el-table-column label="用户地址" align="center" prop="address" />
+      <el-table-column label="用户状态" align="center" prop="freeze">
+        <el-switch
+          v-model="value"
+          active-color="#13ce66"
+          inactive-color="#ff4949">
+        </el-switch>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -100,8 +106,8 @@
     <!-- 添加或修改用户管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="请输入用户昵称" />
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="form.username" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="用户邮箱" prop="email">
           <el-input v-model="form.email" placeholder="请输入用户邮箱" />
@@ -167,7 +173,7 @@ export default {
       // 表单校验
       rules: {
         email: [
-          { required: true, message: '请输入用户邮箱', trigger: 'blur' },
+          {message: '请输入用户邮箱', trigger: 'blur' },
                 { pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: '请输入正确的邮箱格式', trigger: 'blur' }
         ],
       },
@@ -372,11 +378,60 @@ export default {
     },
     /** 处理地址选择变化 */
     handleAddressChange(value) {
+      console.log('handleAddressChange', value);
       if (value && value.length > 0) {
-        const selectedNames = this.$refs.addressCascader.getCheckedNodes()[0].pathLabels;
-        this.form.address = selectedNames.join('/');
-      } else {
-        this.form.address = '';
+        // 直接通过ID查找对应的地址名称
+        this.getAddressPathById(value).then(addressPath => {
+          if (addressPath && addressPath.length >= 2) {
+            // 拼接省市区三级地址
+            this.form.address = addressPath.join('/');
+            console.log('设置地址:', this.form.address);
+          }
+          // else {
+          //   // 如果选择的不是三级地址，则清空
+          //   this.form.address = '';
+          //   this.$message.warning('请选择完整的省市区三级地址');
+          // }
+        });
+      }
+      // else {
+      //   this.form.address = '';
+      // }
+    },
+
+    /** 根据ID获取地址路径 */
+    async getAddressPathById(addressIds) {
+      try {
+        const addressPath = [];
+        let currentOptions = this.options;
+
+        for (let i = 0; i < addressIds.length; i++) {
+          const id = addressIds[i];
+          // 在当前级别的选项中查找匹配的地址
+          const found = currentOptions.find(opt => opt.addressId === id);
+
+          if (found) {
+            addressPath.push(found.address);
+
+            // 如果不是最后一级，加载下一级选项
+            if (i < addressIds.length - 1) {
+              await new Promise((resolve) => {
+                this.lazyLoadAddress({ level: i, data: found }, (children) => {
+                  currentOptions = children;
+                  resolve();
+                });
+              });
+            }
+          } else {
+            console.error('未找到对应的地址ID:', id);
+            break;
+          }
+        }
+
+        return addressPath;
+      } catch (error) {
+        console.error('获取地址路径失败:', error);
+        return [];
       }
     }
   }

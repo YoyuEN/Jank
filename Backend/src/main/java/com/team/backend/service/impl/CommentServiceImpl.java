@@ -145,7 +145,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 查询文章下的所有评论
         List<Comment> comments = lambdaQuery()
                 .eq(Comment::getPostId, postId)
-                .orderByAsc(Comment::getCreateAt)
+                .orderByAsc(Comment::getCreateTime)
                 .list();
 
         // 构建评论VO并关联用户信息
@@ -191,7 +191,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         comment.setPostId(postId);
         comment.setContent(content);
         comment.setParentId(parentId);
-        comment.setCreateAt(LocalDateTime.now());
+        comment.setCreateTime(LocalDateTime.now());
         save(comment);
 
         // 构建返回的VO对象

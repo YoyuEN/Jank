@@ -38,7 +38,7 @@ public class CommentVO {
     private String replyToUsername;
 
     // 创建时间
-    private LocalDateTime createAt;
+    private LocalDateTime createTime;
 
     // 子评论列表
     private List<CommentVO> replies;

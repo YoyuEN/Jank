@@ -36,5 +36,5 @@ public class Comment {
     private String parentId;
 
     // 创建时间
-    private LocalDateTime createAt;
+    private LocalDateTime createTime;
 }
