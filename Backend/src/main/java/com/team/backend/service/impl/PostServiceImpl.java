@@ -34,7 +34,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     public void addPost(PostVO postVO) throws Exception {
         String imageUrl = null;
         if (postVO.getImage() != null && !postVO.getImage().isEmpty()) {
-            imageUrl = minioService.uploadFile(postVO.getImage(), "");
+            imageUrl = minioService.uploadFile(postVO.getImage());
         }
 
         if (postVO.getTitle() == null && postVO.getContentHtml() == null && postVO.getCategoryNames() == null) {

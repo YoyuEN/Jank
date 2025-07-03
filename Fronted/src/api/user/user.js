@@ -15,4 +15,7 @@ export function getUserByUserId(userId) {
     }
   })
 }
+export function updateUser(data) {
+  return service.post('/user/updateUser', data)
+}
 
