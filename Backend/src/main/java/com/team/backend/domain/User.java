@@ -39,6 +39,8 @@ public class User {
     private String createTime;
     //修改时间
     private String updateTime;
+    //用户地址
+    private String address;
     // 删除状态
     private int deleted;
 

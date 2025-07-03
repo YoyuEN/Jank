@@ -34,7 +34,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         String imageUrl = "https://pic.imgdb.cn/item/64cf07a61ddac507cc7501cc.jpg"; // 默认图
 
         if (postVO.getImage() != null && !postVO.getImage().isEmpty()) {
-            imageUrl = minioService.uploadFile(postVO.getImage(), "");
+            imageUrl = minioService.uploadFile(postVO.getImage());
         }
 
         if (postVO.getTitle() == null && postVO.getContentHtml() == null && postVO.getCategoryNames() == null) {

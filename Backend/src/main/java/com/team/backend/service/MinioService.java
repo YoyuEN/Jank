@@ -12,6 +12,6 @@ import java.io.InputStream;
  * @Description:
  */
 public interface MinioService {
-    String  uploadFile(MultipartFile file, String folder) throws Exception;
+    String  uploadFile(MultipartFile file) throws Exception;
     String getPresignedUrl(String objectName);
 }

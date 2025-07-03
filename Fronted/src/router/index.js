@@ -55,6 +55,11 @@ const routes = [
     component: () => import('@/views/UserInformation.vue'),
   },
   {
+    path:'/settings',
+    name: 'Setting',
+    component: () => import('@/views/UpdateUser.vue'),
+  },
+  {
     path: '/publish',
     name: 'Publish',
     component: () => import('@/views/PublishPost.vue'),

@@ -1,9 +1,11 @@
 package com.team.backend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.team.backend.domain.Address;
 import com.team.backend.domain.User;
 import com.team.backend.domain.vo.LoginUserVO;
 import com.team.backend.domain.vo.RegisterUserVO;
+import com.team.backend.domain.vo.UpdateUserVO;
 
 /**
  * @Author: YoyuEN
@@ -17,4 +19,6 @@ public interface IUserService extends IService<User> {
     long register(RegisterUserVO userVO);
 
     String getAvatarUrlByUserId(String userId);
+
+    User updateUser(UpdateUserVO user) throws Exception;
 }
