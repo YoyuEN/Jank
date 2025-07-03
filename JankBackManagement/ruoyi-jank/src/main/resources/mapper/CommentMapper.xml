@@ -3,22 +3,22 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 命名空间必须与Mapper接口的全限定名一致 -->
-<mapper namespace="com.ruoyi.jank.mapper.CommentMapper">
-    <select id="selectById" resultType="com.ruoyi.jank.domain.Comment">
-        SELECT * FROM comment WHERE comment_id = #{comment_id}
-    </select>
+    <mapper namespace="com.ruoyi.jank.mapper.CommentMapper">
+        <select id="selectById" resultType="com.ruoyi.jank.domain.Comment">
+            SELECT * FROM comment WHERE comment_id = #{comment_id}
+        </select>
 
-    <update id="updateById" parameterType="com.ruoyi.jank.domain.Comment">
-        UPDATE comment
-        SET
-            content = #{et.content},
-            user_id = #{et.userId},
-            post_id = #{et.postId},
-            updated_at = NOW()
-        WHERE
-            comment_id = #{et.commentId}
-    </update>
-    <delete id="deleteById" parameterType="com.ruoyi.jank.domain.Comment">
-        DELETE FROM comment WHERE comment_id = #{comment_id}
-    </delete>
-</mapper>
+        <update id="updateById" parameterType="com.ruoyi.jank.domain.Comment">
+            UPDATE comment
+            SET
+                content = #{et.content},
+                user_id = #{et.userId},
+                post_id = #{et.postId},
+                updated_at = NOW()
+            WHERE
+                comment_id = #{et.commentId}
+        </update>
+        <delete id="deleteById" parameterType="com.ruoyi.jank.domain.Comment">
+            DELETE FROM comment WHERE comment_id = #{comment_id}
+        </delete>
+    </mapper>

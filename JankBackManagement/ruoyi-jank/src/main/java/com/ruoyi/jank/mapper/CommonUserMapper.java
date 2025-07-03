@@ -3,6 +3,8 @@ package com.ruoyi.jank.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.jank.domain.CommonUser;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * author: wuyinai
@@ -10,5 +12,8 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface CommonUserMapper extends BaseMapper<CommonUser> {
-
+    /**
+     * 根据用户名判断是否存在
+     */
+    int countByUsername(@Param("username") String username);
 }

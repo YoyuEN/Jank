@@ -3,6 +3,7 @@ package com.team.backend.controller;
 import com.team.backend.domain.Comment;
 import com.team.backend.domain.User;
 import com.team.backend.domain.vo.CommentVO;
+import com.team.backend.handler.ResponseResult;
 import com.team.backend.service.ICommentService;
 import com.team.backend.service.IUserService;
 import com.team.backend.utils.ResponseCode;
@@ -29,33 +30,35 @@ public class CommentController {
     @Autowired
     private IUserService userService;
 
-    /**
-     * 添加评论
-     * @param comment 评论信息
-     * @return 添加结果
-     */
-//    @PostMapping("/add")
-//    public Result<CommentWithUserVO> addComment(@RequestBody Comment comment, HttpServletRequest request) {
-//        // 从请求属性中获取当前登录用户
-//        User currentUser = (User) request.getAttribute("currentUser");
-//        if (currentUser == null) {
-//            return Result.fail(ResponseCode.ERROR, "用户未登录");
-//        }
-//
-//        // 设置用户ID
-//        comment.setUserId(currentUser.getUserId());
-//        // 设置删除标记为0（未删除）
-//        comment.setDeleted(0);
-//
-//        boolean success = commentService.addComment(comment);
-//        if (!success) {
-//            return Result.fail(ResponseCode.ERROR, "添加评论失败");
-//        }
-//
-//        // 将Comment对象转换为CommentWithUserVO对象
-//        CommentWithUserVO commentWithUser = CommentWithUserVO.fromComment(comment, currentUser);
-//        return Result.success(ResponseCode.SUCCESS, commentWithUser);
-//    }
+
+    @PostMapping
+    public Map<String, Object> saveComment(@RequestBody Comment comment) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            commentService.saveComment(comment);
+            result.put("success", true);
+            result.put("message", "评论提交成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "评论提交失败");
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @GetMapping("/{articleId}")
+    public List<Comment> getCommentsByArticleId(@PathVariable String articleId) {
+        return commentService.getCommentsListByPostId(articleId);
+    }
+
+    @GetMapping("/statistics/{articleId}")
+    public Map<String, Integer> getCommentStatistics(@PathVariable String articleId) {
+        return commentService.getCommentStatistics(articleId);
+    }
+    @GetMapping("/articles/{articleId}/rating-stats")
+    public ResponseResult getArticleRatingStats(@PathVariable String articleId) {
+        return commentService.getArticleRatingStats(articleId);
+    }
 
     /**
      * 获取评论列表（平铺结构）
@@ -68,46 +71,7 @@ public class CommentController {
         return Result.success(ResponseCode.SUCCESS, commentsList);
     }
 
-//    @Deprecated
-//    @GetMapping("/nested-list/{postId}")
-//    public Result<List<Comment>> getNestedCommentsList(@PathVariable String postId) {
-//        List<Comment> commentsList = commentService.getNestedCommentsListByPostId(postId);
-//        return Result.success(ResponseCode.SUCCESS, commentsList);
-//    }
 
-//    @GetMapping("/nested-list-with-user/{postId}")
-//    public Result<List<CommentWithUserVO>> getNestedCommentsWithUser(@PathVariable String postId) {
-//        List<CommentWithUserVO> commentsList = commentService.getNestedCommentsWithUserByPostId(postId);
-//        return Result.success(ResponseCode.SUCCESS, commentsList);
-//    }
-
-    //    @PostMapping("/reply")
-//    public Result<CommentWithUserVO> replyComment(@RequestBody Comment comment, HttpServletRequest request) {
-//        // 从请求属性中获取当前登录用户
-//        User currentUser = (User) request.getAttribute("currentUser");
-//        if (currentUser == null) {
-//            return Result.fail(ResponseCode.ERROR, "用户未登录");
-//        }
-//
-//        // 验证回复目标评论是否存在
-//        if (comment.getReplyToCommentId() == null || comment.getReplyToCommentId().isEmpty()) {
-//            return Result.fail(ResponseCode.ERROR, "回复目标评论不能为空");
-//        }
-//
-//        // 设置用户ID
-//        comment.setUserId(currentUser.getUserId());
-//        // 设置删除标记为0（未删除）
-//        comment.setDeleted(0);
-//
-//        boolean success = commentService.addComment(comment);
-//        if (!success) {
-//            return Result.fail(ResponseCode.ERROR, "回复评论失败");
-//        }
-//
-//        // 将Comment对象转换为CommentWithUserVO对象
-//        CommentWithUserVO commentWithUser = CommentWithUserVO.fromComment(comment, currentUser);
-//        return Result.success(ResponseCode.SUCCESS, commentWithUser);
-//    }
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> params) {
         Map<String, Object> result = new HashMap<>();

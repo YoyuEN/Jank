@@ -6,6 +6,7 @@ import com.ruoyi.jank.domain.CommonUser;
 import com.ruoyi.jank.mapper.CommonUserMapper;
 import com.ruoyi.jank.service.ICommonUserService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,12 @@ import java.util.List;
  */
 @Service
 public class ICommonUserServiceImpl extends ServiceImpl<CommonUserMapper, CommonUser> implements ICommonUserService {
+    @Autowired
+    private CommonUserMapper commonUserMapper;
+    @Override
+    public boolean isUsernameExist(String username) {
+        return commonUserMapper.countByUsername(username) > 0;
+    }
     @Override
     public List<CommonUser> selectCommonUserList(CommonUser commonUser) {
         LambdaQueryWrapper<CommonUser> wrapper = new LambdaQueryWrapper<>();
