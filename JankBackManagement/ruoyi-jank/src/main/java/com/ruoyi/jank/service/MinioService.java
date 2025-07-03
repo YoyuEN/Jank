@@ -1,9 +1,8 @@
-package com.team.backend.service;
+package com.ruoyi.jank.service;
 
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -13,7 +12,7 @@ import java.util.List;
  * @Description:
  */
 public interface MinioService {
-    String  uploadFile(MultipartFile file) throws Exception;
+    String  uploadFile(MultipartFile file, String folder) throws Exception;
 
     // 上传多个文件
     List<String> uploadFile(List<MultipartFile> file, String folder);

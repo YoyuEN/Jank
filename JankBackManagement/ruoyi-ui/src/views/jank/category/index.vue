@@ -63,9 +63,9 @@
 
     <el-table v-loading="loading" :data="categoryList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="类目唯一标识" align="center" prop="categoryId" />
-      <el-table-column label="类目名称" align="center" prop="name" />
-      <el-table-column label="类目描述" align="center" prop="description" :formatter="removePTags"/>
+      <el-table-column label="序号" align="center" prop="categoryId" width="100px"/>
+      <el-table-column label="类目名称" align="center" prop="name" width="100px"/>
+      <el-table-column label="类目描述" align="center" prop="description" :formatter="removePTags" width="700px"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button

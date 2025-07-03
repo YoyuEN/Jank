@@ -1,8 +1,8 @@
 package com.ruoyi.jank.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ruoyi.jank.domain.Category;
 import com.ruoyi.jank.domain.Post;
+import com.ruoyi.jank.domain.vo.PostVO;
 
 import java.util.List;
 
@@ -11,5 +11,5 @@ import java.util.List;
  * date: 2025/6/24
  */
 public interface IPostService extends IService<Post> {
-    List<Post> selectPostList(Post post);
+    List<PostVO> selectPostList(Post post);
 }

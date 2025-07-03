@@ -35,6 +35,8 @@ public class User {
     private String phone;
     // 冻结状态
     private Integer freeze;
+    //地址
+    private String address;
     // 访问令牌
     private String accessToken;
     // 刷新令牌

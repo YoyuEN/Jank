@@ -22,4 +22,9 @@ public class ICommonUserServiceImpl extends ServiceImpl<CommonUserMapper, Common
         wrapper.like(StringUtils.isNotEmpty(commonUser.getNickname()), CommonUser::getNickname, commonUser.getNickname());
         return super.list(wrapper);
     }
+
+    @Override
+    public String getUsernameById(String userId) {
+        return super.getBaseMapper().getUsernameById(userId);
+    }
 }

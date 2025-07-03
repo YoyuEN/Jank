@@ -1,4 +1,4 @@
-package com.ruoyi.jank.domain;
+package com.ruoyi.jank.domain.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 //帖子
-public class Post implements Serializable {
+public class PostVO implements Serializable {
     private static final long serialVersionUID = 1L;
     @TableId
     private String postId;
@@ -28,8 +28,7 @@ public class Post implements Serializable {
     private String contentHtml;
     @TableField(exist = false)
     private List<String> categoryNames;
-    //用户id
-    private String userId;
+    private String username;
     private String createTime;
     private String updateTime;
     @TableLogic

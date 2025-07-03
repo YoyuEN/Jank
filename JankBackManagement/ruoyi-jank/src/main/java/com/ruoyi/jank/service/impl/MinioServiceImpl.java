@@ -1,15 +1,13 @@
-package com.team.backend.service.impl;
+package com.ruoyi.jank.service.impl;
 
-import com.team.backend.service.MinioService;
+import com.ruoyi.jank.service.MinioService;
 import io.minio.*;
-import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +37,7 @@ public class MinioServiceImpl implements MinioService {
      * @throws Exception 如果上传失败
      */
     @Override
-    public String uploadFile(MultipartFile file) throws Exception {
+    public String uploadFile(MultipartFile file, String folder) throws Exception {
         String objectName = file.getOriginalFilename();
 
         try (InputStream inputStream = file.getInputStream()) {
@@ -71,7 +69,7 @@ public class MinioServiceImpl implements MinioService {
         List<String> objectNames = new ArrayList<>();
         for (MultipartFile multipartFile : files) {
             try {
-                String objectName = uploadFile(multipartFile);
+                String objectName = uploadFile(multipartFile, folder);
                 objectNames.add(objectName);
                 minioClient.putObject(
                         PutObjectArgs.builder()

@@ -9,7 +9,7 @@ export function getNestedCommentList(postId) {
 }
 
 // 获取文章评论列表
-export function getCommentsByArticleId(postId) {
+export function getCommentByUserId(postId) {
   return request({
     url: `/comment/comments/${postId}`,  // 移除重复的api前缀
     method: 'get'

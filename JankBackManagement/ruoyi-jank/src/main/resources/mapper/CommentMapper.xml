@@ -14,7 +14,7 @@
             content = #{et.content},
             user_id = #{et.userId},
             post_id = #{et.postId},
-            updated_at = NOW()
+            update_time = NOW()
         WHERE
             comment_id = #{et.commentId}
     </update>
