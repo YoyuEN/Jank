@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.team.backend.handler.ResponseResult;
 
 /**
  * @Author: YoyuEN
@@ -33,10 +34,47 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private IUserService userService;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private CommentMapper commentMapper;
+    @Override
+    public void saveComment(Comment comment) {
+        baseMapper.insert(comment);
+    }
+
+    @Override
+    public ResponseResult getArticleRatingStats(String articleId) {
+        List<Comment> comments = commentMapper.getCommentsByArticleId(articleId);
+
+        // 统计好评、一般、差评的数量
+        long goodCount = comments.stream()
+                .filter(c -> c.getGoodorbad() >= 4)
+                .count();
+
+        long averageCount = comments.stream()
+                .filter(c -> c.getGoodorbad() >= 2 && c.getGoodorbad() <= 3)
+                .count();
+
+        long badCount = comments.stream()
+                .filter(c -> c.getGoodorbad() <= 1)
+                .count();
+
+        long total = comments.size();
+
+        // 返回统计结果
+        Map<String, Object> result = new HashMap<>();
+        result.put("good", goodCount);
+        result.put("average", averageCount);
+        result.put("bad", badCount);
+        result.put("total", total);
+
+        return ResponseResult.success(result);
+    }
+
     @Override
     public boolean addComment(Comment comment) {
-        return save(comment);
+        return false;
     }
+
 
     @Override
     public List<Comment> getCommentsListByPostId(String postId) {
@@ -181,6 +219,28 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         });
 
         return rootComments;
+    }
+
+
+    @Override
+    public Map<String, Integer> getCommentStatistics(String articleId) {
+        List<Comment> comments = getCommentsListByPostId(articleId);
+        Map<String, Integer> statistics = new HashMap<>();
+        statistics.put("good", 0);
+        statistics.put("average", 0);
+        statistics.put("bad", 0);
+
+        for (Comment comment : comments) {
+            Integer score = comment.getGoodorbad();
+            if (score >= 4) {
+                statistics.put("good", statistics.get("good") + 1);
+            } else if (score >= 2) {
+                statistics.put("average", statistics.get("average") + 1);
+            } else {
+                statistics.put("bad", statistics.get("bad") + 1);
+            }
+        }
+        return statistics;
     }
 
 

@@ -2,16 +2,11 @@ package com.ruoyi.jank.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.utils.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -34,6 +29,20 @@ public class CommonUserController extends BaseController
     @Autowired
     private ICommonUserService commonUserService;
 
+
+    @GetMapping("/check-username")
+    public AjaxResult checkUsernameExist(@RequestParam String username) {
+        if (StringUtils.isBlank(username)) {
+            return AjaxResult.error("用户名不能为空");
+        }
+
+        boolean exist = commonUserService.isUsernameExist(username);
+        if (exist) {
+            return AjaxResult.warn("该用户名已存在，请重新输入");
+        } else {
+            return AjaxResult.success();
+        }
+    }
     /**
      * 查询用户管理列表
      */

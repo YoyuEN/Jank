@@ -8,6 +8,14 @@ export function listCommonuser(query) {
     params: query
   })
 }
+// @/api/commonuser/commonuser.js
+export function checkUsernameExist(username) {
+  return request({
+    url: '/commonuser/commonuser/check-username',
+    method: 'get',
+    params: { username }
+  });
+}
 
 // 查询用户管理详细
 export function getCommonuser(userId) {

@@ -102,8 +102,8 @@
     <!-- 添加或修改用户管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="请输入用户昵称" />
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="form.username" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="用户邮箱" prop="email">
           <el-input v-model="form.email" placeholder="请输入用户邮箱" />
@@ -134,11 +134,13 @@
 <script>
 import { listCommonuser, getCommonuser, delCommonuser, addCommonuser, updateCommonuser } from "@/api/commonuser/commonuser";
 import { getProvinces, getChildrenByPId } from "@/api/address/address";
+import { checkUsernameExist } from "@/api/commonuser/commonuser"; // 根据实际路径调整
 
 export default {
   name: "Commonuser",
   data() {
     return {
+      value: true,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -168,6 +170,14 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        email: [
+          {message: '请输入用户邮箱', trigger: 'blur' },
+                { pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: '请输入正确的邮箱格式', trigger: 'blur' }
+        ],
+        username: [
+          { required: true, message: "请输入用户名,用户名不能为空", trigger: "blur" },
+          { validator: this.validateUsernameUnique, trigger: 'blur' }
+        ],
       },
       options: [], // 省份选项
       addressProps: {
@@ -186,6 +196,25 @@ export default {
     this.loadProvinces();
   },
   methods: {
+    async validateUsernameUnique(rule, value, callback) {
+      if (!value) {
+        callback(new Error('用户名不能为空'));
+        return;
+      }
+
+      try {
+        const response = await checkUsernameExist(value); // 假设你有这个API
+        if (response.exist) {
+          callback(new Error('该用户名已存在，请重新输入'));
+        } else {
+          callback();
+        }
+      } catch (error) {
+        console.error('检查用户名失败:', error);
+        //callback(new Error('无法验证用户名是否存在'));
+      }
+    }
+,
     /** 查询用户管理列表 */
     getList() {
       this.loading = true;
@@ -333,7 +362,6 @@ export default {
         ...this.queryParams
       }, `commonuser_${new Date().getTime()}.xlsx`)
     },
-
     /** 加载省份数据 */
     async loadProvinces() {
       try {
@@ -348,7 +376,6 @@ export default {
         console.error("加载省份数据失败:", error);
       }
     },
-
     /** 懒加载子级地址 */
     async lazyLoadAddress(node, resolve) {
       const { level, data} = node;
@@ -367,7 +394,6 @@ export default {
           address: item.address,
           leaf: level >= 2
         }));
-        console.log('children:', children.address)
         resolve(children);
       } catch (error) {
         this.$message.error("加载地址数据失败");
@@ -375,14 +401,62 @@ export default {
         resolve([]);
       }
     },
-
     /** 处理地址选择变化 */
     handleAddressChange(value) {
+      console.log('handleAddressChange', value);
       if (value && value.length > 0) {
-        const selectedNames = this.$refs.addressCascader.getCheckedNodes()[0].pathLabels;
-        this.form.address = selectedNames.join('/');
-      } else {
-        this.form.address = '';
+        // 直接通过ID查找对应的地址名称
+        this.getAddressPathById(value).then(addressPath => {
+          if (addressPath && addressPath.length >= 2) {
+            // 拼接省市区三级地址
+            this.form.address = addressPath.join('/');
+            console.log('设置地址:', this.form.address);
+          }
+          // else {
+          //   // 如果选择的不是三级地址，则清空
+          //   this.form.address = '';
+          //   this.$message.warning('请选择完整的省市区三级地址');
+          // }
+        });
+      }
+      // else {
+      //   this.form.address = '';
+      // }
+    },
+
+    /** 根据ID获取地址路径 */
+    async getAddressPathById(addressIds) {
+      try {
+        const addressPath = [];
+        let currentOptions = this.options;
+
+        for (let i = 0; i < addressIds.length; i++) {
+          const id = addressIds[i];
+          // 在当前级别的选项中查找匹配的地址
+          const found = currentOptions.find(opt => opt.addressId === id);
+
+          if (found) {
+            addressPath.push(found.address);
+
+            // 如果不是最后一级，加载下一级选项
+            if (i < addressIds.length - 1) {
+              await new Promise((resolve) => {
+                this.lazyLoadAddress({ level: i, data: found }, (children) => {
+                  currentOptions = children;
+                  resolve();
+                });
+              });
+            }
+          } else {
+            console.error('未找到对应的地址ID:', id);
+            break;
+          }
+        }
+
+        return addressPath;
+      } catch (error) {
+        console.error('获取地址路径失败:', error);
+        return [];
       }
     }
   }
