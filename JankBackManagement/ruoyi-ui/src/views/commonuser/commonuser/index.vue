@@ -134,11 +134,13 @@
 <script>
 import { listCommonuser, getCommonuser, delCommonuser, addCommonuser, updateCommonuser } from "@/api/commonuser/commonuser";
 import { getProvinces, getChildrenByPId } from "@/api/address/address";
+import { checkUsernameExist } from "@/api/commonuser/commonuser"; // 根据实际路径调整
 
 export default {
   name: "Commonuser",
   data() {
     return {
+      value: true,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -172,6 +174,10 @@ export default {
           {message: '请输入用户邮箱', trigger: 'blur' },
                 { pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: '请输入正确的邮箱格式', trigger: 'blur' }
         ],
+        username: [
+          { required: true, message: "请输入用户名,用户名不能为空", trigger: "blur" },
+          { validator: this.validateUsernameUnique, trigger: 'blur' }
+        ],
       },
       options: [], // 省份选项
       addressProps: {
@@ -190,6 +196,25 @@ export default {
     this.loadProvinces();
   },
   methods: {
+    async validateUsernameUnique(rule, value, callback) {
+      if (!value) {
+        callback(new Error('用户名不能为空'));
+        return;
+      }
+
+      try {
+        const response = await checkUsernameExist(value); // 假设你有这个API
+        if (response.exist) {
+          callback(new Error('该用户名已存在，请重新输入'));
+        } else {
+          callback();
+        }
+      } catch (error) {
+        console.error('检查用户名失败:', error);
+        //callback(new Error('无法验证用户名是否存在'));
+      }
+    }
+,
     /** 查询用户管理列表 */
     getList() {
       this.loading = true;
@@ -337,7 +362,6 @@ export default {
         ...this.queryParams
       }, `commonuser_${new Date().getTime()}.xlsx`)
     },
-
     /** 加载省份数据 */
     async loadProvinces() {
       try {
@@ -352,7 +376,6 @@ export default {
         console.error("加载省份数据失败:", error);
       }
     },
-
     /** 懒加载子级地址 */
     async lazyLoadAddress(node, resolve) {
       const { level, data} = node;
@@ -371,7 +394,6 @@ export default {
           address: item.address,
           leaf: level >= 2
         }));
-        console.log('children:', children.address)
         resolve(children);
       } catch (error) {
         this.$message.error("加载地址数据失败");
@@ -379,7 +401,6 @@ export default {
         resolve([]);
       }
     },
-
     /** 处理地址选择变化 */
     handleAddressChange(value) {
       console.log('handleAddressChange', value);

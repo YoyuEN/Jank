@@ -1,22 +1,8 @@
 <template>
   <!-- 左侧浮动按钮 -->
   <div class="sidebar-buttons">
-<!--    <button @click="showCommentPanel = true" title="发表评论" class="sidebar-btn">💬</button>-->
     <button @click="scrollToTop" title="回到顶部" class="sidebar-btn">⬆️</button>
   </div>
-  <!-- 弹窗层 -->
-<!--  <transition name="slide">-->
-<!--    <div v-show="showCommentPanel" class="comment-panel">-->
-<!--      <div>-->
-<!--        <h3>发表评论</h3>-->
-<!--        <textarea v-model="newComment" placeholder="写下你的评论..." rows="5"></textarea>-->
-<!--      </div>-->
-<!--      <div class="comment-actions">-->
-<!--        <button @click="submitComment" class="submit-comment-btn">提交评论</button>-->
-<!--        <button @click="showCommentPanel = false" class="close-btn">关闭</button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </transition>-->
   <!-- 评论输入区域 - 移动到评论列表上方 -->
   <div class="comment-input-area">
 
@@ -30,11 +16,22 @@
           rows="5"
           class="comment-textarea"
         ></textarea>
-        <div class="comment-actions">
-          <button @click="submitComment" class="submit-comment-btn">
-            <span>提交评论</span>
-          </button>
-        </div>
+
+    <el-row>
+      <div class="block">
+        <span class="demonstration">五星好评</span>
+        <el-rate
+          v-model="ratingValue"
+          :colors="colors">
+        </el-rate>
+      </div>
+      <div class="comment-actions" style="margin-left: 600px">
+        <button @click="submitComment" class="submit-comment-btn">
+          <span>提交评论</span>
+        </button>
+      </div>
+    </el-row>
+
 
   </div>
   <div class="comments-section">
@@ -62,53 +59,6 @@
             </div>
           </div>
           <div class="comment-text">{{ comment.content }}</div>
-<!--          <div class="comment-actions">-->
-<!--            <button @click="toggleReplyInput(comment.id)" class="reply-btn">-->
-<!--              {{ replyTo === comment.id ? '取消回复' : '回复' }}-->
-<!--            </button>-->
-<!--            <button-->
-<!--              @click="toggleReplies(comment.id)"-->
-<!--              class="show-replies-btn"-->
-<!--              v-if="comment.replyCount > 0"-->
-<!--            >-->
-<!--              {{ comment.showReplies ? '收起回复' : `查看回复(${comment.replyCount})` }}-->
-<!--            </button>-->
-<!--          </div>-->
-
-<!--          &lt;!&ndash; 回复输入框 &ndash;&gt;-->
-<!--          <div v-if="replyTo === comment.id" class="reply-input-container">-->
-<!--            <textarea-->
-<!--              v-model="replyContent"-->
-<!--              placeholder="写下你的回复..."-->
-<!--              rows="3"-->
-<!--              class="reply-textarea"-->
-<!--            ></textarea>-->
-<!--            <div class="reply-actions">-->
-<!--              <button @click="submitReply(comment.id)" class="submit-reply-btn">提交回复</button>-->
-<!--            </div>-->
-<!--          </div>-->
-
-          <!-- 回复列表 -->
-<!--          <div v-if="comment.showReplies" class="replies-container">-->
-<!--            <div v-if="comment.loadingReplies" class="loading-replies">加载回复中...</div>-->
-<!--            <div v-else-if="comment.replies.length === 0" class="no-replies">暂无回复</div>-->
-<!--            <div v-else class="replies-list">-->
-<!--              <div v-for="reply in comment.replies" :key="reply.id" class="reply-item">-->
-<!--                <div class="reply-header">-->
-<!--                  <img-->
-<!--                    :src="reply.avatar || 'https://via.placeholder.com/30'"-->
-<!--                    alt="头像"-->
-<!--                    class="reply-avatar"-->
-<!--                  />-->
-<!--                  <div class="reply-info">-->
-<!--                    <div class="reply-author">{{ reply.username || '匿名用户' }}</div>-->
-<!--                    <div class="reply-time">{{ reply.createTime }}</div>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--                <div class="reply-text">{{ reply.content }}</div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
         </div>
       </div>
 
@@ -122,28 +72,49 @@
   </div>
 </template>
 
+
+<script>
+export default {
+  props: ['comments'],
+  data() {
+    return {
+      ratingValue: null,
+      colors: ['#99A9BF', '#F7BA2A', '#FF9900']
+    }
+  }
+}
+</script>
 <script setup>
 import {
   getNestedCommentList,
-  submitComment as submitCommentApi
+  submitComment as submitCommentApi,
 } from '@/api/comment/comment.js'
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 // import { getPostDetail } from '@/api/posts/posts.js'
 // import { marked } from 'marked'
+import { ElRate } from 'element-plus'
 
+// 确保初始显示数量是非负的
 const comments = ref([])
 const loadingComments = ref(false)
-const displayCount = ref(3)  // 初始显示3条评论
+const displayCount = ref(Math.max(3, 0))  // 初始显示3条评论
 
-// 计算要显示的评论
+// 计算要显示的评论 - 增加安全检查
 const displayedComments = computed(() => {
-  return comments.value.slice(0, displayCount.value)
+  // 确保 comments.value 是一个数组
+  if (!Array.isArray(comments.value)) {
+    return []
+  }
+
+  const safeDisplayCount = Math.max(displayCount.value, 0)
+  return comments.value.slice(0, safeDisplayCount)
 })
 
-// 加载更多评论
+// 加载更多评论 - 增加安全检查
 const loadMore = () => {
-  displayCount.value += 5  // 每次增加5条评论
+  const newDisplayCount = displayCount.value + 5  // 每次增加5条评论
+  displayCount.value = Math.max(newDisplayCount, 0)
 }
 
 // 用于跟踪当前正在回复的评论ID
@@ -153,6 +124,8 @@ const postId = route.params.postId
 // const loading = ref(true)
 const showCommentPanel = ref(false)
 const newComment = ref('')
+const ratingValue = ref(null) // 新增：评分值
+const colors = ['#99A9BF', '#F7BA2A', '#FF9900']
 
 // const submitComment = () => {
 //   if (newComment.value.trim()) {
@@ -191,6 +164,11 @@ const submitComment = async () => {
     alert('评论内容不能为空')
     return
   }
+  // 检查评分是否已选择
+  if (ratingValue.value === null) {
+    alert('请选择评分')
+    return
+  }
 
     const response = await submitCommentApi({
       postId: postId,
@@ -198,7 +176,8 @@ const submitComment = async () => {
       userId: effectiveUserId, // 使用有效的用户ID
       username: effectiveUsername, // 添加用户名
       avatar: effectiveAvatar, // 添加头像
-      createTime: new Date().toISOString() // 添加创建时间，虽然后端会覆盖，但为了前端显示可以先设置
+      createTime: new Date().toISOString(),// 添加创建时间，虽然后端会覆盖，但为了前端显示可以先设置
+      goodorbad: ratingValue.value // 新增：提交评分信息
     })
 
     if (response.code === 200) {
@@ -296,7 +275,6 @@ onMounted(fetchComments)
   gap: 10px;
   z-index: 999;
 }
-
 .sidebar-btn {
   background-color: #007bff;
   color: white;
@@ -562,7 +540,9 @@ onMounted(fetchComments)
   font-weight: bold;
   color: #333;
 }
-
+.rating {
+  color: gold;
+}
 .comment-time {
   font-size: 0.8em;
   color: #888;
