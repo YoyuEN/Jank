@@ -39,7 +39,7 @@ public class MinioServiceImpl implements MinioService {
      * @throws Exception 如果上传失败
      */
     @Override
-    public String uploadFile(MultipartFile file, String folder) throws Exception {
+    public String uploadFile(MultipartFile file) throws Exception {
         String objectName = file.getOriginalFilename();
 
         try (InputStream inputStream = file.getInputStream()) {
@@ -71,7 +71,7 @@ public class MinioServiceImpl implements MinioService {
         List<String> objectNames = new ArrayList<>();
         for (MultipartFile multipartFile : files) {
             try {
-                String objectName = uploadFile(multipartFile, folder);
+                String objectName = uploadFile(multipartFile);
                 objectNames.add(objectName);
                 minioClient.putObject(
                         PutObjectArgs.builder()
