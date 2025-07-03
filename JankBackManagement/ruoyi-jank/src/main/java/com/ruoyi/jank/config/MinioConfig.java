@@ -1,4 +1,4 @@
-package com.team.backend.config;
+package com.ruoyi.jank.config;
 
 import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Autowired;

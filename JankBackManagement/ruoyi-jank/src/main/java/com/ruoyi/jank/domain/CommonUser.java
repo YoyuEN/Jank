@@ -45,6 +45,7 @@ public class CommonUser implements Serializable {
     @TableId
     private String userId;
     private String nickname;
+    private String avatar;
     private String email;
     private String username;
     private String password;

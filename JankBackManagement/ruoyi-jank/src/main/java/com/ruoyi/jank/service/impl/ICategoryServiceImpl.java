@@ -36,4 +36,9 @@ public class ICategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> 
         });
         return CategoryDtoList;
     }
+
+    @Override
+    public List<String> selectCategoryNamesByPostId(String postId) {
+        return baseMapper.selectCategoryNamesByPostId(postId);
+    }
 }

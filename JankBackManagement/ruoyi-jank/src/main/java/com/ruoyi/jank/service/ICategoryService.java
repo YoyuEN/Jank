@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface ICategoryService extends IService<Category> {
     List<CategoryDto> selectCategoryList(Category category);
+    List<String> selectCategoryNamesByPostId(String postId);
 }
