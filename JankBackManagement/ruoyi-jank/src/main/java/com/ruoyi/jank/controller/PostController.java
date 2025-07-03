@@ -5,11 +5,12 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.jank.domain.Post;
+import com.ruoyi.jank.domain.vo.PostVO;
 import com.ruoyi.jank.service.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.utils.poi.ExcelUtil;
 
 /**
  * 帖子Controller
@@ -42,7 +42,7 @@ public class PostController extends BaseController
     public TableDataInfo list(Post post)
     {
         startPage();
-        List<Post> list = postService.selectPostList(post);
+        List<PostVO> list = postService.selectPostList(post);
         return getDataTable(list);
     }
 

@@ -11,4 +11,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CommonUserMapper extends BaseMapper<CommonUser> {
 
+    String getUsernameById(String userId);
 }

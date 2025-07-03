@@ -72,8 +72,8 @@
           {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="评论内容" align="center" prop="content" :formatter="removePTags"/>
-      <el-table-column label="评论时间" align="center" prop="createTime"/>
+      <el-table-column label="评论内容" align="center" prop="content" :formatter="removePTags" width="500"/>
+      <el-table-column label="评论时间" align="center" prop="createTime" :formatter="formatTime"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -182,6 +182,15 @@ export default {
     this.getList()
   },
   methods: {
+    // 格式化时间
+    formatTime(row, column, cellValue) {
+      if (!cellValue) return '';
+      const date = new Date(cellValue);
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
     /** 查询评论功能列表 */
     getList() {
       this.loading = true

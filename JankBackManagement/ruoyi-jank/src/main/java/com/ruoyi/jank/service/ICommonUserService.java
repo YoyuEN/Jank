@@ -11,4 +11,5 @@ import java.util.List;
  */
 public interface ICommonUserService extends IService<CommonUser> {
     List<CommonUser> selectCommonUserList(CommonUser commonUser);
+    String getUsernameById(String userId);
 }

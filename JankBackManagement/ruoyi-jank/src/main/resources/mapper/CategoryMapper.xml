@@ -7,6 +7,9 @@
     <select id="selectById" resultType="com.ruoyi.jank.domain.Category">
         SELECT * FROM category WHERE category_id = #{category_id}
     </select>
+    <select id="selectCategoryNamesByPostId" resultType="java.lang.String">
+        SELECT name FROM category WHERE post_id = #{postId}
+    </select>
 
     <update id="updateById" parameterType="com.ruoyi.jank.domain.Category">
         UPDATE category
