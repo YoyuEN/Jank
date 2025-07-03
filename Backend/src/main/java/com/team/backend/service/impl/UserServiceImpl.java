@@ -1,12 +1,17 @@
 package com.team.backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.team.backend.domain.Address;
 import com.team.backend.domain.User;
 import com.team.backend.domain.vo.LoginUserVO;
 import com.team.backend.domain.vo.RegisterUserVO;
+import com.team.backend.domain.vo.UpdateUserVO;
 import com.team.backend.exception.ServiceExceptionHandler;
+import com.team.backend.mapper.AddressMapper;
 import com.team.backend.mapper.UserMapper;
+import com.team.backend.service.IAddressService;
 import com.team.backend.service.IUserService;
 import com.team.backend.service.MinioService;
 import com.team.backend.utils.ResponseCode;
@@ -27,6 +32,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Autowired
     private MinioService minioService;
     private final UserMapper userMapper;
+    @Autowired
+    private AddressMapper addressMapper;
+
     public UserServiceImpl(UserMapper userMapper) {
         this.userMapper = userMapper;
     }
@@ -88,10 +96,45 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public User login(String username, String password) {
-        User user = userMapper.findByUsername(username);
-        if (user != null && user.getPassword().equals(password)) {
-            return user;
-        }
         return null;
+    }
+
+    @Override
+    public User updateUser(UpdateUserVO user) {
+        if(user == null){
+            throw new ServiceExceptionHandler(ResponseCode.USER_NOT_EXIST);
+        }
+        if (user.getEmail().length()<8){
+            return null;
+        }
+        if (user.getNickname().length()<2||user.getNickname().length()>20){
+            return null;
+        }
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUsername, user.getUsername());
+        Long count = userMapper.selectCount(wrapper);
+        if (count > 1){
+            return null;
+        }
+        StringBuilder addresscomment = new StringBuilder();
+        //地址数据结构为[1,2,3,4],遍历查询给的id在表中对应的内容
+        for (int i = 0; i < user.getAddress().length; i++) {
+            Address address = new Address();
+            address.setAddressId(user.getAddress()[i]);
+            Address address1 = addressMapper.selectOne(new QueryWrapper<Address>().eq("address_id", user.getAddress()[i]));
+            addresscomment.append(address1.getAddress());
+            if(i != user.getAddress().length-1){
+                addresscomment.append("/");
+            }
+        }
+        wrapper.eq(User::getUserId, user.getUserId());
+        User user1 = userMapper.selectOne(wrapper);
+        user1.setUsername(user.getUsername());
+        user1.setEmail(user.getEmail());
+        user1.setNickname(user.getNickname());
+        user1.setAddress(addresscomment.toString());
+        //更新用户信息
+        super.updateById(user1);
+        return user1;
     }
 }

@@ -71,7 +71,7 @@ public class MinioServiceImpl implements MinioService {
         List<String> objectNames = new ArrayList<>();
         for (MultipartFile multipartFile : files) {
             try {
-                String objectName = uploadFile(multipartFile, folder);
+                String objectName = uploadFile(multipartFile);
                 objectNames.add(objectName);
                 minioClient.putObject(
                         PutObjectArgs.builder()

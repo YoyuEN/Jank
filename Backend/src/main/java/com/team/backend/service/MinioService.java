@@ -13,7 +13,7 @@ import java.util.List;
  * @Description:
  */
 public interface MinioService {
-    String  uploadFile(MultipartFile file, String folder) throws Exception;
+    String  uploadFile(MultipartFile file) throws Exception;
 
     // 上传多个文件
     List<String> uploadFile(List<MultipartFile> file, String folder);

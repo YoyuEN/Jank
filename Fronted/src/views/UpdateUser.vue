@@ -11,11 +11,11 @@
         <!-- 头像上传 -->
         <el-form-item label="头像" prop="avatar">
           <el-upload
-            class="avatar-uploader"
-            action="#"
-            :show-file-list="false"
-            :before-upload="beforeAvatarUpload"
-            :http-request="handleAvatarUpload"
+              class="avatar-uploader"
+              action="#"
+              :show-file-list="false"
+              :before-upload="beforeAvatarUpload"
+              :http-request="handleAvatarUpload"
           >
             <img v-if="userForm.avatar" :src="userForm.avatar" class="avatar" />
             <el-icon v-else class="avatar-uploader-icon">
@@ -40,14 +40,13 @@
         <!-- 地址选择 -->
         <el-form-item label="所在地区" prop="address">
           <el-cascader
-            v-model="addressIds"
-            :options="addressOptions"
-            :props="addressProps"
-            @change="handleAddressChange"
-            placeholder="请选择所在地区"
+              v-model="userForm.address"
+              :options="addressOptions"
+              :props="addressProps"
+              @change="handleAddressChange"
+              placeholder="请选择所在地区"
           >
           </el-cascader>
-          <el-input v-model="userForm.address" type="hidden"></el-input>
         </el-form-item>
 
         <!-- 修改密码折叠面板 -->
@@ -63,9 +62,9 @@
             </el-form-item>
             <el-form-item label="确认密码" prop="confirmPassword">
               <el-input
-                v-model="userForm.confirmPassword"
-                type="password"
-                placeholder="请确认新密码"
+                  v-model="userForm.confirmPassword"
+                  type="password"
+                  placeholder="请确认新密码"
               >
               </el-input>
             </el-form-item>
@@ -83,8 +82,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
-import { ElMessage, ElLoading } from 'element-plus'
+import { ref, reactive, onMounted, watchEffect } from 'vue'
+import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { getAddressById, getAddress } from '@/api/address/address.js'
 import { updateUser } from '@/api/user/user.js'
@@ -100,17 +99,16 @@ const activeCollapse = ref([])
 const userStore = useUserStore()
 // 使用 userStore 中的用户数据
 const user = ref(
-  userStore.user || {
-    userId: '',
-  },
+    userStore.user || {
+      userId: '',
+    },
 )
 // 监听 store 的变化（响应式更新头像）
-watch(() => userStore.user, (newUser) => {
-  if (newUser) {
-    user.value = newUser
+watchEffect(() => {
+  if (userStore.user) {
+    user.value = userStore.user
   }
 })
-
 // 表单数据
 const userForm = reactive({
   userId: user.value.userId,
@@ -118,14 +116,11 @@ const userForm = reactive({
   nickname: '',
   email: '',
   username: '',
-  address: '', // 存储地址内容
+  address: [],
   oldPassword: '',
   newPassword: '',
   confirmPassword: '',
 })
-
-// 地址ID数组，用于级联选择器
-const addressIds = ref([])
 
 // 表单验证规则
 const rules = reactive({
@@ -186,35 +181,35 @@ const addressProps = {
       }
 
       if (
-        response &&
-        response.data &&
-        (Array.isArray(response.data) ? response.data.length > 0 : true)
+          response &&
+          response.data &&
+          (Array.isArray(response.data) ? response.data.length > 0 : true)
       ) {
         const data = Array.isArray(response.data) ? response.data : [response.data]
 
         // 检查是否有子节点
         const nodes = await Promise.all(
-          data.map(async (item) => {
-            // 尝试获取子节点，判断是否为叶子节点
-            try {
-              const childResponse = await getAddressById(item.addressId)
-              const hasChildren =
-                childResponse &&
-                childResponse.data &&
-                (Array.isArray(childResponse.data) ? childResponse.data.length > 0 : true)
+            data.map(async (item) => {
+              // 尝试获取子节点，判断是否为叶子节点
+              try {
+                const childResponse = await getAddressById(item.addressId)
+                const hasChildren =
+                    childResponse &&
+                    childResponse.data &&
+                    (Array.isArray(childResponse.data) ? childResponse.data.length > 0 : true)
 
-              return {
-                ...item,
-                leaf: !hasChildren, // 如果没有子节点，则标记为叶子节点
+                return {
+                  ...item,
+                  leaf: !hasChildren, // 如果没有子节点，则标记为叶子节点
+                }
+              } catch (error) {
+                console.error(`检查节点 ${item.addressId} 的子节点失败:`, error)
+                return {
+                  ...item,
+                  leaf: true, // 出错时默认为叶子节点
+                }
               }
-            } catch (error) {
-              console.error(`检查节点 ${item.addressId} 的子节点失败:`, error)
-              return {
-                ...item,
-                leaf: true, // 出错时默认为叶子节点
-              }
-            }
-          }),
+            }),
         )
 
         resolve(nodes)
@@ -245,49 +240,10 @@ const loadAddressData = async () => {
 // 处理地址选择变化
 const handleAddressChange = async (value) => {
   if (value && value.length > 0) {
-    // 获取选择的地址ID数组
-    addressIds.value = value
-
     // 获取最后选择的地址ID
     const addressId = value[value.length - 1]
-
-    try {
-      // 获取完整的地址信息
-      const addressResponse = await getAddressById(addressId)
-
-      if (addressResponse && addressResponse.data) {
-        // 构建地址内容
-        const addressInfo = addressResponse.data
-
-        // 从addressIds构建完整地址路径
-        let fullAddress = ''
-        let currentId = addressId
-        let currentNode = addressInfo
-
-        // 逐级向上查找父节点，构建完整地址
-        while (currentNode) {
-          fullAddress = currentNode.address + ' ' + fullAddress
-
-          if (currentNode.pid && currentNode.pid !== '0') {
-            try {
-              const parentResponse = await getAddressById(currentNode.pid)
-              currentNode = parentResponse.data
-            } catch (error) {
-              console.error('获取父级地址失败:', error)
-              currentNode = null
-            }
-          } else {
-            currentNode = null
-          }
-        }
-
-        // 去除首尾空格
-        userForm.address = fullAddress.trim()
-        console.log('选择的完整地址:', userForm.address)
-      }
-    } catch (error) {
-      console.error('获取地址详情失败:', error)
-    }
+    console.log('选中的地址路径:', value)
+    console.log('最终选中的addressId:', addressId)
   }
 }
 
@@ -319,54 +275,15 @@ const handleAvatarUpload = (options) => {
 // 提交表单
 const submitForm = async () => {
   if (!userFormRef.value) return
-
-  // 显示加载状态
-  const loading = ElLoading.service({
-    lock: true,
-    text: '提交中...',
-    spinner: 'el-icon-loading',
-    background: 'rgba(0, 0, 0, 0.7)',
-  })
-
-  try {
-    // 验证表单
-    await new Promise((resolve, reject) => {
-      userFormRef.value.validate((valid) => {
-        if (valid) {
-          resolve()
-        } else {
-          reject(new Error('表单验证失败'))
-        }
-      })
-    })
-
-    // 构建提交数据
-    const submitData = {
-      ...userForm,
-      // 使用地址内容而不是地址ID
-      address: userForm.address,
-    }
-
-    console.log('提交的用户数据:', submitData)
-
-    // 调用API
-    const response = await updateUser(submitData)
-
-    if (response.code === 200) {
-      ElMessage.success('保存成功')
-      userStore.setUserInfo(response.data)
-      router.push('/posts')
-    } else {
-      ElMessage.error(response.message || '保存失败')
-    }
-  } catch (error) {
-    if (error.message !== '表单验证失败') {
-      console.error('提交表单失败:', error)
-      ElMessage.error('提交失败，请稍后重试')
-    }
-  } finally {
-    // 关闭加载状态
-    loading.close()
+  const response = await updateUser(userForm)
+  console.log('提交的用户数据:', user)
+  if (response.code === 200) {
+    // 这里应该调用实际的保存API
+    ElMessage.success('保存成功')
+    userStore.setUserInfo(response.data)
+    router.push('/posts')
+  } else {
+    ElMessage.error('保存失败')
   }
 }
 
@@ -374,9 +291,6 @@ const submitForm = async () => {
 const resetForm = () => {
   if (userFormRef.value) {
     userFormRef.value.resetFields()
-    // 重置地址选择
-    addressIds.value = []
-    userForm.address = ''
   }
 }
 
@@ -394,11 +308,11 @@ const getUserInfo = async () => {
       userForm.username = userData.username || ''
       userForm.email = userData.email || ''
       userForm.avatar = userData.avatar || ''
+      userForm.address = userData.address || ''
 
-      // 如果有地址ID，设置地址
+      // 如果有地址信息，设置地址
       if (userData.addressId) {
         try {
-          // 获取地址详情
           const addressResponse = await getAddressById(userData.addressId)
           console.log('获取到用户地址详情:', addressResponse)
 
@@ -424,12 +338,10 @@ const buildAddressPath = async (addressData) => {
   try {
     const addressPath = []
     let currentAddress = addressData
-    let fullAddress = ''
 
     // 从当前地址开始，向上查找所有父级地址
     while (currentAddress && currentAddress.addressId) {
       addressPath.unshift(currentAddress.addressId)
-      fullAddress = currentAddress.address + ' ' + fullAddress
 
       if (currentAddress.pid && currentAddress.pid !== '0') {
         try {
@@ -449,15 +361,13 @@ const buildAddressPath = async (addressData) => {
     }
 
     console.log('构建的地址路径:', addressPath)
-    console.log('构建的完整地址:', fullAddress.trim())
 
-    // 设置地址路径和地址内容
+    // 设置地址路径前确保所有必要的选项都已加载
     if (addressPath.length > 0) {
       // 延迟设置地址值，确保级联选择器已完成初始化
       setTimeout(() => {
-        addressIds.value = addressPath
-        userForm.address = fullAddress.trim()
-      }, 300) // 增加延迟时间，确保级联选择器完全初始化
+        userForm.address = addressPath
+      }, 100)
     }
   } catch (error) {
     console.error('构建地址路径失败:', error)
@@ -520,4 +430,4 @@ onMounted(async () => {
   text-align: center;
   line-height: 178px;
 }
-</style>    
+</style>
