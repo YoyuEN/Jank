@@ -20,7 +20,11 @@
       <PostCard v-for="post in filteredPosts" :key="post.postId" :post="post" />
     </div>
     <div class="sidebar-buttons">
-      <button @click="$router.push('/publish')" title="发布帖子" class="sidebar-btn publish-btn">
+      <button
+        @click="$router.push('/publishPost')"
+        title="发布帖子"
+        class="sidebar-btn publish-btn"
+      >
         📝
       </button>
       <button @click="scrollToTop" title="回到顶部" class="sidebar-btn scroll-btn">⬆️</button>

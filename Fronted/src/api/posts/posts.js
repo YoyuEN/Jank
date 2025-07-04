@@ -1,16 +1,15 @@
 import service from '@/utils/request.js'
 
-
 export function getPostList() {
-  return service.get('/post/getPostList');
+  return service.get('/post/getPostList')
 }
 
 // 根据帖子ID获取帖子详情
 export function getPostDetail(postId) {
   return service.get('/post/getPostDetail', {
     params: {
-      postId
-    }
+      postId,
+    },
   })
 }
 //新增帖子
@@ -22,6 +21,7 @@ export function addPostDetail(data) {
 export function getUserIdPost(userId) {
   return service.get('/post/getUserIdPost', {
     params: {
-      userId
-    }})
+      userId,
+    },
+  })
 }
