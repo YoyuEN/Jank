@@ -15,8 +15,12 @@
           </div>
           <div class="info-section">
             <h2 class="username">{{ user.nickname || '用户昵称' }}</h2>
-            <p class="user-detail"><span class="label">用户名：</span>{{ user.username || 'username123' }}</p>
-            <p class="user-detail"><span class="label">邮箱：</span>{{ user.email || 'example@email.com' }}</p>
+            <p class="user-detail">
+              <span class="label">用户名：</span>{{ user.username || 'username123' }}
+            </p>
+            <p class="user-detail">
+              <span class="label">邮箱：</span>{{ user.email || 'example@email.com' }}
+            </p>
             <p class="user-detail"><span class="label">加入时间：</span>{{ user.createTime }}</p>
           </div>
         </div>
@@ -25,22 +29,19 @@
         </div>
       </div>
 
-
       <!-- 右侧：帖子和评论 -->
       <div class="user-activity-panel">
         <!-- 上半部分：用户发布的帖子 -->
         <div class="posts-section">
           <h3 class="section-title">我的帖子</h3>
           <div class="posts-list">
-            <div v-if="posts.length === 0" class="empty-message">
-              暂无发布的帖子
-            </div>
+            <div v-if="posts.length === 0" class="empty-message">暂无发布的帖子</div>
             <div v-else v-for="(post, index) in posts" :key="index" class="post-item">
               <h4 class="post-title">{{ post.title }}</h4>
               <p class="post-excerpt">{{ post.contentHtml }}</p>
               <div class="post-meta">
-                <span class="post-date">{{post.createTime}}</span>
-<!--                <span class="post-stats">{{ post.views }} 浏览 · {{ post.comments }} 评论</span>-->
+                <span class="post-date">{{ post.createTime }}</span>
+                <!--                <span class="post-stats">{{ post.views }} 浏览 · {{ post.comments }} 评论</span>-->
               </div>
             </div>
           </div>
@@ -50,14 +51,12 @@
         <div class="comments-section">
           <h3 class="section-title">我的评论</h3>
           <div class="comments-list">
-            <div v-if="comments.length === 0" class="empty-message">
-              暂无评论
-            </div>
+            <div v-if="comments.length === 0" class="empty-message">暂无评论</div>
             <div v-else v-for="(comment, index) in comments" :key="index" class="comment-item">
               <p class="comment-content">{{ comment.content }}</p>
               <div class="comment-meta">
                 <span class="comment-post">评论于：{{ comment.postTitle }}</span>
-                <span class="comment-date">{{comment.createTime}}</span>
+                <span class="comment-date">{{ comment.createTime }}</span>
               </div>
             </div>
           </div>
@@ -71,16 +70,18 @@
 import { ref, watchEffect, onMounted } from 'vue'
 import { useUserStore } from '@/store/userStore.js'
 import { getUserIdPost } from '@/api/posts/posts.js'
-import {getCommentByUserId} from '@/api/comment/comment.js'
+import { getCommentByUserId } from '@/api/comment/comment.js'
 // 用户基本信息
 const userStore = useUserStore()
 
 // 使用 userStore 中的用户数据
-const user = ref(userStore.user || {
-  avatar: '/YoyuEN.png',
-  username: '游客',
-  userId: ''
-})
+const user = ref(
+  userStore.user || {
+    avatar: '/YoyuEN.png',
+    username: '游客',
+    userId: '',
+  },
+)
 // 监听 store 的变化（响应式更新头像）
 watchEffect(() => {
   if (userStore.user) {
@@ -100,7 +101,7 @@ const fetchUserPosts = async () => {
       const response = await getUserIdPost(user.value.userId)
       if (response && response.data && response.data.length > 0) {
         // 将API返回的数据映射到我们需要的格式
-        posts.value = response.data.map(post => ({
+        posts.value = response.data.map((post) => ({
           title: post.title || '无标题',
           contentHtml: post.contentHtml ? post.contentHtml.substring(0, 100) + '...' : '无内容',
           createTime: new Date(post.createTime || Date.now()),
@@ -125,8 +126,8 @@ const fetchUserComment = async () => {
       const response = await getCommentByUserId(user.value.userId)
       if (response && response.data && response.data.length > 0) {
         // 将API返回的数据映射到我们需要的格式
-        comments.value = response.data.map(comment => ({
-          content:comment.content || '无内容',
+        comments.value = response.data.map((comment) => ({
+          content: comment.content || '无内容',
           createTime: new Date(comment.createTime || Date.now()),
         }))
       } else {
@@ -151,14 +152,13 @@ watchEffect(() => {
     fetchUserComment()
   }
 })
-
 </script>
 
 <style scoped>
 .user-container {
   min-height: calc(100vh - 80px); /* 减去导航栏的高度 */
   padding: 30px; /* 统一内边距 */
-  margin-top:50px; /* 减少顶部外边距 */
+  margin-top: 50px; /* 减少顶部外边距 */
 }
 
 .user-dashboard {
@@ -258,7 +258,9 @@ watchEffect(() => {
 .post-item {
   padding: 15px;
   border-radius: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .post-item:hover {
@@ -296,7 +298,9 @@ watchEffect(() => {
 .comment-item {
   padding: 15px;
   border-radius: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .comment-item:hover {

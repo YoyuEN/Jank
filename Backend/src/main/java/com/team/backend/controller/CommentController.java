@@ -92,7 +92,7 @@ public class CommentController {
         return result;
     }
 
-    @GetMapping("/listcomments/{postId}")
+    @GetMapping("/listComment/{postId}")
     public Result<List<Comment>> getComments(@PathVariable String postId) {
         List<Comment> data = commentService.getCommentsByArticleId(postId);
         return Result.success(ResponseCode.SUCCESS,data);

@@ -266,11 +266,18 @@ export default {
 
     toggleComments(momentId) {
       const userStore = useUserStore()
+      // 判断userStore是否为空
+      if (!userStore.user || !userStore.user.userId) {
+        this.$message.error('请先登录后再查看评论')
+        return
+      }
+
       this.newComment = {
         userId: userStore.user.userId,
         content: '',
         momentId: momentId,
       }
+
       this.moments = this.moments.map((m) => {
         if (m.momentId === momentId) {
           return { ...m, showComments: !m.showComments }
@@ -337,15 +344,14 @@ export default {
   margin-top: 40px;
 }
 
-/* 侧边浮动按钮 */
 .sidebar-buttons {
   position: fixed;
-  left: 30px;
-  bottom: 30px;
+  left: 50px;
+  bottom: 80px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  z-index: 1000;
+  gap: 10px;
+  z-index: 999;
 }
 
 .sidebar-btn {

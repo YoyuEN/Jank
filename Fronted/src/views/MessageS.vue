@@ -3,16 +3,17 @@
     <!-- 弹幕区域 -->
     <div class="danmu-area" ref="danmuArea">
       <div
-        v-for="(message) in displayMessages"
+        v-for="message in displayMessages"
         :key="message.id"
         class="danmu-item"
         :style="{
           top: message.top + '%',
           animationDuration: message.duration + 's',
           animationDelay: message.delay + 's',
-          color: message.color
+          color: message.color,
         }"
-        @animationend="handleAnimationEnd(message, $event.target)">
+        @animationend="handleAnimationEnd(message, $event.target)"
+      >
         {{ message.message }}
       </div>
     </div>
@@ -25,32 +26,34 @@
         placeholder="请输入消息"
         @keyup.enter="sendMessage"
         :disabled="sending"
-      >
+      />
       <button @click="sendMessage" :disabled="sending">
         {{ sending ? '发送中...' : '发送' }}
       </button>
     </div>
 
     <!-- 提示消息 -->
-    <div class="message-tip" v-if="showTip" :class="{ 'show': showTip }">
+    <div class="message-tip" v-if="showTip" :class="{ show: showTip }">
       {{ tipMessage }}
     </div>
   </div>
 </template>
 
 <script>
-import { getPerMessage,postPerMessage} from '@/api/permessage/permessage'
+import { getPerMessage, postPerMessage } from '@/api/permessage/permessage'
 import { ref, watchEffect } from 'vue'
 import { useUserStore } from '@/store/userStore.js'
 // 用户基本信息
 const userStore = useUserStore()
 
 // 使用 userStore 中的用户数据
-const user = ref(userStore.user || {
-  avatar: '/img1.png',
-  username: '游客',
-  userId: ''
-})
+const user = ref(
+  userStore.user || {
+    avatar: '/img1.png',
+    username: '游客',
+    userId: '',
+  },
+)
 // 监听 store 的变化（响应式更新头像）
 watchEffect(() => {
   if (userStore.user) {
@@ -69,73 +72,83 @@ export default {
       showTip: false,
       tipMessage: '',
       colors: [
-        '#FF5252', '#FF4081', '#E040FB', '#7C4DFF',
-        '#536DFE', '#448AFF', '#40C4FF', '#18FFFF'
+        '#FF5252',
+        '#FF4081',
+        '#E040FB',
+        '#7C4DFF',
+        '#536DFE',
+        '#448AFF',
+        '#40C4FF',
+        '#18FFFF',
       ],
       cleanupInterval: null,
       animationEndTimeout: null,
-      isLooping: false
+      isLooping: false,
     }
   },
   created() {
-    this.fetchMessages();
+    this.fetchMessages()
   },
   mounted() {
-    this.initDanmu();
-    this.cleanupInterval = setInterval(this.cleanupMessages, 5000);
-    window.addEventListener('resize', this.handleResize);
+    this.initDanmu()
+    this.cleanupInterval = setInterval(this.cleanupMessages, 5000)
+    window.addEventListener('resize', this.handleResize)
   },
   beforeUnmount() {
-    if (this.cleanupInterval) clearInterval(this.cleanupInterval);
-    if (this.animationEndTimeout) clearTimeout(this.animationEndTimeout);
-    window.removeEventListener('resize', this.handleResize);
+    if (this.cleanupInterval) clearInterval(this.cleanupInterval)
+    if (this.animationEndTimeout) clearTimeout(this.animationEndTimeout)
+    window.removeEventListener('resize', this.handleResize)
   },
   methods: {
-    async fetchMessages() {//从服务器获取消息
+    async fetchMessages() {
+      //从服务器获取消息
       try {
-        const response = await getPerMessage();
+        const response = await getPerMessage()
         if (response && response.data) {
           // 假设后端返回的数据格式是 { id: number, content: string }[]
-          this.messages = response.data;
-          this.nextId = Math.max(...this.messages.map(m => m.id)) + 1;
-          this.processMessages();
+          this.messages = response.data
+          this.nextId = Math.max(...this.messages.map((m) => m.id)) + 1
+          this.processMessages()
         }
       } catch (error) {
-        console.error('获取消息失败:', error);
+        console.error('获取消息失败:', error)
         // 如果获取失败，使用默认消息
-        this.processMessages();
+        this.processMessages()
       }
     },
 
-    processMessages() {//处理消息数据，添加动画属性
-      this.displayMessages = this.messages.map(msg => ({
+    processMessages() {
+      //处理消息数据，添加动画属性
+      this.displayMessages = this.messages.map((msg) => ({
         ...msg,
         top: this.getRandomPosition(5, 80),
         duration: this.getRandomDuration(8, 15),
         delay: this.getRandomDelay(0, 2),
         color: this.getRandomColor(),
-        isPlaying: true
-      }));
+        isPlaying: true,
+      }))
     },
 
-    initDanmu() {//初始化弹幕
+    initDanmu() {
+      //初始化弹幕
       // 初始化弹幕
     },
 
-    async sendMessage() {//发送新消息
-      if (!this.newMessage.trim() || this.sending) return;
+    async sendMessage() {
+      //发送新消息
+      if (!this.newMessage.trim() || this.sending) return
 
-      this.sending = true;
+      this.sending = true
 
       try {
         // 准备发送到后端的数据
         const messageData = {
           userId: userStore.user.userId,
-          message: this.newMessage
-        };
+          message: this.newMessage,
+        }
 
         // 调用API发送消息
-        const response = await postPerMessage(messageData);
+        const response = await postPerMessage(messageData)
 
         if (response && response.data) {
           // 创建新消息对象
@@ -146,104 +159,113 @@ export default {
             duration: this.getRandomDuration(8, 15),
             delay: 0,
             color: this.getRandomColor(),
-            isPlaying: true
-          };
+            isPlaying: true,
+          }
 
           // 更新消息列表
           this.messages.push({
             id: newMsg.id,
-            message: newMsg.message
-          });
+            message: newMsg.message,
+          })
 
           // 更新显示的消息
-          this.displayMessages.push(newMsg);
+          this.displayMessages.push(newMsg)
 
           // 清空输入框并显示成功提示
-          this.newMessage = '';
-          this.showTipMessage('发送成功！');
+          this.newMessage = ''
+          this.showTipMessage('发送成功！')
         } else {
-          this.showTipMessage('发送失败，请重试！');
+          this.showTipMessage('发送失败，请重试！')
         }
       } catch (error) {
-        console.error('发送消息失败:', error);
-        this.showTipMessage('发送失败，请重试！');
+        console.error('发送消息失败:', error)
+        this.showTipMessage('发送失败，请重试！')
       } finally {
-        this.sending = false;
+        this.sending = false
       }
     },
 
-    showTipMessage(message) {//显示提示信息
-      this.tipMessage = message;
-      this.showTip = true;
+    showTipMessage(message) {
+      //显示提示信息
+      this.tipMessage = message
+      this.showTip = true
       setTimeout(() => {
-        this.showTip = false;
-      }, 3000);
+        this.showTip = false
+      }, 3000)
     },
 
-    handleAnimationEnd(message) {//处理动画结束事件
-      message.isPlaying = false;
+    handleAnimationEnd(message) {
+      //处理动画结束事件
+      message.isPlaying = false
 
       if (this.animationEndTimeout) {
-        clearTimeout(this.animationEndTimeout);
+        clearTimeout(this.animationEndTimeout)
       }
 
-      const allPlayed = this.displayMessages.every(msg => !msg.isPlaying);
+      const allPlayed = this.displayMessages.every((msg) => !msg.isPlaying)
       if (allPlayed && !this.isLooping) {
-        this.isLooping = true;
+        this.isLooping = true
         this.animationEndTimeout = setTimeout(() => {
-          this.replayDanmaku();
-        }, 1000);
+          this.replayDanmaku()
+        }, 1000)
       }
     },
 
-    replayDanmaku() {//重新播放弹幕
+    replayDanmaku() {
+      //重新播放弹幕
       // 获取弹幕容器
-      const container = this.$refs.danmuArea;
-      if (!container) return;
+      const container = this.$refs.danmuArea
+      if (!container) return
 
       // 保存当前弹幕配置
-      const currentMessages = [...this.displayMessages];
+      const currentMessages = [...this.displayMessages]
 
       // 清空容器
-      this.displayMessages = [];
+      this.displayMessages = []
 
       // 强制DOM更新
       this.$nextTick(() => {
         // 创建新的弹幕实例，保持原有的配置但重置状态
-        this.displayMessages = currentMessages.map(msg => ({
+        this.displayMessages = currentMessages.map((msg) => ({
           ...msg,
           top: this.getRandomPosition(5, 80), // 重新随机位置增加趣味性
-          isPlaying: true
-        }));
+          isPlaying: true,
+        }))
 
-        this.isLooping = false;
-      });
+        this.isLooping = false
+      })
     },
 
-    cleanupMessages() {//清理消息
+    cleanupMessages() {
+      //清理消息
       // 不再需要定期清理，由animationEnd事件处理
     },
 
-    handleResize() {//处理窗口大小变化
+    handleResize() {
+      //处理窗口大小变化
       // 响应式调整逻辑
     },
 
-    getRandomPosition(min, max) {//生成随机位置
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+    getRandomPosition(min, max) {
+      //生成随机位置
+      return Math.floor(Math.random() * (max - min + 1)) + min
     },
 
-    getRandomDuration(min, max) {//生成随机动画持续时间
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+    getRandomDuration(min, max) {
+      //生成随机动画持续时间
+      return Math.floor(Math.random() * (max - min + 1)) + min
     },
 
-    getRandomDelay(min, max) {//生成随机动画延迟
-      return Math.random() * (max - min) + min;
+    getRandomDelay(min, max) {
+      //生成随机动画延迟
+      return Math.random() * (max - min) + min
     },
 
-    getRandomColor() {//随机颜色
-      return this.colors[Math.floor(Math.random() * this.colors.length)];
-    }
-  }
+    getRandomColor() {
+      //随机颜色
+      return this.colors[Math.floor(Math.random() * this.colors.length)]
+    },
+  },
 }
 </script>
 
@@ -303,8 +325,9 @@ export default {
   border: none;
   border-radius: 20px;
   background-color: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04),
-              0 0 2px rgba(0, 0, 0, 0.02);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 0 2px rgba(0, 0, 0, 0.02);
   white-space: nowrap;
   font-size: 14px;
   color: #666;
@@ -320,8 +343,9 @@ export default {
   transform: scale(1.03) translateY(-1px);
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06),
-              0 2px 4px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.03);
   color: #333;
   letter-spacing: 0.3px;
 }
@@ -397,8 +421,9 @@ export default {
 .input-area input:focus {
   border-color: #d0d0d0;
   background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(200, 200, 200, 0.1),
-              inset 0 1px 2px rgba(0, 0, 0, 0.01);
+  box-shadow:
+    0 0 0 3px rgba(200, 200, 200, 0.1),
+    inset 0 1px 2px rgba(0, 0, 0, 0.01);
 }
 
 .input-area input:disabled {
@@ -429,7 +454,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -474,8 +499,9 @@ export default {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
   z-index: 1000;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06),
-              0 2px 4px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.03);
   border: 1px solid rgba(240, 240, 240, 0.8);
   backdrop-filter: blur(8px);
 }

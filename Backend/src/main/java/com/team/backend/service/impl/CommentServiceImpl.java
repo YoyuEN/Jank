@@ -11,6 +11,7 @@ import com.team.backend.mapper.CommentMapper;
 import com.team.backend.mapper.UserMapper;
 import com.team.backend.service.ICommentService;
 import com.team.backend.service.IUserService;
+import com.team.backend.service.MinioService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,9 @@ import com.team.backend.handler.ResponseResult;
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements ICommentService {
     @Autowired
     private IUserService userService;
+
     @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private CommentMapper commentMapper;
+    private MinioService minioService;
     @Override
     public void saveComment(Comment comment) {
         baseMapper.insert(comment);
@@ -179,12 +179,27 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Override
     public List<Comment> getCommentsByArticleId(String postId) {
-        // 查询文章下的所有评论
         List<Comment> comments = lambdaQuery()
                 .eq(Comment::getPostId, postId)
                 .list();
+
+        comments.forEach(comment -> {
+            User user = userService.getById(comment.getUserId());
+            if (user != null) {
+                String avatar = user.getAvatar();
+                if (avatar != null && !avatar.isEmpty()) {
+                    comment.setAvatar(minioService.getPresignedUrl(avatar));
+                    comment.setUsername(user.getUsername());
+                }
+            } else {
+                // 可选：设置默认头像或留空
+                comment.setAvatar(null); // 或者使用默认图片 URL
+            }
+        });
+
         return comments;
     }
+
 
 
     @Override

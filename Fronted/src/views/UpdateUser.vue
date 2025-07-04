@@ -1,84 +1,138 @@
 <template>
   <div class="update-user-container">
-    <el-card class="user-card">
-      <template #header>
-        <div class="card-header">
-          <span>个人信息设置</span>
-        </div>
-      </template>
-
-      <el-form :model="userForm" :rules="rules" ref="userFormRef" label-width="100px">
-        <!-- 头像上传 -->
-        <el-form-item label="头像" prop="avatar">
+    <div class="user-card">
+      <div class="form-layout">
+        <!-- 左侧：头像上传 -->
+        <div class="avatar-section">
+          <h3 class="section-title">头像设置</h3>
           <el-upload
-              class="avatar-uploader"
-              action="#"
-              :show-file-list="false"
-              :before-upload="beforeAvatarUpload"
-              :http-request="handleAvatarUpload"
+            class="avatar-uploader"
+            action="#"
+            :show-file-list="false"
+            :before-upload="beforeAvatarUpload"
+            :http-request="handleAvatarUpload"
           >
-            <img v-if="userForm.avatar" :src="userForm.avatar" class="avatar" />
-            <el-icon v-else class="avatar-uploader-icon">
-              <Plus />
-            </el-icon>
+            <div class="avatar-container">
+              <img v-if="userForm.avatar" :src="userForm.avatar" class="avatar" />
+              <div v-else class="avatar-placeholder">
+                <el-icon class="avatar-uploader-icon">
+                  <Plus />
+                </el-icon>
+                <span class="upload-text">点击上传头像</span>
+              </div>
+              <div class="avatar-overlay">
+                <span class="overlay-text">更换头像</span>
+              </div>
+            </div>
           </el-upload>
-        </el-form-item>
+        </div>
 
-        <!-- 用户昵称 -->
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="userForm.nickname" placeholder="请输入昵称"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="userForm.email" placeholder="请输入邮箱"></el-input>
-        </el-form-item>
+        <!-- 右侧：用户信息表单 -->
+        <div class="form-section">
+          <h3 class="section-title">基本信息</h3>
 
-        <!-- 用户名 -->
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="userForm.username" placeholder="请输入用户名"></el-input>
-        </el-form-item>
-
-        <!-- 地址选择 -->
-        <el-form-item label="所在地区" prop="address">
-          <el-cascader
-              v-model="userForm.address"
-              :options="addressOptions"
-              :props="addressProps"
-              @change="handleAddressChange"
-              placeholder="请选择所在地区"
-              clearable
+          <el-form
+            :model="userForm"
+            :rules="rules"
+            ref="userFormRef"
+            label-width="100px"
+            class="user-form"
           >
-          </el-cascader>
-        </el-form-item>
+            <el-form-item label="昵称" prop="nickname">
+              <el-input
+                v-model="userForm.nickname"
+                placeholder="请输入昵称"
+                class="custom-input"
+              ></el-input>
+            </el-form-item>
 
-        <!-- 修改密码折叠面板 -->
-        <el-collapse v-model="activeCollapse">
+            <el-form-item label="邮箱" prop="email">
+              <el-input
+                v-model="userForm.email"
+                placeholder="请输入邮箱"
+                class="custom-input"
+              ></el-input>
+            </el-form-item>
+
+            <el-form-item label="用户名" prop="username">
+              <el-input
+                v-model="userForm.username"
+                placeholder="请输入用户名"
+                class="custom-input"
+              ></el-input>
+            </el-form-item>
+
+            <el-form-item label="所在地区" prop="address">
+              <el-cascader
+                v-model="userForm.address"
+                :options="addressOptions"
+                :props="addressProps"
+                @change="handleAddressChange"
+                placeholder="请选择所在地区"
+                clearable
+                class="custom-cascader"
+              >
+              </el-cascader>
+            </el-form-item>
+          </el-form>
+        </div>
+      </div>
+
+      <!-- 修改密码折叠面板 -->
+      <div class="password-section">
+        <el-collapse v-model="activeCollapse" class="password-collapse">
           <el-collapse-item title="修改密码" name="password">
+            <template #title>
+              <div class="collapse-title">
+                <span class="title-text">修改密码</span>
+              </div>
+            </template>
+
             <el-form-item label="原密码" prop="oldPassword">
-              <el-input v-model="userForm.oldPassword" type="password" placeholder="请输入原密码">
+              <el-input
+                v-model="userForm.oldPassword"
+                type="password"
+                placeholder="请输入原密码"
+                class="custom-input"
+              >
               </el-input>
             </el-form-item>
+
             <el-form-item label="新密码" prop="newPassword">
-              <el-input v-model="userForm.newPassword" type="password" placeholder="请输入新密码">
+              <el-input
+                v-model="userForm.newPassword"
+                type="password"
+                placeholder="请输入新密码"
+                class="custom-input"
+              >
               </el-input>
             </el-form-item>
+
             <el-form-item label="确认密码" prop="confirmPassword">
               <el-input
-                  v-model="userForm.confirmPassword"
-                  type="password"
-                  placeholder="请确认新密码"
+                v-model="userForm.confirmPassword"
+                type="password"
+                placeholder="请确认新密码"
+                class="custom-input"
               >
               </el-input>
             </el-form-item>
           </el-collapse-item>
         </el-collapse>
+      </div>
 
-        <!-- 提交按钮 -->
-        <el-form-item>
-          <el-button type="primary" @click="submitForm">保存修改</el-button>
-          <el-button @click="resetForm">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+      <!-- 提交按钮 -->
+      <div class="form-actions">
+        <el-button type="primary" @click="submitForm" class="submit-btn">
+          <span class="btn-icon">💾</span>
+          保存修改
+        </el-button>
+        <el-button @click="resetForm" class="reset-btn">
+          <span class="btn-icon">🔄</span>
+          重置
+        </el-button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -187,38 +241,38 @@ const addressProps = {
       }
 
       if (
-          response &&
-          response.data &&
-          (Array.isArray(response.data) ? response.data.length > 0 : true)
+        response &&
+        response.data &&
+        (Array.isArray(response.data) ? response.data.length > 0 : true)
       ) {
         const data = Array.isArray(response.data) ? response.data : [response.data]
 
         // 检查是否有子节点
         const nodes = await Promise.all(
-            data.map(async (item) => {
-              // 尝试获取子节点，判断是否为叶子节点
-              try {
-                const childResponse = await getAddressById(item.addressId)
-                if (!childResponse.data) {
-                  return
-                }
-                const hasChildren =
-                    childResponse &&
-                    childResponse.data &&
-                    (Array.isArray(childResponse.data) ? childResponse.data.length > 0 : true)
-
-                return {
-                  ...item,
-                  leaf: !hasChildren, // 如果没有子节点，则标记为叶子节点
-                }
-              } catch (error) {
-                console.error(`检查节点 ${item.addressId} 的子节点失败:`, error)
-                return {
-                  ...item,
-                  leaf: true, // 出错时默认为叶子节点
-                }
+          data.map(async (item) => {
+            // 尝试获取子节点，判断是否为叶子节点
+            try {
+              const childResponse = await getAddressById(item.addressId)
+              if (!childResponse.data) {
+                return
               }
-            }),
+              const hasChildren =
+                childResponse &&
+                childResponse.data &&
+                (Array.isArray(childResponse.data) ? childResponse.data.length > 0 : true)
+
+              return {
+                ...item,
+                leaf: !hasChildren, // 如果没有子节点，则标记为叶子节点
+              }
+            } catch (error) {
+              console.error(`检查节点 ${item.addressId} 的子节点失败:`, error)
+              return {
+                ...item,
+                leaf: true, // 出错时默认为叶子节点
+              }
+            }
+          }),
         )
 
         resolve(nodes)
@@ -259,7 +313,7 @@ const beforeAvatarUpload = (file) => {
 
 // 处理头像上传
 const handleAvatarUpload = (options) => {
-  const { file } =  options
+  const { file } = options
   userForm.avatar = file
   userForm.avatar1 = file
   const reader = new FileReader()
@@ -307,8 +361,7 @@ const resetForm = () => {
 const getUserInfo = async () => {
   try {
     // 正确获取用户信息
-    const userStore = useUserStore()
-    const userData = userStore.user
+    const userData = useUserStore().user
 
     if (userData) {
       console.log('获取到用户数据:', userData)
@@ -396,51 +449,410 @@ onMounted(async () => {
 
 <style scoped>
 .update-user-container {
-  padding: 50px;
+  min-height: 80vh;
+  padding: 40px 20px;
+  margin-top: 60px;
+}
+
+/* 页面头部 */
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-subtitle {
+  font-size: 1.1rem;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* 用户卡片 */
+.user-card {
   max-width: 800px;
   margin: 0 auto;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
 }
 
-.user-card {
-  margin-bottom: 20px;
-}
-
+/* 卡片头部 */
 .card-header {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  padding: 32px;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.header-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 20px;
+}
+
+.header-icon {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-text h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.header-text p {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* 表单布局 */
+.form-layout {
+  display: flex;
+  gap: 40px;
+  padding: 32px;
+  align-items: flex-start;
+}
+
+.avatar-section {
+  flex: 0 0 300px;
+  text-align: center;
+}
+
+.form-section {
+  flex: 1;
+}
+
+/* 表单样式 */
+.user-form {
+  padding: 0;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+/* 头像上传区域 */
+.avatar-section {
+  margin-bottom: 32px;
 }
 
 .avatar-uploader {
   text-align: center;
 }
 
-.avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-  object-fit: cover;
-}
-
-.avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
+.avatar-container {
   position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 50%;
   overflow: hidden;
-  transition: var(--el-transition-duration-fast);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
+.avatar-container:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(102, 126, 234, 0.3);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.avatar-container:hover .avatar-placeholder {
+  border-color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
 }
 
 .avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
-  line-height: 178px;
+  font-size: 2rem;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.upload-text {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 50%;
+}
+
+.avatar-container:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.overlay-text {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* 自定义输入框样式 */
+.custom-input :deep(.el-input__wrapper) {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1.5px solid rgba(102, 126, 234, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.03);
+  transition: all 0.3s ease;
+}
+
+.custom-input :deep(.el-input__wrapper:hover) {
+  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.08);
+}
+
+.custom-input :deep(.el-input__wrapper.is-focus) {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.custom-input :deep(.el-input__inner) {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.custom-input :deep(.el-input__inner::placeholder) {
+  color: #94a3b8;
+}
+
+/* 级联选择器样式 */
+.custom-cascader :deep(.el-cascader) {
+  width: 100%;
+}
+
+.custom-cascader :deep(.el-input__wrapper) {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1.5px solid rgba(102, 126, 234, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.03);
+  transition: all 0.3s ease;
+}
+
+.custom-cascader :deep(.el-input__wrapper:hover) {
+  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.08);
+}
+
+/* 密码部分样式 */
+.password-section {
+  padding: 0 32px 32px;
+}
+
+/* 折叠面板样式 */
+.password-collapse :deep(.el-collapse) {
+  border: none;
+}
+
+.password-collapse :deep(.el-collapse-item__header) {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-weight: 600;
+  color: #1e293b;
+  transition: all 0.3s ease;
+}
+
+.password-collapse :deep(.el-collapse-item__header:hover) {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-color: rgba(102, 126, 234, 0.2);
+}
+
+.password-collapse :deep(.el-collapse-item__content) {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.collapse-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-text {
+  font-weight: 600;
+}
+
+/* 表单操作按钮 */
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 20px auto;
+  padding-top: 32px;
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.reset-btn {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
+  border: 1.5px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #64748b;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.reset-btn:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-color: rgba(102, 126, 234, 0.3);
+  color: #1e293b;
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  margin-right: 8px;
+  font-size: 1.1rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .update-user-container {
+    padding: 20px 16px;
+  }
+
+  .user-card {
+    border-radius: 16px;
+  }
+
+  .form-layout {
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px 20px;
+  }
+
+  .avatar-section {
+    flex: none;
+    width: 100%;
+  }
+
+  .avatar-container {
+    width: 140px;
+    height: 140px;
+  }
+
+  .password-section {
+    padding: 0 20px 24px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .submit-btn,
+  .reset-btn {
+    width: 100%;
+    padding: 14px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-layout {
+    padding: 20px 16px;
+    gap: 20px;
+  }
+
+  .avatar-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .avatar-uploader-icon {
+    font-size: 1.5rem;
+  }
+
+  .upload-text {
+    font-size: 0.8rem;
+  }
+
+  .password-section {
+    padding: 0 16px 20px;
+  }
 }
 </style>

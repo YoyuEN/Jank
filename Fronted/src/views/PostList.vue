@@ -13,12 +13,17 @@
           {{ category }}
         </button>
       </div>
-      <div v-if="posts.length === 0 && !loading">暂无岗位信息</div>
+      <div v-if="posts.length === 0 && !loading" class="empty-state">
+        <div class="empty-icon">📝</div>
+        <div class="empty-text">暂无岗位信息</div>
+      </div>
       <PostCard v-for="post in filteredPosts" :key="post.postId" :post="post" />
     </div>
     <div class="sidebar-buttons">
-      <button @click="$router.push('/publish')" title="发布帖子" class="sidebar-btn">📝</button>
-      <button @click="scrollToTop" title="回到顶部" class="sidebar-btn">⬆️</button>
+      <button @click="$router.push('/publish')" title="发布帖子" class="sidebar-btn publish-btn">
+        📝
+      </button>
+      <button @click="scrollToTop" title="回到顶部" class="sidebar-btn scroll-btn">⬆️</button>
     </div>
   </div>
 </template>
@@ -42,21 +47,21 @@ export default {
       // 表单参数
       form: {},
       selectedCategory: '全部', // 新增：当前选中的分类
-      categories: ['全部', '前端', '后端', '算法', '运维', 'AI'] // 示例分类列表
+      categories: ['全部', '前端', '后端', '算法', '运维', 'AI'], // 示例分类列表
     }
   },
   computed: {
     filteredPosts() {
       if (this.selectedCategory === '全部') {
-        return this.posts;
+        return this.posts
       } else {
-        return this.posts.filter(post => {
+        return this.posts.filter((post) => {
           return Array.isArray(post.categoryNames)
             ? post.categoryNames.includes(this.selectedCategory)
-            : false;
-        });
+            : false
+        })
       }
-    }
+    },
   },
   props: {
     // 是否显示搜索条件
@@ -85,7 +90,7 @@ export default {
     },
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
+    },
   },
 }
 </script>
@@ -108,34 +113,91 @@ export default {
 }
 
 .sidebar-btn {
-  background-color: #007bff;
-  color: white;
+  width: 56px;
+  height: 56px;
   border: none;
-  width: 48px;
-  height: 48px;
-  font-size: 24px;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.scroll-btn {
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  color: white;
+}
+
+.publish-btn {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
 }
 
 .category-filter {
   display: flex;
   gap: 10px;
-  margin: 20px auto;
+  padding: 16px;
 }
 
 .category-btn {
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 14px;
+  color: #64748b;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.category-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.category-btn:hover::before {
+  opacity: 1;
+}
+
+.category-btn:hover {
+  transform: translateY(-1px);
+  color: #475569;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.12);
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
 .category-btn.active {
-  background-color: #77787c;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+  transform: translateY(-1px);
 }
 
+.category-btn.active::before {
+  opacity: 0;
+}
+
+.category-btn.active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+}
 </style>
