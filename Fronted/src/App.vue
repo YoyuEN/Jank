@@ -7,14 +7,12 @@
 
 <script setup>
 import AppHeader from './components/AppHeader.vue'
-
 </script>
 
 <style>
 .main {
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
 }
 
 #app {
@@ -26,7 +24,6 @@ import AppHeader from './components/AppHeader.vue'
   width: 85%;
   max-width: 1400px;
   margin: 0 auto;
-
 }
 
 .dark {
@@ -43,8 +40,6 @@ import AppHeader from './components/AppHeader.vue'
 .dark .menu a {
   color: #f0f0f0;
 }
-
-
 
 :root {
   --bg-color: #fff;
@@ -63,15 +58,12 @@ body {
   color: var(--text-color);
 }
 
-
 .dark .card,
 .dark-mode .card {
   background-color: #1e1e1e;
   border-color: #333;
   color: #f0f0f0;
 }
-
-
 
 .dark .post-body,
 .dark .post-card,

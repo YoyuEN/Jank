@@ -33,10 +33,10 @@
           </div>
         </div>
       </div>
+      <CommentList />
     </div>
     <div v-else class="no-data">未找到该岗位信息</div>
   </div>
-  <CommentsList />
 </template>
 
 <script setup>
@@ -45,7 +45,7 @@ import { useRoute } from 'vue-router'
 import { getPostDetail } from '@/api/posts/posts.js'
 import { marked } from 'marked'
 import AIagentSimple from '@/views/AIagentSimple.vue'
-import CommentsList from '@/components/CommentsList.vue'
+import CommentList from '@/components/CommentList.vue'
 
 const route = useRoute()
 const postId = route.params.postId
@@ -122,14 +122,11 @@ const handleScroll = () => {
 </script>
 
 <style>
-
-
 .comment-panel textarea {
   width: 100%;
   resize: none;
   margin-bottom: 16px;
 }
-
 
 .comment-panel h3 {
   margin-top: 0;
