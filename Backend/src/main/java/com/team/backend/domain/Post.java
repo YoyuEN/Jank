@@ -2,6 +2,7 @@ package com.team.backend.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.team.backend.handler.CategoryIdsTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,5 +42,6 @@ public class Post {
     //修改时间
     private String updateTime;
     // 删除状态
+    @TableLogic
     private int deleted;
 }

@@ -74,6 +74,7 @@ import DOMPurify from 'dompurify'
 import { addPostDetail } from '@/api/posts/posts.js'
 import { getCategoryList } from '@/api/posts/category/category'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/store/userStore'
 
 export default {
   name: 'PublishPost',
@@ -174,10 +175,12 @@ export default {
       this.publishing = true
 
       try {
+        const userStore = useUserStore()
         const formData = new FormData()
         formData.append('title', this.postForm.title)
         formData.append('contentHtml', this.postForm.contentHtml)
         formData.append('categoryNames', this.postForm.categoryNames)
+        formData.append('userId', userStore.user?.userId || '')
 
         // 如果有图片，则追加到 formData 中
         if (this.postForm.image) {

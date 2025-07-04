@@ -20,4 +20,9 @@ public interface ICategoryService extends IService<Category> {
      * @return 类目名称列表
      */
     List<String> listAllCategoryNames();
+
+    /*
+    *
+    * */
+    int removeByCategoryIds(List<String> categoryId);
 }

@@ -107,7 +107,7 @@ public class CommonUserController extends BaseController
     @DeleteMapping("/{userIds}")
     public AjaxResult remove(@PathVariable List<String> userIds)
     {
-        return toAjax(commonUserService.removeBatchByIds(userIds));
+        return toAjax(commonUserService.removeByUserIds(userIds));
     }
 
     /**

@@ -49,6 +49,12 @@
       </el-table-column>
       <el-table-column label="用户邮箱" align="center" prop="email" />
       <el-table-column label="用户名" align="center" prop="username" />
+      <el-table-column label="用户头像" align="center" prop="avatar">
+        <template slot-scope="scope">
+          <img v-if="scope.row.avatar" :src="scope.row.avatar" alt="头像" style="width:40px;height:40px;border-radius:50%;" />
+          <span v-else>无</span>
+        </template>
+      </el-table-column>
       <el-table-column label="用户地址" align="center" prop="address" />
       <!-- 修改后使用开关组件展示用户状态 -->
       <el-table-column label="用户状态" align="center" width="200">

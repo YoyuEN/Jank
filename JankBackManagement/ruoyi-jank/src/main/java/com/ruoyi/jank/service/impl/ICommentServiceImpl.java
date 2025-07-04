@@ -43,4 +43,18 @@ public class ICommentServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
         public List<Comment> selectCommentWithUserAndPost(Comment comment) {
             return commentMapper.selectCommentWithUserAndPost(comment);
         }
+
+    @Override
+    public List<Comment> getCommentByPostId(String postId) {
+        LambdaQueryWrapper<Comment> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Comment::getPostId,postId);
+        return list(lambdaQueryWrapper);
+    }
+
+    @Override
+    public List<Comment> getCommentByUserId(String userId) {
+        LambdaQueryWrapper<Comment> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Comment::getUserId,userId);
+        return list(lambdaQueryWrapper);
+    }
 }

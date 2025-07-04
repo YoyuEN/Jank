@@ -46,7 +46,8 @@ public class PostController {
             @RequestParam("title") String title,
             @RequestParam("contentHtml") String contentHtml,
             @RequestParam("categoryNames") List<String> categoryNames,
-            @RequestParam("image") MultipartFile image) throws Exception {
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("userId") String userId) throws Exception {
 
         // 构造 PostVO 或直接调用 service
         PostVO postVO = new PostVO();
@@ -54,6 +55,11 @@ public class PostController {
         postVO.setContentHtml(contentHtml);
         postVO.setCategoryNames(categoryNames);
         postVO.setImage(image);
+        if (userId != null) {
+            postVO.setUserId(userId);
+        } else {
+            throw new Exception("请先登录");
+        }
 
         postService.addPost(postVO);
         return Result.success(ResponseCode.SUCCESS);
