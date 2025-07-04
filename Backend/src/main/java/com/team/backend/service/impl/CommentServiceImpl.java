@@ -264,4 +264,21 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
         return startVO;
     }
+
+    @Override
+    public List<Comment> getCommentsUserId(String userId) {
+        if (userId == null){
+            return null;
+        }
+        return lambdaQuery().eq(Comment::getUserId,userId).list();
+    }
+
+    @Override
+    public void removeCommentById(String commentId) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getCommentId,commentId);
+        Comment comment = super.getOne(wrapper);
+        comment.setDeleted(1);
+        super.updateById(comment);
+    }
 }

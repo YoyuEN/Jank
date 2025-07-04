@@ -45,4 +45,8 @@ public interface ICommentService extends IService<Comment> {
     void addCommentgood(CommentsVO params);
 
     StartVO getCommentsStarts(String postId);
+
+    List<Comment> getCommentsUserId(String userId);
+
+    void removeCommentById(String commentId);
 }

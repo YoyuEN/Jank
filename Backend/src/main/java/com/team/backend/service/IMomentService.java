@@ -20,4 +20,8 @@ public interface IMomentService extends IService<Moment> {
     void likeMoment(String momentId);
 
 
+    // 根据用户id查询朋友圈
+    List<Moment> getUserIdMoment(String userId);
+
+    Boolean removeMomentById(String momentId);
 }

@@ -65,4 +65,10 @@ public class PostController {
         List<Post> post = postService.getUserIdPost(userId);
         return Result.success(ResponseCode.SUCCESS, post);
     }
+    //删除帖子
+    @DeleteMapping("/deletePost")
+    public Result<Boolean> deletePost(@RequestParam("postId") String postId) {
+        boolean flag =  postService.removeAllById(postId);
+        return Result.success(ResponseCode.SUCCESS,flag);
+    }
 }

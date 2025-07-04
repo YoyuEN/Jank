@@ -1,6 +1,7 @@
 package com.team.backend.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,5 +25,6 @@ public class Verification {
     //修改时间
     private String updateTime;
     // 删除状态
+//    @TableLogic
     private int deleted;
 }

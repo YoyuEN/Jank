@@ -2,11 +2,13 @@ package com.team.backend.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.team.backend.handler.CategoryIdsTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -18,7 +20,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post {
+public class Post implements Serializable {
+    private static final long serialVersionUID = 1L;
     // 帖子唯一标识
     @TableId
     private String postId;
@@ -41,5 +44,6 @@ public class Post {
     //修改时间
     private String updateTime;
     // 删除状态
-    private int deleted;
+//    @TableLogic
+    private Integer deleted;
 }

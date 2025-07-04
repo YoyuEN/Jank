@@ -67,3 +67,12 @@ export function addMomentComment(data) {
   return service.post('/moment/addMomentComment', data)
 }
 
+/*
+根据用户id获取朋友圈列表
+ */
+export function getUserIdMoment(userId) {
+  return service.get('/moment/getUserIdMoment',{
+    params: {
+      userId
+    }})
+}
