@@ -56,5 +56,7 @@ public class Comment implements Serializable {
     @TableField("update_time")
     private Date updateTime;
     private Integer deleted;
+    private CommonUser user;
+    private Post post;
 
 }

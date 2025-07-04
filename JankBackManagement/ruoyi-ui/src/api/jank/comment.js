@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+export function listCommentWithUserAndPost(query) {
+  return request({
+    url: '/jank/comment/listWithUserAndPost',
+    method: 'get',
+    params: query
+  })
+}
 // 查询评论功能列表
 export function listComment(query) {
   return request({

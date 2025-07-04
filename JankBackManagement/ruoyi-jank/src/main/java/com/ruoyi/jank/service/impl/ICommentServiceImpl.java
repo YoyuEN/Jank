@@ -20,6 +20,9 @@ import java.util.List;
  */
 @Service
 public class ICommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements ICommentService {
+    @Autowired
+    private CommentMapper commentMapper;
+
     @Override
     //查询评论列表
     public List<CommentDto> selectCommentList(Comment comment) {
@@ -35,4 +38,9 @@ public class ICommentServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
         });
         return CommentDtoList;
     }
+
+        @Override
+        public List<Comment> selectCommentWithUserAndPost(Comment comment) {
+            return commentMapper.selectCommentWithUserAndPost(comment);
+        }
 }
