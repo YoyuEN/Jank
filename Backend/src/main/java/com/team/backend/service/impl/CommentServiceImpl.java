@@ -6,6 +6,7 @@ import com.team.backend.domain.Comment;
 import com.team.backend.domain.User;
 import com.team.backend.domain.vo.CommentVO;
 import com.team.backend.domain.vo.CommentWithUserVO;
+import com.team.backend.domain.vo.CommentsVO;
 import com.team.backend.mapper.CommentMapper;
 import com.team.backend.mapper.UserMapper;
 import com.team.backend.service.ICommentService;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import com.team.backend.handler.ResponseResult;
 
@@ -41,34 +39,34 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         baseMapper.insert(comment);
     }
 
-    @Override
-    public ResponseResult getArticleRatingStats(String articleId) {
-        List<Comment> comments = commentMapper.getCommentsByArticleId(articleId);
-
-        // 统计好评、一般、差评的数量
-        long goodCount = comments.stream()
-                .filter(c -> c.getGoodorbad() >= 4)
-                .count();
-
-        long averageCount = comments.stream()
-                .filter(c -> c.getGoodorbad() >= 2 && c.getGoodorbad() <= 3)
-                .count();
-
-        long badCount = comments.stream()
-                .filter(c -> c.getGoodorbad() <= 1)
-                .count();
-
-        long total = comments.size();
-
-        // 返回统计结果
-        Map<String, Object> result = new HashMap<>();
-        result.put("good", goodCount);
-        result.put("average", averageCount);
-        result.put("bad", badCount);
-        result.put("total", total);
-
-        return ResponseResult.success(result);
-    }
+//    @Override
+//    public ResponseResult getArticleRatingStats(String articleId) {
+//        List<Comment> comments = commentMapper.getCommentsByArticleId(articleId);
+//
+//        // 统计好评、一般、差评的数量
+//        long goodCount = comments.stream()
+//                .filter(c -> c.getGoodorbad() >= 4)
+//                .count();
+//
+//        long averageCount = comments.stream()
+//                .filter(c -> c.getGoodorbad() >= 2 && c.getGoodorbad() <= 3)
+//                .count();
+//
+//        long badCount = comments.stream()
+//                .filter(c -> c.getGoodorbad() <= 1)
+//                .count();
+//
+//        long total = comments.size();
+//
+//        // 返回统计结果
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("good", goodCount);
+//        result.put("average", averageCount);
+//        result.put("bad", badCount);
+//        result.put("total", total);
+//
+//        return ResponseResult.success(result);
+//    }
 
     @Override
     public boolean addComment(Comment comment) {
@@ -179,46 +177,12 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 //    }
 
     @Override
-    public List<CommentVO> getCommentsByArticleId(String postId) {
+    public List<Comment> getCommentsByArticleId(String postId) {
         // 查询文章下的所有评论
         List<Comment> comments = lambdaQuery()
                 .eq(Comment::getPostId, postId)
-                .orderByAsc(Comment::getCreateTime)
                 .list();
-
-        // 构建评论VO并关联用户信息
-        Map<Long, CommentVO> commentMap = new HashMap<>();
-        comments.forEach(comment -> {
-            CommentVO vo = new CommentVO();
-            BeanUtils.copyProperties(comment, vo);
-
-            // 查询用户信息
-            User user = userMapper.selectById(comment.getUserId());
-            if (user != null) {
-                vo.setUsername(user.getUsername());
-                vo.setAvatar(user.getAvatar());
-            }
-
-            commentMap.put(comment.getCommentId(), vo);
-        });
-
-        // 构建评论层级结构
-        List<CommentVO> rootComments = new ArrayList<>();
-        commentMap.forEach((id, commentVO) -> {
-            if (commentVO.getParentId() == null) {
-                rootComments.add(commentVO);
-            } else {
-                CommentVO parent = commentMap.get(commentVO.getParentId());
-                if (parent != null) {
-                    if (parent.getReplies() == null) {
-                        parent.setReplies(new ArrayList<>());
-                    }
-                    parent.getReplies().add(commentVO);
-                }
-            }
-        });
-
-        return rootComments;
+        return comments;
     }
 
 
@@ -243,31 +207,19 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         return statistics;
     }
 
-
+    //获取评论和星级
     @Override
-    public CommentVO addComment(String userId, String postId, String content, String parentId) {
-        Comment comment = new Comment();
-        comment.setUserId(userId);
-        comment.setPostId(postId);
-        comment.setContent(content);
-        comment.setParentId(parentId);
-        comment.setCreateTime(LocalDateTime.now());
-        save(comment);
-
-        // 构建返回的VO对象
-        CommentVO vo = new CommentVO();
-        BeanUtils.copyProperties(comment, vo);
-
-        // 查询用户信息
-        User user = userMapper.selectById(userId);
-        if (user != null) {
-            vo.setUsername(user.getUsername());
-            vo.setAvatar(user.getAvatar());
+    public void addCommentgood(CommentsVO params) {
+        if (params == null){
+            return;
         }
-
-        return vo;
+        Comment comment = new Comment();
+        comment.setCommentId(UUID.randomUUID().toString());
+        comment.setPostId(params.getPostId());
+        comment.setUserId(params.getUserId());
+        comment.setUsername(params.getUsername());
+        comment.setGoodorbad(params.getGoodorbad());
+        comment.setContent(params.getContent());
+        super.save(comment);
     }
-
-
-
 }
