@@ -19,4 +19,7 @@ public interface ICommonUserService extends IService<CommonUser> {
     String getUsernameById(String userId);
     // 更新用户状态
     boolean updateUserStatus(String userId, Integer freeze);
+    int removeByUserIds(List<String> userIds);
+
+    String getAvatarUrlByUserId(String userId);
 }

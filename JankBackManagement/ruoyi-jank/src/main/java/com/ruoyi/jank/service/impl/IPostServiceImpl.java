@@ -6,15 +6,13 @@ import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.jank.domain.Post;
 import com.ruoyi.jank.domain.vo.PostVO;
 import com.ruoyi.jank.mapper.PostMapper;
-import com.ruoyi.jank.service.ICategoryService;
-import com.ruoyi.jank.service.ICommonUserService;
-import com.ruoyi.jank.service.IPostService;
-import com.ruoyi.jank.service.MinioService;
-import org.apache.commons.lang3.StringUtils;
+import com.ruoyi.jank.service.*;
+import com.ruoyi.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,14 +21,22 @@ import java.util.List;
  */
 @Service
 public class IPostServiceImpl extends ServiceImpl<PostMapper, Post> implements IPostService {
+
     @Autowired
     private ICategoryService categoryService;
+
     @Autowired
     private IPostService postService;
+
     @Autowired
     private MinioService minioService;
+
     @Autowired
     private ICommonUserService commonUserService;
+
+    @Autowired
+    private ICommentService commentService;
+
     @Override
     public List<PostVO> selectPostList(Post post) {
         List<PostVO> postVOList = new ArrayList<>();
@@ -51,5 +57,27 @@ public class IPostServiceImpl extends ServiceImpl<PostMapper, Post> implements I
             postVOList.add(postVO);
         });
         return postVOList;
+    }
+
+    @Override
+    public int removeByPostId(List<String> postIds) {
+        for (String id : postIds) {
+            Post post = postService.getById(id);
+            // 根据帖子ID查询评论列表，如果为空则可以删除，否则无法删除
+            if (post == null || StringUtils.isNotEmpty(commentService.getCommentByPostId(id))) {
+                // 进行异常处理
+                throw new RuntimeException("帖子正在被使用，请勿删除");
+            } else {
+                removeById(id);
+            }
+        }
+        return 1;
+    }
+
+    @Override
+    public List<Post> getPostByUserId(String userId) {
+        LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Post::getUserId,userId);
+        return list(wrapper);
     }
 }

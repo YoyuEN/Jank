@@ -12,4 +12,8 @@ import java.util.List;
  */
 public interface IPostService extends IService<Post> {
     List<PostVO> selectPostList(Post post);
+
+    int removeByPostId(List<String> postIds);
+
+    List<Post> getPostByUserId(String userId);
 }

@@ -114,21 +114,11 @@ const loadMore = () => {
 // 用于跟踪当前正在回复的评论ID
 const route = useRoute()
 const postId = route.params.postId
-// const post = ref(null)
-// const loading = ref(true)
 const showCommentPanel = ref(false)
 const newComment = ref('')
 const ratingValue = ref(null) // 新增：评分值
 const colors = ['#99A9BF', '#F7BA2A', '#FF9900']
 
-// const submitComment = () => {
-//   if (newComment.value.trim()) {
-//     alert('模拟提交评论: ' + newComment.value)
-//     // TODO: 调用 API 提交评论
-//     newComment.value = ''
-//     showCommentPanel.value = false
-//   }
-// }
 const submitComment = async () => {
   // 检查用户是否登录
   const token = localStorage.getItem('token')

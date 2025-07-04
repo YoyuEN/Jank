@@ -28,7 +28,6 @@ public class MinioServiceImpl implements MinioService {
         this.minioClient = minioClient;
     }
 
-
     /*
      * 上传文件到 MinIO
      *
@@ -86,12 +85,6 @@ public class MinioServiceImpl implements MinioService {
         }
         return objectNames;
     }
-
-    /*
-    * 上传多个文件
-    * */
-
-
 
     /**
      * 获取 MinIO 文件的预签名访问 URL

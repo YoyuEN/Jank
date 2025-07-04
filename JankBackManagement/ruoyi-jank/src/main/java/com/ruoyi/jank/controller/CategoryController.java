@@ -101,7 +101,7 @@ public class CategoryController extends BaseController
 	@DeleteMapping("/{categoryIds}")
     public AjaxResult remove(@PathVariable List<String> categoryIds)
     {
-        return toAjax(categoryService.removeBatchByIds(categoryIds));
+        return toAjax(categoryService.removeByCategoryIds(categoryIds));
     }
     
     /**

@@ -54,6 +54,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         post.setContentHtml(postVO.getContentHtml());
         post.setCategoryNames(postVO.getCategoryNames());
         post.setVisibility(true);
+        post.setUserId(postVO.getUserId());
 
         super.save(post);
     }
