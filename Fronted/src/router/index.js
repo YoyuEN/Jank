@@ -71,6 +71,11 @@ const routes = [
     name: 'PublishMoment',
     component: PublishMoment,
   },
+  {
+    path: '/chat',
+    name: 'Chat',
+    component: () => import('@/views/AIagent.vue'),
+  },
 ]
 
 const router = createRouter({

@@ -13,6 +13,7 @@ import AppHeader from './components/AppHeader.vue'
 .main {
   flex-direction: column;
   align-items: center;
+  min-height: 80vh;
 }
 
 #app {

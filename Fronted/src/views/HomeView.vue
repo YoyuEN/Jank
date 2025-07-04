@@ -8,7 +8,7 @@
         <div class="hero-buttons">
           <button class="btn-primary" @click="navigateToPosts">浏览博客</button>
           <button class="btn-secondary" @click="navigateToMoments">查看动态</button>
-          <button class="btn-ai" @click="toggleAI">AI 助手</button>
+          <button class="btn-ai" @click="navigateChat">AI 助手</button>
         </div>
       </div>
     </div>
@@ -16,10 +16,6 @@
     <!-- AI 智能体区域 - 可折叠 -->
     <div v-if="showAI" class="ai-section">
       <div class="content-wrapper">
-        <div class="ai-header">
-          <h3>AI 智能助手</h3>
-          <button class="btn-close" @click="toggleAI">×</button>
-        </div>
         <div class="ai-container">
           <AIagent />
         </div>
@@ -92,13 +88,7 @@
         <div v-if="layout === 'sidebar'" class="sidebar-layout">
           <!-- 左侧：AI助手 -->
           <div class="sidebar-ai">
-            <div class="ai-sidebar-header">
-              <h3>AI 智能助手</h3>
-              <p>与AI对话，探索无限可能</p>
-            </div>
-            <div class="ai-sidebar-container">
-              <AIagent />
-            </div>
+            <AIagent />
           </div>
 
           <!-- 右侧：博客内容 -->
@@ -150,10 +140,14 @@ export default {
     const navigateToMoments = () => {
       router.push({ name: 'Moments' })
     }
+    const navigateChat = () => {
+      router.push({ name: 'Chat' })
+    }
 
     return {
       navigateToPosts,
       navigateToMoments,
+      navigateChat,
     }
   },
   created() {
@@ -490,12 +484,9 @@ export default {
 
 .sidebar-ai {
   flex: 0 0 400px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
   position: sticky;
   top: 80px;
@@ -522,7 +513,6 @@ export default {
 
 .ai-sidebar-container {
   padding: 24px;
-  max-height: 500px;
   overflow: hidden;
 }
 
