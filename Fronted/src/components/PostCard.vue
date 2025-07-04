@@ -28,8 +28,6 @@
 
       <div class="post-content" v-html="post.contentHtml.slice(0, 100) + '...'"></div>
 
-
-
       <div class="card-footer">
         <div class="read-more">
           <span>阅读更多</span>
@@ -472,13 +470,13 @@ onUnmounted(() => {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255, 0.05); /* 更透明的背景 */
+  background-color: rgba(255, 255, 255, 0.2); /* 半透明背景 */
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   padding: 20px;
   z-index: 100;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .pie-chart {
