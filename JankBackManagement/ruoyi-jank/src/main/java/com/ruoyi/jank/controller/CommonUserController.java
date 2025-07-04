@@ -29,7 +29,6 @@ public class CommonUserController extends BaseController
     @Autowired
     private ICommonUserService commonUserService;
 
-
     @GetMapping("/check-username")
     public AjaxResult checkUsernameExist(@RequestParam String username) {
         if (StringUtils.isBlank(username)) {

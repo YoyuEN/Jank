@@ -35,7 +35,6 @@ public class CommentController extends BaseController
 {
     @Autowired
     private ICommentService commentService;
-
     /**
      * 查询评论功能列表
      */

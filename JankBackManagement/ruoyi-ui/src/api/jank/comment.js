@@ -24,9 +24,7 @@ export function addComment(data) {
     method: 'post',
     data: data
   })
-}
-
-// 修改评论功能
+}// 修改评论功能
 export function updateComment(data) {
   return request({
     url: '/jank/comment',

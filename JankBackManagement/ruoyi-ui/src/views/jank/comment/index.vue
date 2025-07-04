@@ -61,6 +61,9 @@
           {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
+      <el-table-column label="用户姓名" align="center" prop="userName" />
+      <el-table-column label="文章标题" align="center" prop="postTitle" />
+      <el-table-column label="文章内容" align="center" prop="postContent" :show-overflow-tooltip="true" />
       <el-table-column label="评论内容" align="center" prop="content" :formatter="removePTags" width="500"/>
       <el-table-column label="评论时间" align="center" prop="createTime" :formatter="formatTime"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">

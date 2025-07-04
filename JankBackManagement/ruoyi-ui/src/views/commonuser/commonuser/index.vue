@@ -107,16 +107,23 @@
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入用户名" />
         </el-form-item>
-        <el-form-item label="用户所在地址" prop="address" label-width="100px">
+        <el-form-item label="所在地区" prop="address" label-width="100px">
           <el-cascader
             ref="addressCascader"
             v-model="selectedAddress"
             :options="options"
             :props="addressProps"
             @change="handleAddressChange"
-            placeholder="请选择所在地区"
+            placeholder="请选择省市区"
             clearable>
           </el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" prop="detailAddress">
+          <el-input
+            v-model="form.detailAddress"
+            placeholder="请输入街道、门牌号等详细地址"
+            clearable
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -136,6 +143,7 @@ export default {
   name: "Commonuser",
   data() {
     return {
+      selectedAddress: [], // 确保初始化为数组
       // 控制状态开关是否可修改
       canModifyStatus: true,
       // 批量操作时是否禁用
@@ -167,7 +175,10 @@ export default {
         address: null
       },
       // 表单参数
-      form: {},
+      form: {
+        address: null,
+        detailAddress: null
+      },
       // 表单校验
       rules: {
         email: [
@@ -196,7 +207,6 @@ export default {
         lazy: true,
         lazyLoad: this.lazyLoadAddress
       },
-      selectedAddress: [] // 选中的地址ID数组
     };
   },
   created() {
@@ -343,6 +353,25 @@ export default {
 
       getCommonuser(userId).then(response => {
         this.form = response.data;
+        // 拆分地址数据
+        if (this.form.address) {
+          const addressParts = this.form.address.split('/');
+
+          // 省市区部分（前三个部分）
+          const regionParts = addressParts.slice(0, 3);
+          // 详细地址部分（剩余部分）
+          const detailAddress = addressParts.slice(3).join('/');
+
+          // 设置详细地址
+          this.form.detailAddress = detailAddress;
+
+          // 如果有地址数据，设置selectedAddress
+          if (regionParts.length > 0) {
+            // 将地址字符串拆分为数组
+            // 在options中查找对应的地址ID
+            this.findAndSetAddressIds(regionParts);
+          }
+        }
         // 如果有地址数据，设置selectedAddress
         if (this.form.address) {
           // 将地址字符串拆分为数组
@@ -389,9 +418,28 @@ export default {
       }
     },
     /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
+     submitForm() {
+      this.$refs["form"].validate(async valid => {
         if (valid) {
+          // // 拼接完整地址：省市区/详细地址
+          // if (this.form.address && this.form.detailAddress) {
+          //   // 先获取省市区部分
+          //   const regionAddress = this.selectedAddress.length > 0
+          //     ? this.getAddressPathById(this.selectedAddress).join('/')
+          //     : this.form.address.split('/').slice(0, 3).join('/');
+          //
+          //   // 拼接完整地址
+          //   this.form.address = `${regionAddress}/${this.form.detailAddress}`;
+          //
+          //   //this.form.address = `${this.form.address}/${this.form.detailAddress}`;
+          // }
+          // 拼接完整地址：省市区/详细地址
+          if (this.selectedAddress && this.selectedAddress.length > 0 && this.form.detailAddress) {
+            const regionParts = await this.getAddressPathById(this.selectedAddress);
+            if (regionParts.length > 0) {
+              this.form.address = `${regionParts.join('/')}/${this.form.detailAddress}`;
+            }
+          }
           if (this.form.userId != null) {
             updateCommonuser(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
