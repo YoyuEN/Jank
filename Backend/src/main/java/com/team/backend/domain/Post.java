@@ -1,6 +1,7 @@
 package com.team.backend.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.team.backend.handler.CategoryIdsTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,10 @@ import java.util.List;
 @NoArgsConstructor
 public class Post {
     // 帖子唯一标识
+    @TableId
     private String postId;
+    // 帖子作者用户 ID
+    private String userId;
     // 帖子标题
     private String title;
     // 帖子封面图片 URL
@@ -30,8 +34,8 @@ public class Post {
     @TableField("content_html")
     private String contentHtml;
     // 帖子所属分类 ID
-    @TableField(value = "category_ids", typeHandler = CategoryIdsTypeHandler.class)
-    private List<String> categoryIds;
+    @TableField(exist = false)
+    private List<String> categoryNames;
     // 创建时间
     private String createTime;
     //修改时间

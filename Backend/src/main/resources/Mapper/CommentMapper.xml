@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team.backend.mapper.CommentMapper">
+
+<!--<select id="getPostGoodOrBad" parameterType="com.team.backend.domain.Comment" resultType="int">-->
+<!--    SELECT-->
+<!--        SUM(CASE WHEN goodorbad BETWEEN 0 AND 1 THEN 1 ELSE 0 END) AS bad_count,-->
+<!--        SUM(CASE WHEN goodorbad BETWEEN 2 AND 3 THEN 1 ELSE 0 END) AS average_count,-->
+<!--        SUM(CASE WHEN goodorbad BETWEEN 4 AND 5 THEN 1 ELSE 0 END) AS good_count-->
+<!--    FROM comment-->
+<!--    GROUP BY post_id;-->
+<!--</select>-->
+<!--    <select id="getCommentsByArticleId" resultType="com.team.backend.domain.Comment">-->
+<!--        SELECT *-->
+<!--        FROM comment-->
+<!--        WHERE post_id = #{postId}-->
+<!--        ORDER BY create_time DESC-->
+<!--    </select>-->
+</mapper>

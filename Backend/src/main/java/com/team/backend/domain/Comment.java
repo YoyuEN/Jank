@@ -1,39 +1,57 @@
 package com.team.backend.domain;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.AllArgsConstructor;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 /**
  * @Author: YoyuEN
- * @Date: 2025/6/23
- * @Time: 16:30
- * @Description: 评论
+ * @Date: 2025/6/24
+ * @Time: 10:37
+ * @Description: 评论实体类
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@TableName("comment")
 public class Comment {
-    // 评论唯一标识
+
+    /**
+     * 评论ID
+     * 使用AUTO策略，依赖数据库的自增功能
+     */
+    @TableId
     private String commentId;
-    // 评论内容
-    private String content;
+
     // 评论所属用户ID
     private String userId;
+
+    private String username;
+
+    private String replyToCommentId;
+
     // 评论所属文章ID
     private String postId;
-    // 回复的目标评论ID
-    private String replyToCommentId;
-    // 子评论列表
-    @TableField(exist = false)
-    private List<Comment> replies;
+
+    private String rootParentId;
+
+    private String avatar;
+
+    // 评论内容
+    private String content;
+
+    // 父评论ID，如果是顶级评论则为null
+    private String parentId;
+
+    private Integer goodorbad;
+
     // 创建时间
     private String createTime;
-    //修改时间
     private String updateTime;
-    // 删除状态
-    private int deleted;
+
+    @TableLogic
+    private Integer deleted;
 }

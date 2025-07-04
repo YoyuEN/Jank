@@ -63,9 +63,9 @@
 
     <el-table v-loading="loading" :data="categoryList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="类目唯一标识" align="center" prop="categoryId" />
-      <el-table-column label="类目名称" align="center" prop="name" />
-      <el-table-column label="类目描述" align="center" prop="description" />
+      <el-table-column label="序号" align="center" prop="categoryId" width="100px"/>
+      <el-table-column label="类目名称" align="center" prop="name" width="100px"/>
+      <el-table-column label="类目描述" align="center" prop="description" :formatter="removePTags" width="700px"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -95,38 +95,19 @@
     />
 
     <!-- 添加或修改类目管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="类目名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入类目名称" />
         </el-form-item>
-        <el-form-item label="类目描述">
-          <editor v-model="form.description" :min-height="192"/>
+        <el-form-item label="类目描述" prop="description">
+          <editor v-model="form.description" :min-height="192" />
         </el-form-item>
         <el-form-item label="父类目ID" prop="parentId">
           <el-input v-model="form.parentId" placeholder="请输入父类目ID" />
         </el-form-item>
         <el-form-item label="类目图标路径" prop="path">
           <el-input v-model="form.path" placeholder="请输入类目图标路径" />
-        </el-form-item>
-        <el-form-item label="创建时间" prop="createdAt">
-          <el-date-picker clearable
-                          v-model="form.createdAt"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="请选择创建时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="更新时间" prop="updatedAt">
-          <el-date-picker clearable
-                          v-model="form.updatedAt"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="请选择更新时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="是否删除" prop="deleted">
-          <el-input v-model="form.deleted" placeholder="请输入是否删除" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -286,6 +267,12 @@ export default {
       this.download('jank/category/export', {
         ...this.queryParams
       }, `category_${new Date().getTime()}.xlsx`)
+    },
+    removePTags(row, column, cellValue) {
+      if (cellValue) {
+        return cellValue.replace(/<p>/g, '').replace(/<\/p>/g, '');
+      }
+      return '';
     }
   }
 };

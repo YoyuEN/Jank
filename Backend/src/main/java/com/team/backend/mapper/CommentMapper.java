@@ -1,10 +1,10 @@
 package com.team.backend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.team.backend.domain.Category;
 import com.team.backend.domain.Comment;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @Author: YoyuEN
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
  * @Description:
  */
 @Mapper
-@Repository
 public interface CommentMapper extends BaseMapper<Comment> {
+    int getPostGoodOrBad(String postId);
+    List<Comment> getCommentsByArticleId(String postId);
 }

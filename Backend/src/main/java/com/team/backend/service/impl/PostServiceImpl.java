@@ -1,19 +1,17 @@
 package com.team.backend.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.team.backend.domain.Moment;
+import com.team.backend.domain.MomentComment;
 import com.team.backend.domain.Post;
-import com.team.backend.domain.dto.PostPageResult;
+import com.team.backend.domain.vo.PostVO;
 import com.team.backend.mapper.PostMapper;
+import com.team.backend.service.ICategoryService;
 import com.team.backend.service.IPostService;
-import com.team.backend.utils.ResponseCode;
-import com.team.backend.utils.Result;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.team.backend.service.MinioService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -25,35 +23,62 @@ import java.util.List;
  */
 @Service
 public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IPostService {
-    private final PostMapper postMapper;
-    
-    
-    public PostServiceImpl(PostMapper postMapper) {
-        this.postMapper = postMapper;
+    private final MinioService minioService;
+    private final ICategoryService categoryService;
+    public PostServiceImpl(MinioService minioService, ICategoryService categoryService) {
+        this.minioService = minioService;
+        this.categoryService = categoryService;
+    }
+    //新增帖子
+    @Override
+    public void addPost(PostVO postVO) throws Exception {
+        String imageUrl = null;
+        if (postVO.getImage() != null && !postVO.getImage().isEmpty()) {
+            imageUrl = minioService.uploadFile(postVO.getImage());
+        }
+
+        if (postVO.getTitle() == null && postVO.getContentHtml() == null && postVO.getCategoryNames() == null) {
+            return;
+        }
+
+        Post post = new Post();
+        post.setTitle(postVO.getTitle());
+        post.setImage(imageUrl);
+        post.setContentHtml(postVO.getContentHtml());
+        post.setCategoryNames(postVO.getCategoryNames());
+        post.setVisibility(true);
+
+        super.save(post);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<Post> getPosts(int pageSize, int page) {
-        // 确保 page 从 1 开始，MyBatis-Plus 默认 page 从 1 开始
-        int validPage = Math.max(1, page);
-        int validPageSize = Math.max(1, pageSize);
+    public List<Post> getPostList() {
+        // 查询所有动态
+        LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
+        List<Post> postList = this.list(wrapper);
 
-        // 创建分页对象
-        Page<Post> pageData = new Page<>(validPage, validPageSize);
+        for (Post post : postList) {
+            String postId = post.getPostId();
 
-        // 添加查询条件，过滤已删除记录
-        QueryWrapper<Post> wrapper = new QueryWrapper<>();
-        wrapper.eq("deleted", 0);
+            List<String> categoryNames = categoryService.getCategoryNamesByPostId(postId);
+            post.setCategoryNames(categoryNames);
 
-        // 执行分页查询
-        pageData = postMapper.selectPage(pageData, wrapper);
-
-        // 打印调试信息
-        System.out.println("总记录数: " + pageData.getTotal());
-        System.out.println("计算的总页数: " + pageData.getPages());
-        System.out.println("当前页记录: " + pageData.getRecords().size());
-
-        return pageData;
+            String image = post.getImage();
+            post.setImage(minioService.getPresignedUrl(image));
+//            BeanUtils.copyProperties(post, post);
+        }
+        return postList;
     }
+
+    //根据用户id查询帖子
+    @Override
+    public List<Post> getUserIdPost(String userId) {
+        if(userId == null){
+            return null;
+        }
+        LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Post::getUserId, userId);
+        return super.list(queryWrapper);
+    }
+
 }
