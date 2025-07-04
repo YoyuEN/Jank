@@ -75,10 +75,35 @@
               </el-table-column>
               <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
                 <template slot-scope="scope" v-if="scope.row.userId !== 1">
-                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:user:edit']">修改</el-button>
-                  <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:user:remove']">删除</el-button>
-                  <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
-                    <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
+                  <el-button
+                    size="mini"
+                    type="text"
+                    icon="el-icon-edit"
+                    @click="handleUpdate(scope.row)"
+                    v-hasPermi="['system:user:edit']"
+                    :disabled="scope.row.status === '1'"
+                  >修改</el-button>
+                  <el-button
+                    size="mini"
+                    type="text"
+                    icon="el-icon-delete"
+                    @click="handleDelete(scope.row)"
+                    v-hasPermi="['system:user:remove']"
+                    :disabled="scope.row.status === '1'"
+                  >删除</el-button>
+                  <el-dropdown
+                    size="mini"
+                    @command="(command) => handleCommand(command, scope.row)"
+                    v-hasPermi="['system:user:resetPwd', 'system:user:edit']"
+                    :disabled="scope.row.status === '1'"
+                    class="el-dropdown-disabled"
+                  >
+                    <el-button
+                      size="mini"
+                      type="text"
+                      icon="el-icon-d-arrow-right"
+                      :disabled="scope.row.status === '1'"
+                    >更多</el-button>
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item command="handleResetPwd" icon="el-icon-key" v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
                       <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check" v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
@@ -372,13 +397,30 @@ export default {
     },
     // 用户状态修改
     handleStatusChange(row) {
-      let text = row.status === "0" ? "启用" : "停用";
+      // 保存原始状态，以便在取消时恢复
+      const originalStatus = row.status;
+      // 计算新状态（切换后的状态）
+      const newStatus = originalStatus === "0" ? "1" : "0";
+      // 计算状态文本描述
+      let text = newStatus === "0" ? "启用" : "冻结";
+
       this.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(function() {
-        return changeUserStatus(row.userId, row.status);
+        // 用户点击确定，调用API更改状态
+        return changeUserStatus(row.userId, newStatus);
       }).then(() => {
+        // API调用成功
         this.$modal.msgSuccess(text + "成功");
-      }).catch(function() {
-        row.status = row.status === "0" ? "1" : "0";
+
+        // 如果是冻结操作，提示用户冻结后的限制
+        if (newStatus === "1") {
+          this.$modal.msgInfo("用户已冻结，该用户将无法进行任何操作");
+        }
+
+        // 刷新用户列表，确保状态显示正确
+        this.getList();
+      }).catch(() => {
+        // 用户点击取消或API调用失败，恢复原始状态
+        row.status = originalStatus;
       });
     },
     // 取消按钮
@@ -509,6 +551,26 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row.userId || this.ids;
+
+      // 检查是否为单个用户删除
+      if (row.userId) {
+        // 检查用户状态，如果是冻结状态（status === "1"），则不允许删除
+        if (row.status === "1") {
+          this.$modal.msgError("冻结状态的用户不允许删除");
+          return;
+        }
+      } else {
+        // 批量删除时，检查选中的用户中是否有冻结状态的用户
+        const frozenUsers = this.userList.filter(user =>
+          this.ids.includes(user.userId) && user.status === "1"
+        );
+
+        if (frozenUsers.length > 0) {
+          this.$modal.msgError("选中的用户中包含冻结状态的用户，不允许删除");
+          return;
+        }
+      }
+
       this.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function() {
         return delUser(userIds);
       }).then(() => {

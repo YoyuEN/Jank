@@ -27,5 +27,9 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-system</artifactId>
         </dependency>
-           </dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+    </dependencies>
 </project>

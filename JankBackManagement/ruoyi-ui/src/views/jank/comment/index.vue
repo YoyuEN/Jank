@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="评论内容" prop="content" label-width="150px">
+      <el-form-item label="评论内容" prop="content">
         <el-input
           v-model="queryParams.content"
           placeholder="请输入评论内容"

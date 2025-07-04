@@ -9,12 +9,12 @@ export function getNestedCommentList(postId) {
 }
 
 // 获取文章评论列表
-export function getCommentByUserId(postId) {
-  return request({
-    url: `/comment/comments/${postId}`,  // 移除重复的api前缀
-    method: 'get'
-  })
-}
+// export function getCommentByUserId(postId) {
+//   return request({
+//     url: `/comment/comments/${postId}`,  // 移除重复的api前缀
+//     method: 'get'
+//   })
+// }
 
 // 提交评论
 export function submitComment(data) {

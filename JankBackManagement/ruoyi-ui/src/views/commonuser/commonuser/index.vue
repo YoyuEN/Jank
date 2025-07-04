@@ -61,7 +61,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="commonuserList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="commonuserList" @selection-change="handleSelectionChange" :row-style="rowStyle">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" width="60">
         <template slot-scope="scope">
@@ -70,23 +70,40 @@
       </el-table-column>
       <el-table-column label="用户邮箱" align="center" prop="email" />
       <el-table-column label="用户名" align="center" prop="username" />
-      <el-table-column label="用户状态" align="center" prop="freeze"/>
+      <el-table-column label="用户地址" align="center" prop="address" />
+      <!-- 修改后使用开关组件展示用户状态 -->
+      <el-table-column label="用户状态" align="center" width="200">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.freeze"
+            :active-value="1"
+            :inactive-value="0"
+            active-text="启用"
+            inactive-text="冻结"
+            @change="handleStatusChange(scope.row)"
+            :disabled="!canModifyStatus"
+          />
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['commonuser:commonuser:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['commonuser:commonuser:remove']"
-          >删除</el-button>
+          <template v-if="scope.row.freeze === 1">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['commonuser:commonuser:edit']"
+            >修改</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['commonuser:commonuser:remove']"
+            >删除</el-button>
+          </template>
+          <span v-else style="color:#999">已冻结</span>
         </template>
       </el-table-column>
     </el-table>
@@ -134,12 +151,16 @@
 <script>
 import { listCommonuser, getCommonuser, delCommonuser, addCommonuser, updateCommonuser } from "@/api/commonuser/commonuser";
 import { getProvinces, getChildrenByPId } from "@/api/address/address";
-import { checkUsernameExist } from "@/api/commonuser/commonuser"; // 根据实际路径调整
+import { checkUsernameExist,updateCommonuserStatus } from "@/api/commonuser/commonuser"; // 根据实际路径调整
 
 export default {
   name: "Commonuser",
   data() {
     return {
+      // 控制状态开关是否可修改
+      canModifyStatus: true,
+      // 批量操作时是否禁用
+      isBatchOperation: false,
       value: true,
       // 遮罩层
       loading: true,
@@ -176,8 +197,16 @@ export default {
         ],
         username: [
           { required: true, message: "请输入用户名,用户名不能为空", trigger: "blur" },
-          { validator: this.validateUsernameUnique, trigger: 'blur' }
+          { validator:this.validateUsernameUnique, trigger: 'blur' }
         ],
+        phone: [
+          {message: '请输入手机号', trigger: 'blur' },
+          {
+            pattern: /^1[3-9]\d{9}$/, // 中国大陆手机号正则表达式
+            message: '请输入正确的手机号格式',
+            trigger: 'blur'
+          }
+        ]
       },
       options: [], // 省份选项
       addressProps: {
@@ -196,6 +225,15 @@ export default {
     this.loadProvinces();
   },
   methods: {
+    rowStyle({ row}) {
+      // 行样式
+      if (row.freeze==0) {
+        return {
+          color: '#999',backgroundColor: '#f5f7fa'
+        };
+      }
+      return {};
+    },
     async validateUsernameUnique(rule, value, callback) {
       if (!value) {
         callback(new Error('用户名不能为空'));
@@ -234,6 +272,42 @@ export default {
       this.reset();
     },
     // 表单重置
+    /** 处理用户状态变更 */
+    handleStatusChange(row) {
+      // 发送请求更新用户状态
+      const params = {
+        userId: row.userId,
+        freeze: row.freeze ? 1 : 0  // 将布尔值转换为整数
+      };
+
+        return updateCommonuserStatus(params);
+        // 刷新列表数据
+        this.getList();
+    },
+
+    /** 处理表单中的状态变更 */
+    handleFormStatusChange(value) {
+      if (this.form.userId) {
+        const params = {
+          userId: this.form.userId,
+          freeze: value ? 1 : 0  // 将布尔值转换为整数
+        };
+        updateCommonuserStatus(params).then(() => {
+          this.$message({
+            message: value ? "用户已成功启用" : "用户已成功冻结",
+            type: "success"
+          });
+        }).catch(() => {
+          // 恢复原状态
+          this.form.freeze = !value;
+        });
+      }
+    },
+    /** 控制操作按钮是否禁用 */
+    isOperationDisabled(row) {
+      // 如果用户被冻结，则禁用所有操作按钮
+      return !row.freeze;
+    },
     reset() {
       this.form = {
         userId: null,
@@ -253,6 +327,7 @@ export default {
       this.selectedAddress = [];
       this.resetForm("form");
     },
+
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -277,8 +352,16 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
+      if (this.isOperationDisabled(row)) {
+        this.$message({
+          message: "该用户已被冻结，无法进行修改操作",
+          type: "warning"
+        });
+        return;
+      }
       this.reset();
-      const userId = row.userId || this.ids
+      const userId = row.userId || this.ids;
+
       getCommonuser(userId).then(response => {
         this.form = response.data;
         // 如果有地址数据，设置selectedAddress
@@ -348,6 +431,13 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
+      if (this.isOperationDisabled(row)) {
+        this.$message({
+          message: "该用户已被冻结，无法进行删除操作",
+          type: "warning"
+        });
+        return;
+      }
       const userIds = row.userId || this.ids;
       this.$modal.confirm('是否确认删除用户管理编号为"' + userIds + '"的数据项？').then(function() {
         return delCommonuser(userIds);
@@ -462,3 +552,11 @@ export default {
   }
 };
 </script>
+<style>
+.el-switch__core {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 60px !important;
+}
+</style>
