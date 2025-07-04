@@ -177,7 +177,8 @@ export default {
       // 表单参数
       form: {
         address: null,
-        detailAddress: null
+        detailAddress: null,
+        username: null
       },
       // 表单校验
       rules: {
@@ -187,7 +188,7 @@ export default {
         ],
         username: [
           { required: true, message: "请输入用户名,用户名不能为空", trigger: "blur" },
-          { validator:this.validateUsernameUnique, trigger: 'blur' }
+          { validator:this.checkUsernameExists, trigger: 'blur' }
         ],
         phone: [
           {message: '请输入手机号', trigger: 'blur' },
@@ -214,6 +215,27 @@ export default {
     this.loadProvinces();
   },
   methods: {
+    // 检查用户名是否存在的验证函数
+    checkUsernameExists(rule, value, callback) {
+      // 空值校验已在前面的规则中处理
+      if (!value) {
+        return callback();
+      }
+
+      // 发送异步请求检查用户名是否存在
+      checkUsernameExist(value).then(response => {
+        if (response.data) {
+          // 用户名已存在
+          callback(new Error("用户名已存在"));
+        } else {
+          // 用户名可用
+          callback();
+        }
+      }).catch(error => {
+        console.error("检查用户名存在失败", error);
+        callback(new Error("检查用户名失败，请重试"));
+      });
+    },
     rowStyle({ row}) {
       // 行样式
       if (row.freeze==0) {
@@ -223,25 +245,6 @@ export default {
       }
       return {};
     },
-    async validateUsernameUnique(rule, value, callback) {
-      if (!value) {
-        callback(new Error('用户名不能为空'));
-        return;
-      }
-
-      try {
-        const response = await checkUsernameExist(value); // 假设你有这个API
-        if (response.exist) {
-          callback(new Error('该用户名已存在，请重新输入'));
-        } else {
-          callback();
-        }
-      } catch (error) {
-        console.error('检查用户名失败:', error);
-        //callback(new Error('无法验证用户名是否存在'));
-      }
-    }
-,
     /** 查询用户管理列表 */
     getList() {
       this.loading = true;
@@ -579,11 +582,29 @@ export default {
   }
 };
 </script>
-<style>
-.el-switch__core {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 60px !important;
+
+<style scoped>
+/* 仅在当前组件生效的样式 */
+.el-form-item.is-error .el-input__inner {
+  border-color: #f56c6c;
+}
+
+.el-form-item.is-error .el-input__append,
+.el-form-item.is-error .el-input__prepend {
+  border-color: #f56c6c;
+}
+
+.el-form-item__error {
+  position: relative;
+  top: 0;
+  left: 0;
+  margin-top: 4px;
+  padding: 0 5px;
+  font-size: 12px;
+  color: #f56c6c;
+}
+
+.el-message--error {
+  display: none;
 }
 </style>
