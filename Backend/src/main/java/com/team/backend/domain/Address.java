@@ -1,5 +1,6 @@
 package com.team.backend.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Address {
-    private String addressId;
+    @TableId
+    private Integer addressId;
     private String address;
     private String pId;
     private String level;

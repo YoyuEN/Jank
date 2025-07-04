@@ -45,6 +45,7 @@
               :props="addressProps"
               @change="handleAddressChange"
               placeholder="请选择所在地区"
+              clearable
           >
           </el-cascader>
         </el-form-item>
@@ -82,14 +83,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watchEffect } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { getAddressById, getAddress } from '@/api/address/address.js'
 import { updateUser } from '@/api/user/user.js'
 import { useUserStore } from '@/store/userStore'
 import { useRouter } from 'vue-router'
-
+import { watchEffect } from 'vue'
 const router = useRouter()
 // 表单引用
 const userFormRef = ref(null)
@@ -97,22 +98,23 @@ const userFormRef = ref(null)
 // 折叠面板激活项
 const activeCollapse = ref([])
 const userStore = useUserStore()
-// 使用 userStore 中的用户数据
-const user = ref(
-    userStore.user || {
-      userId: '',
-    },
-)
-// 监听 store 的变化（响应式更新头像）
-watchEffect(() => {
-  if (userStore.user) {
-    user.value = userStore.user
-  }
-})
+// // 使用 userStore 中的用户数据
+// const user = ref(
+//     userStore.user || {
+//       userId: '',
+//     },
+// )
+// // 监听 store 的变化（响应式更新头像）
+// watchEffect(() => {
+//   if (userStore.user) {
+//     user.value = userStore.user
+//   }
+// })
 // 表单数据
 const userForm = reactive({
-  userId: user.value.userId,
+  userId: '',
   avatar: '',
+  avatar1: '',
   nickname: '',
   email: '',
   username: '',
@@ -120,6 +122,10 @@ const userForm = reactive({
   oldPassword: '',
   newPassword: '',
   confirmPassword: '',
+})
+
+watchEffect(() => {
+  console.log('地址路径更新为:', userForm.address)
 })
 
 // 表单验证规则
@@ -193,6 +199,9 @@ const addressProps = {
               // 尝试获取子节点，判断是否为叶子节点
               try {
                 const childResponse = await getAddressById(item.addressId)
+                if (!childResponse.data) {
+                  return
+                }
                 const hasChildren =
                     childResponse &&
                     childResponse.data &&
@@ -224,19 +233,6 @@ const addressProps = {
   },
 }
 
-// 获取地址数据
-const loadAddressData = async () => {
-  try {
-    console.log('开始加载地址数据...')
-    // 不需要在这里加载数据，因为级联选择器会通过lazy load自动加载
-    return true
-  } catch (error) {
-    ElMessage.error('初始化地址选择器失败')
-    console.error('初始化地址选择器失败:', error)
-    return false
-  }
-}
-
 // 处理地址选择变化
 const handleAddressChange = async (value) => {
   if (value && value.length > 0) {
@@ -263,8 +259,9 @@ const beforeAvatarUpload = (file) => {
 
 // 处理头像上传
 const handleAvatarUpload = (options) => {
-  // 这里应该调用实际的上传API
-  // 临时使用 FileReader 预览
+  const { file } =  options
+  userForm.avatar = file
+  userForm.avatar1 = file
   const reader = new FileReader()
   reader.readAsDataURL(options.file)
   reader.onload = () => {
@@ -275,13 +272,25 @@ const handleAvatarUpload = (options) => {
 // 提交表单
 const submitForm = async () => {
   if (!userFormRef.value) return
-  const response = await updateUser(userForm)
-  console.log('提交的用户数据:', user)
+  userForm.avatar = userForm.avatar1
+  const formData = new FormData()
+  formData.append('userId', userStore.user.userId)
+  formData.append('avatar', userForm.avatar)
+  formData.append('nickname', userForm.nickname)
+  formData.append('email', userForm.email)
+  formData.append('username', userForm.username)
+  formData.append('address', userForm.address)
+  formData.append('oldPassword', userForm.oldPassword)
+  formData.append('newPassword', userForm.newPassword)
+  formData.append('confirmPassword', userForm.confirmPassword)
+
+  const response = await updateUser(formData)
+  console.log('提交的用户数据:', userStore.user)
   if (response.code === 200) {
     // 这里应该调用实际的保存API
     ElMessage.success('保存成功')
     userStore.setUserInfo(response.data)
-    router.push('/posts')
+    await router.push('/posts')
   } else {
     ElMessage.error('保存失败')
   }
@@ -376,7 +385,11 @@ const buildAddressPath = async (addressData) => {
 
 // 页面加载时获取地址数据和用户信息
 onMounted(async () => {
-  await loadAddressData()
+  if (!userStore.user || !userStore.user.userId) {
+    ElMessage.error('用户信息缺失，请重新登录')
+    await router.push('/login')
+    return
+  }
   await getUserInfo()
 })
 </script>

@@ -2,6 +2,7 @@ package com.team.backend.controller;
 
 import com.team.backend.domain.Address;
 import com.team.backend.domain.User;
+import com.team.backend.domain.dto.UserDTO;
 import com.team.backend.domain.vo.LoginUserVO;
 import com.team.backend.domain.vo.RegisterUserVO;
 import com.team.backend.domain.vo.UpdateUserVO;
@@ -10,6 +11,7 @@ import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @Author: YoyuEN
@@ -28,9 +30,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Result<User> login(@RequestBody LoginUserVO userVO){
-        User user = userService.login(userVO);
-        return Result.success(ResponseCode.SUCCESS, user);
+    public Result<UserDTO> login(@RequestBody LoginUserVO userVO){
+        UserDTO userDTO = userService.login(userVO);
+        return Result.success(ResponseCode.SUCCESS, userDTO);
     }
 
     @PostMapping("/register")
@@ -49,7 +51,18 @@ public class UserController {
 
     //修改用户信息
     @PostMapping("/updateUser")
-    public Result<User> updateUser(@RequestBody UpdateUserVO user) throws Exception {
+    public Result<User> updateUser(
+            @RequestParam("userId") String userId,
+            @RequestParam("username") String username,
+            @RequestParam("nickname") String nickname,
+            @RequestParam("avatar") MultipartFile avatar,
+            @RequestParam("email") String email,
+            @RequestParam("oldPassword") String oldPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            @RequestParam("address") String[] address
+    ) throws Exception {
+        UpdateUserVO user = new UpdateUserVO(userId, username, nickname, avatar, email, oldPassword, newPassword, confirmPassword, address);
         User user1 = userService.updateUser(user);
         return Result.success(ResponseCode.SUCCESS,user1);
     }

@@ -5,7 +5,7 @@
     <div class="post-meta">
       <span class="post-time">{{ post.createTime }}</span>
       <span class="post-categories">
-        <span v-for="id in post.categoryIds" :key="id" class="category-tag">#{{ id }}</span>
+        <span v-for="id in post.categoryNames" :key="id" class="category-tag">#{{ id }}</span>
       </span>
     </div>
     <div class="post-content" v-html="post.contentHtml.slice(0, 100) + '...'"></div>

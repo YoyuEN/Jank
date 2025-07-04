@@ -412,16 +412,8 @@ export default {
             this.form.address = addressPath.join('/');
             console.log('设置地址:', this.form.address);
           }
-          // else {
-          //   // 如果选择的不是三级地址，则清空
-          //   this.form.address = '';
-          //   this.$message.warning('请选择完整的省市区三级地址');
-          // }
         });
       }
-      // else {
-      //   this.form.address = '';
-      // }
     },
 
     /** 根据ID获取地址路径 */

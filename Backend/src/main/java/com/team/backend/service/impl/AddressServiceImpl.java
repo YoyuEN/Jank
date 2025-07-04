@@ -25,4 +25,12 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address> impl
         wrapper.eq(Address::getPId,addressId);
         return list(wrapper);
     }
+
+    @Override
+    public Integer getAddressIdByAddress(String address) {
+        // 根据地址获取id
+        LambdaQueryWrapper<Address> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Address::getAddress,address);
+        return getOne(wrapper).getAddressId();
+    }
 }
