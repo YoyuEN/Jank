@@ -29,10 +29,10 @@ public class ICommonUserServiceImpl extends ServiceImpl<CommonUserMapper, Common
     }
     @Override
     public List<CommonUser> selectCommonUserList(CommonUser commonUser) {
-        LambdaQueryWrapper<CommonUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(StringUtils.isNotEmpty(commonUser.getUsername()), CommonUser::getUsername, commonUser.getUsername());
-        return super.list(wrapper);
-
+//        LambdaQueryWrapper<CommonUser> wrapper = new LambdaQueryWrapper<>();
+//        wrapper.like(StringUtils.isNotEmpty(commonUser.getUsername()), CommonUser::getUsername, commonUser.getUsername());
+//        return super.list(wrapper);
+        return commonUserMapper.selectCommentUserList(commonUser);
     }
 
     @Override

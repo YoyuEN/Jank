@@ -14,4 +14,24 @@
     <update id="updateFreezeStatus">
         update user set freeze = #{freeze} where user_id = #{userId}
     </update>
+
+    <resultMap id="CommentWithUserAndPostResult" type="CommonUser">
+        <id     property="userId"       column="user_id"      />
+        <!-- 其他user字段映射 -->
+        <result property="email" column="email" />
+        <result property="username" column="username" />
+        <result property="address" column="address" />
+        <result property="freeze" column="freeze" />
+        <result property="createTime" column="create_time" />
+
+    </resultMap>
+
+    <select id="selectCommentUserList" resultMap="CommentWithUserAndPostResult">
+        SELECT
+        u.email, u.username,u.address,u.freeze
+        FROM
+        user u
+        ORDER BY u.create_time DESC  <!-- 按 createTime 降序（从晚到早） -->
+
+    </select>
 </mapper>

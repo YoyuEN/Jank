@@ -23,4 +23,6 @@ public interface CommonUserMapper extends BaseMapper<CommonUser> {
     int countByUsername(@Param("username") String username);
     // 更新用户状态
     int updateFreezeStatus(@Param("userId") String userId, @Param("freeze") Integer freeze);
+
+    List<CommonUser> selectCommentUserList(CommonUser commonUser);
 }
