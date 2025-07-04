@@ -103,4 +103,14 @@ public class CategoryController extends BaseController
     {
         return toAjax(categoryService.removeBatchByIds(categoryIds));
     }
+    
+    /**
+     * 获取所有类目名称列表
+     */
+    @GetMapping("/names")
+    public AjaxResult listAllCategoryNames()
+    {
+        List<String> categoryNames = categoryService.listAllCategoryNames();
+        return success(categoryNames);
+    }
 }

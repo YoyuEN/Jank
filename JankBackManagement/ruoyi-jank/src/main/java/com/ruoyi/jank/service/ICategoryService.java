@@ -14,4 +14,10 @@ import java.util.List;
 public interface ICategoryService extends IService<Category> {
     List<CategoryDto> selectCategoryList(Category category);
     List<String> selectCategoryNamesByPostId(String postId);
+    
+    /**
+     * 获取所有类目名称列表
+     * @return 类目名称列表
+     */
+    List<String> listAllCategoryNames();
 }

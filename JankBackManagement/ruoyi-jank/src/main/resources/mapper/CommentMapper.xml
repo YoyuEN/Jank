@@ -21,4 +21,40 @@
     <delete id="deleteById" parameterType="com.ruoyi.jank.domain.Comment">
         DELETE FROM comment WHERE comment_id = #{comment_id}
     </delete>
+
+    <!-- CommentMapper.xml -->
+    <resultMap id="CommentWithUserAndPostResult" type="Comment">
+        <id     property="commentId"       column="id"      />
+        <!-- 其他comment字段映射 -->
+        <result property="content" column="content" />
+        <result property="createTime" column="create_time" />
+
+        <!-- 关联用户信息 -->
+        <association property="user" javaType="com.ruoyi.jank.domain.CommonUser">
+            <id     property="userId"   column="user_id"  />
+            <result property="username" column="username" />
+        </association>
+
+        <!-- 关联文章信息 -->
+        <association property="post" javaType="com.ruoyi.jank.domain.Post">
+            <id     property="postId"    column="post_id"   />
+            <result property="title"     column="title"    />
+            <result property="contentHtml" column="content_html" />
+        </association>
+    </resultMap>
+
+    <select id="selectCommentWithUserAndPost" resultMap="CommentWithUserAndPostResult">
+        SELECT
+        c.content,c.create_time,
+        u.user_id, u.username,
+        p.post_id, p.title, p.content_html
+        FROM
+        comment c
+        LEFT JOIN
+        user u ON c.user_id = u.user_id
+        LEFT JOIN
+        post p ON c.post_id = p.post_id
+        ORDER BY c.create_time DESC  <!-- 按 createTime 降序（从晚到早） -->
+
+    </select>
 </mapper>

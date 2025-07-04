@@ -29,7 +29,6 @@ public class CommonUserController extends BaseController
     @Autowired
     private ICommonUserService commonUserService;
 
-
     @GetMapping("/check-username")
     public AjaxResult checkUsernameExist(@RequestParam String username) {
         if (StringUtils.isBlank(username)) {
@@ -55,18 +54,18 @@ public class CommonUserController extends BaseController
         return getDataTable(list);
     }
 
-//    /**
-//     * 导出用户管理列表
-//     */
-//    @PreAuthorize("@ss.hasPermi('commonuser:commonuser:export')")
-//    @Log(title = "用户管理", businessType = BusinessType.EXPORT)
-//    @PostMapping("/export")
-//    public void export(HttpServletResponse response, CommonUser commonUser)
-//    {
-//        List<CommonUser> list = commonUserService.selectCommonUserList(commonUser);
-//        ExcelUtil<CommonUser> util = new ExcelUtil<CommonUser>(CommonUser.class);
-//        util.exportExcel(response, list, "用户管理数据");
-//    }
+    /**
+     * 导出用户管理列表
+     */
+    @PreAuthorize("@ss.hasPermi('commonuser:commonuser:export')")
+    @Log(title = "用户管理", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, CommonUser commonUser)
+    {
+        List<CommonUser> list = commonUserService.selectCommonUserList(commonUser);
+        ExcelUtil<CommonUser> util = new ExcelUtil<CommonUser>(CommonUser.class);
+        util.exportExcel(response, list, "用户管理数据");
+    }
 
     /**
      * 获取用户管理详细信息
@@ -109,6 +108,17 @@ public class CommonUserController extends BaseController
     public AjaxResult remove(@PathVariable List<String> userIds)
     {
         return toAjax(commonUserService.removeBatchByIds(userIds));
+    }
+
+    /**
+     * 更新用户状态
+     */
+    @PreAuthorize("@ss.hasPermi('commonuser:commonuser:edit')")
+    @Log(title = "用户状态", businessType = BusinessType.UPDATE)
+    @PutMapping("/updateStatus")
+    public AjaxResult updateStatus(@RequestBody CommonUser user) {
+        boolean result = commonUserService.updateUserStatus(user.getUserId(), user.getFreeze());
+        return result ? AjaxResult.success() : AjaxResult.error("状态更新失败");
     }
 }
 

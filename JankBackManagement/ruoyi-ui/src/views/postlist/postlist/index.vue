@@ -26,16 +26,6 @@
           v-hasPermi="['post:post:add']"
         >新增</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['post:post:export']"
-        >导出</el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -60,7 +50,6 @@
         </template>
       </el-table-column>
       <el-table-column label="帖子所属分类" align="center" prop="categoryNames" />
-      <el-table-column label="帖子可见性状态" align="center" prop="visibility" />
       <el-table-column label="用户" align="center" prop="username" />
 <!--      <el-table-column label="创建时间" align="center" prop="createTime" width="100">-->
 <!--        <template slot-scope="scope">-->
@@ -101,7 +90,7 @@
     />
 
     <!-- 添加或修改帖子对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="帖子标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入帖子标题" />

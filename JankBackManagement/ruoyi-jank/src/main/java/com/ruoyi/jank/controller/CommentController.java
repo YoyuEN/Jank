@@ -36,6 +36,12 @@ public class CommentController extends BaseController
     @Autowired
     private ICommentService commentService;
 
+    @GetMapping("/listWithUserAndPost")
+    public TableDataInfo listWithUserAndPost(Comment comment) {
+        startPage();
+        List<Comment> list = commentService.selectCommentWithUserAndPost(comment);
+        return getDataTable(list);
+    }
     /**
      * 查询评论功能列表
      */

@@ -41,4 +41,18 @@ public class ICategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> 
     public List<String> selectCategoryNamesByPostId(String postId) {
         return baseMapper.selectCategoryNamesByPostId(postId);
     }
+    
+    @Override
+    public List<String> listAllCategoryNames() {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(Category::getName);
+        List<Category> categories = this.list(queryWrapper);
+        List<String> categoryNames = new ArrayList<>();
+        categories.forEach(category -> {
+            if (!categoryNames.contains(category.getName())) {
+                categoryNames.add(category.getName());
+            }
+        });
+        return categoryNames;
+    }
 }

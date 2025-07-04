@@ -3,6 +3,7 @@ package com.ruoyi.jank.domain;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.annotation.Excel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,15 +44,19 @@ import java.io.Serializable;
 public class CommonUser implements Serializable {
     private static final long serialVersionUID = 1L;
     @TableId
+    @Excel(name = "用户唯一标识")
     private String userId;
     private String nickname;
     private String avatar;
+    @Excel(name = "邮箱")
     private String email;
+    @Excel(name = "用户名")
     private String username;
     private String password;
     private String phone;
     private String accessToken;
     private String refreshToken;
+    @Excel(name = "用户状态")
     private Integer freeze;
     private String createTime;
     private String updateTime;

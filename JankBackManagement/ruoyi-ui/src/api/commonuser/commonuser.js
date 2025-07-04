@@ -17,6 +17,14 @@ export function checkUsernameExist(username) {
   });
 }
 
+export function updateCommonuserStatus(data) {
+  return request({
+    url: '/commonuser/commonuser/updateStatus',
+    method: 'put',
+    data: data
+  })
+}
+
 // 查询用户管理详细
 export function getCommonuser(userId) {
   return request({

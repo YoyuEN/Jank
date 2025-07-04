@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="评论内容" prop="content" label-width="150px">
+      <el-form-item label="评论内容" prop="content">
         <el-input
           v-model="queryParams.content"
           placeholder="请输入评论内容"
@@ -16,17 +16,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['jank:comment:add']"
-        >新增
-        </el-button>
-      </el-col>
       <el-col :span="1.5">
         <el-button
           type="success"
@@ -70,6 +59,28 @@
       <el-table-column label="序号" align="center" width="60">
         <template slot-scope="scope">
           {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
+      <el-table-column label="用户姓名" align="center" prop="user.username" >
+        <template slot-scope="scope">
+          <span class="empty-value">
+<span v-if="scope.row.user && scope.row.user.username" class="normal-text">
+      {{ scope.row.user.username }}
+    </span>
+    <span v-else class="anonymous-text">
+      <i class="el-icon-user-solid"></i> 匿名用户
+    </span>
+  </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="文章标题" align="center" prop="post.title" >
+        <template slot-scope="scope">
+        <span v-if="scope.row.post && scope.row.post.title" class="normal-text">
+      {{ scope.row.post.title }}
+    </span>
+          <span v-else class="no-title-text">
+      <i class="el-icon-warning-outline"></i> 该文章暂无标题
+    </span>
         </template>
       </el-table-column>
       <el-table-column label="评论内容" align="center" prop="content" :formatter="removePTags" width="500"/>
@@ -129,7 +140,7 @@
 
 <script>
 import { listComment, getComment, delComment, addComment, updateComment } from '@/api/jank/comment'
-
+import { listCommentWithUserAndPost } from '@/api/jank/comment'
 export default {
   name: 'Comment',
   data() {
@@ -194,7 +205,7 @@ export default {
     /** 查询评论功能列表 */
     getList() {
       this.loading = true
-      listComment(this.queryParams).then(response => {
+      listCommentWithUserAndPost(this.queryParams).then(response => {
         // 按照 createTime 降序排列（从晚到早）
         const sortedList = response.rows.sort((a, b) => {
           return new Date(b.createTime) - new Date(a.createTime)
@@ -302,3 +313,29 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.normal-text {
+  color: #333;
+}
+
+.anonymous-text {
+  color: #F56C6C;
+  font-weight: bold;
+  background-color: #fef0f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.no-title-text {
+  color: #E6A23C;
+  font-weight: bold;
+  background-color: #fdf6ec;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.el-icon-user-solid, .el-icon-warning-outline {
+  margin-right: 5px;
+}
+</style>
