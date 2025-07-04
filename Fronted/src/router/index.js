@@ -1,31 +1,30 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import PostList from '@/views/PostList.vue';
-import LoginForm from '@/views/LoginForm.vue';
+import { createRouter, createWebHistory } from 'vue-router'
+import PostList from '@/views/PostList.vue'
+import LoginForm from '@/views/LoginForm.vue'
 import Register from '@/views/Register.vue'
 import MomentView from '@/views/MomentView.vue'
 import PublishMoment from '@/views/PublishMoment.vue'
-import StatisticsAdd from '@/views/StatisticsAdd.vue';
 
 const routes = [
   {
     path: '/login',
     name: 'LoginForm',
-    component: LoginForm
+    component: LoginForm,
   },
   {
-    path:'/register',
+    path: '/register',
     name: 'Register',
-    component: Register
+    component: Register,
   },
   {
     path: '/posts',
     name: 'PostList',
-    component: PostList
+    component: PostList,
   },
   {
     path: '/posts/:postId',
     name: 'PostDetail',
-    component: () => import('@/views/PostDetail.vue')
+    component: () => import('@/views/PostDetail.vue'),
   },
   {
     path: '/',
@@ -35,7 +34,7 @@ const routes = [
   {
     path: '/moments',
     name: 'Moments',
-    component: MomentView
+    component: MomentView,
   },
   {
     path: '/home',
@@ -70,18 +69,13 @@ const routes = [
   {
     path: '/publishMoment',
     name: 'PublishMoment',
-    component: PublishMoment
+    component: PublishMoment,
   },
-  {
-    path: '/statistics',
-    name: 'Statistics',
-    component: StatisticsAdd,
-  }
-];
+]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-});
+})
 
-export default router;
+export default router

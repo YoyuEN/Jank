@@ -23,7 +23,7 @@ public class Comment {
      * 评论ID
      * 使用AUTO策略，依赖数据库的自增功能
      */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private String commentId;
 
     // 评论所属用户ID
