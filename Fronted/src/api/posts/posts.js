@@ -25,3 +25,7 @@ export function getUserIdPost(userId) {
     },
   })
 }
+
+export function updatePost(postId){
+  return service.put(`/post/updatePost/${postId}`)
+}

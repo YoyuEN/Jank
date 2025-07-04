@@ -19,4 +19,6 @@ public interface IPostService extends IService<Post> {
     List<Post> getUserIdPost(String userId);
     //获取帖子列表
     List<Post> getPostList();
+
+    Boolean removeAllById(String postId);
 }

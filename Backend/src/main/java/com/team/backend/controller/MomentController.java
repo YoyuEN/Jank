@@ -86,4 +86,17 @@ public class MomentController {
         momentCommentService.addMomentComment(momentId, content, userId);
         return Result.success(ResponseCode.SUCCESS, "评论成功");
     }
+    /*
+    根据用户id获取朋友圈
+     */
+    @GetMapping("/getUserIdMoment")
+    public Result<List<Moment>> getMomentByUserId(@RequestParam("userId") String userId){
+        return Result.success(ResponseCode.SUCCESS, momentService.getUserIdMoment(userId));
+    }
+    //删除朋友圈
+    @DeleteMapping("/deleteMoment")
+    public Result<Boolean> removeMoment(@RequestParam("momentId") String momentId){
+        boolean flag = momentService.removeMomentById(momentId);
+        return Result.success(ResponseCode.SUCCESS, flag);
+    }
 }

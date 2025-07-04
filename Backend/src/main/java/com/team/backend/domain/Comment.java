@@ -52,6 +52,6 @@ public class Comment {
     private String createTime;
     private String updateTime;
 
-    @TableLogic
+//    @TableLogic
     private Integer deleted;
 }

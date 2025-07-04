@@ -1,16 +1,21 @@
 package com.team.backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.team.backend.domain.Comment;
 import com.team.backend.domain.Moment;
 import com.team.backend.domain.MomentComment;
 import com.team.backend.domain.Post;
 import com.team.backend.domain.vo.PostVO;
 import com.team.backend.mapper.PostMapper;
 import com.team.backend.service.ICategoryService;
+import com.team.backend.service.ICommentService;
 import com.team.backend.service.IPostService;
 import com.team.backend.service.MinioService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +28,8 @@ import java.util.List;
  */
 @Service
 public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IPostService {
+    @Autowired
+    private ICommentService commentService;
     private final MinioService minioService;
     private final ICategoryService categoryService;
     public PostServiceImpl(MinioService minioService, ICategoryService categoryService) {
@@ -70,6 +77,23 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         return postList;
     }
 
+    //删除帖子
+    @Override
+    public Boolean removeAllById(String postId) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getPostId, postId);
+        for(Comment comment : commentService.list(wrapper)){
+            comment.setDeleted(1);
+            commentService.updateById(comment);
+        }
+        LambdaQueryWrapper<Post> wrapper1 = new LambdaQueryWrapper<>();
+        wrapper1.eq(Post::getPostId, postId);
+        Post post = super.getOne(wrapper1);
+        post.setDeleted(1);
+        super.updateById(post);
+        return true;
+    }
+
     //根据用户id查询帖子
     @Override
     public List<Post> getUserIdPost(String userId) {
@@ -78,7 +102,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         }
         LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Post::getUserId, userId);
-        return super.list(queryWrapper);
+
+        return this.list(queryWrapper);
     }
 
 }
