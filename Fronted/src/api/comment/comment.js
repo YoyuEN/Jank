@@ -7,6 +7,13 @@ export function getNestedCommentList(postId) {
     method: 'get'
   })
 }
+//获取评论心级数
+export function getCommentLevel(postId) {
+  return request({
+    url: `/comment/level/${postId}`,  // 移除重复的api前缀
+    method: 'get'
+  })
+}
 
 // // 获取文章评论列表
 // export function getCommentByUserId(postId) {

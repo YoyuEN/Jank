@@ -5,6 +5,7 @@ import com.team.backend.domain.Comment;
 import com.team.backend.domain.vo.CommentVO;
 import com.team.backend.domain.vo.CommentWithUserVO;
 import com.team.backend.domain.vo.CommentsVO;
+import com.team.backend.domain.vo.StartVO;
 import com.team.backend.handler.ResponseResult;
 
 import java.util.List;
@@ -42,4 +43,6 @@ public interface ICommentService extends IService<Comment> {
 
     //获取评论即好评率
     void addCommentgood(CommentsVO params);
+
+    StartVO getCommentsStarts(String postId);
 }

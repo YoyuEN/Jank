@@ -4,6 +4,7 @@ import com.team.backend.domain.Comment;
 import com.team.backend.domain.User;
 import com.team.backend.domain.vo.CommentVO;
 import com.team.backend.domain.vo.CommentsVO;
+import com.team.backend.domain.vo.StartVO;
 import com.team.backend.handler.ResponseResult;
 import com.team.backend.service.ICommentService;
 import com.team.backend.service.IUserService;
@@ -102,5 +103,11 @@ public class CommentController {
     public Result<Void> addComment(@RequestBody CommentsVO params) {
         commentService.addCommentgood(params);
         return Result.success(ResponseCode.SUCCESS);
+    }
+
+    @GetMapping("/level/{postId}")
+    public Result<StartVO> getStarts(@PathVariable String postId) {
+        StartVO data = commentService.getCommentsStarts(postId);
+        return Result.success(ResponseCode.SUCCESS,data);
     }
 }

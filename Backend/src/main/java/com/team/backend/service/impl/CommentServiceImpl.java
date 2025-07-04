@@ -7,6 +7,7 @@ import com.team.backend.domain.User;
 import com.team.backend.domain.vo.CommentVO;
 import com.team.backend.domain.vo.CommentWithUserVO;
 import com.team.backend.domain.vo.CommentsVO;
+import com.team.backend.domain.vo.StartVO;
 import com.team.backend.mapper.CommentMapper;
 import com.team.backend.mapper.UserMapper;
 import com.team.backend.service.ICommentService;
@@ -221,5 +222,30 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         comment.setGoodorbad(params.getGoodorbad());
         comment.setContent(params.getContent());
         super.save(comment);
+    }
+
+    @Override
+    public StartVO getCommentsStarts(String postId) {
+        if (postId == null){
+            return null;
+        }
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getPostId,postId);
+        List<Comment> comments = super.list(wrapper);
+        StartVO startVO = new StartVO();
+        //遍历
+        startVO.setGood(0);
+        startVO.setOrdinary(0);
+        startVO.setBad(0);
+        for (Comment comment : comments) {
+            if (comment.getGoodorbad() == 5|| comment.getGoodorbad() == 4){
+                startVO.setGood(startVO.getGood() + 1);
+            }else if (comment.getGoodorbad() == 3|| comment.getGoodorbad() == 2){
+                startVO.setBad(startVO.getBad() + 1);
+            }else if (comment.getGoodorbad() == 1|| comment.getGoodorbad() == 0){
+                startVO.setOrdinary(startVO.getOrdinary() + 1);
+            }
+        }
+        return startVO;
     }
 }
