@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.team.backend.domain.Comment;
 import com.team.backend.domain.vo.CommentVO;
 import com.team.backend.domain.vo.CommentWithUserVO;
+import com.team.backend.domain.vo.CommentsVO;
 import com.team.backend.handler.ResponseResult;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.Map;
  * @Description: 评论服务接口
  */
 public interface ICommentService extends IService<Comment> {
-    ResponseResult getArticleRatingStats(String articleId);
+//    ResponseResult getArticleRatingStats(String articleId);
 
     /**
      * 添加评论
@@ -24,7 +25,7 @@ public interface ICommentService extends IService<Comment> {
      * @return 是否添加成功
      */
     boolean addComment(Comment comment);
-    CommentVO addComment(String userId, String postId, String content, String parentId);
+//    CommentVO addComment(String userId, String postId, String content, String parentId);
 
     /**
      * 根据帖子ID获取评论列表（平铺结构）
@@ -35,7 +36,10 @@ public interface ICommentService extends IService<Comment> {
     //保存评论
     void saveComment(Comment comment);
 
-    List<CommentVO> getCommentsByArticleId(String postId);
+    List<Comment> getCommentsByArticleId(String postId);
 
     Map<String, Integer> getCommentStatistics(String articleId);
+
+    //获取评论即好评率
+    void addCommentgood(CommentsVO params);
 }

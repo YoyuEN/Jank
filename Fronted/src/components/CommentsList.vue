@@ -5,25 +5,21 @@
   </div>
   <!-- 评论输入区域 - 移动到评论列表上方 -->
   <div class="comment-input-area">
-
-        <div class="comment-header">
-          <h3>发表评论</h3>
-          <button @click="showCommentPanel = false" class="close-btn">×</button>
-        </div>
-        <textarea
-          v-model="newComment"
-          placeholder="写下你的评论..."
-          rows="5"
-          class="comment-textarea"
-        ></textarea>
+    <div class="comment-header">
+      <h3>发表评论</h3>
+      <button @click="showCommentPanel = false" class="close-btn">×</button>
+    </div>
+    <textarea
+      v-model="newComment"
+      placeholder="写下你的评论..."
+      rows="5"
+      class="comment-textarea"
+    ></textarea>
 
     <el-row>
       <div class="block">
         <span class="demonstration">五星好评</span>
-        <el-rate
-          v-model="ratingValue"
-          :colors="colors">
-        </el-rate>
+        <el-rate v-model="ratingValue" :colors="colors"> </el-rate>
       </div>
       <div class="comment-actions" style="margin-left: 600px">
         <button @click="submitComment" class="submit-comment-btn">
@@ -31,8 +27,6 @@
         </button>
       </div>
     </el-row>
-
-
   </div>
   <div class="comments-section">
     <h2>评论区</h2>
@@ -45,7 +39,12 @@
 
     <div v-else class="comments-list">
       <!-- 评论列表 -->
-      <div v-for="comment in displayedComments" :key="comment.id" class="comment-item" :data-comment-id="comment.id">
+      <div
+        v-for="comment in displayedComments"
+        :key="comment.id"
+        class="comment-item"
+        :data-comment-id="comment.id"
+      >
         <div class="comment-content">
           <div class="comment-header">
             <img
@@ -59,19 +58,24 @@
             </div>
           </div>
           <div class="comment-text">{{ comment.content }}</div>
+          <div class="block">
+            <el-rate
+              v-model="comment.goodorbad"
+              disabled
+              text-color="#ff9900"
+            >
+            </el-rate>
+          </div>
         </div>
       </div>
 
       <!-- 加载更多按钮 -->
       <div v-if="displayCount < comments.length" class="load-more-container">
-        <button @click="loadMore" class="load-more-btn">
-          加载更多评论
-        </button>
+        <button @click="loadMore" class="load-more-btn">加载更多评论</button>
       </div>
     </div>
   </div>
 </template>
-
 
 <script>
 export default {
@@ -79,16 +83,13 @@ export default {
   data() {
     return {
       ratingValue: null,
-      colors: ['#99A9BF', '#F7BA2A', '#FF9900']
+      colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
     }
-  }
+  },
 }
 </script>
 <script setup>
-import {
-  getNestedCommentList,
-  submitComment as submitCommentApi,
-} from '@/api/comment/comment.js'
+import { getNestedCommentList, submitComment as submitCommentApi } from '@/api/comment/comment.js'
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 // import { getPostDetail } from '@/api/posts/posts.js'
@@ -98,7 +99,7 @@ import { ElRate } from 'element-plus'
 // 确保初始显示数量是非负的
 const comments = ref([])
 const loadingComments = ref(false)
-const displayCount = ref(Math.max(3, 0))  // 初始显示3条评论
+const displayCount = ref(Math.max(3, 0)) // 初始显示3条评论
 
 // 计算要显示的评论 - 增加安全检查
 const displayedComments = computed(() => {
@@ -113,7 +114,7 @@ const displayedComments = computed(() => {
 
 // 加载更多评论 - 增加安全检查
 const loadMore = () => {
-  const newDisplayCount = displayCount.value + 5  // 每次增加5条评论
+  const newDisplayCount = displayCount.value + 5 // 每次增加5条评论
   displayCount.value = Math.max(newDisplayCount, 0)
 }
 
@@ -154,7 +155,8 @@ const submitComment = async () => {
   // 尝试从多个可能的来源获取userId
   const effectiveUserId = userId || userStore.userId || userStore.id || ''
   const effectiveUsername = username || userStore.username || userStore.name || '匿名用户'
-  const effectiveAvatar = avatar || userStore.avatar || userStore.avatarUrl || 'https://via.placeholder.com/40'
+  const effectiveAvatar =
+    avatar || userStore.avatar || userStore.avatarUrl || 'https://via.placeholder.com/40'
 
   console.log('提交评论使用的有效用户ID:', effectiveUserId)
   console.log('提交评论使用的有效用户名:', effectiveUsername)
@@ -170,24 +172,24 @@ const submitComment = async () => {
     return
   }
 
-    const response = await submitCommentApi({
-      postId: postId,
-      content: newComment.value,
-      userId: effectiveUserId, // 使用有效的用户ID
-      username: effectiveUsername, // 添加用户名
-      avatar: effectiveAvatar, // 添加头像
-      createTime: new Date().toISOString(),// 添加创建时间，虽然后端会覆盖，但为了前端显示可以先设置
-      goodorbad: ratingValue.value // 新增：提交评分信息
-    })
+  const response = await submitCommentApi({
+    postId: postId,
+    content: newComment.value,
+    userId: effectiveUserId, // 使用有效的用户ID
+    username: effectiveUsername, // 添加用户名
+    avatar: effectiveAvatar, // 添加头像
+    // createTime: new Date().toISOString(),// 添加创建时间，虽然后端会覆盖，但为了前端显示可以先设置
+    goodorbad: ratingValue.value, // 新增：提交评分信息
+  })
 
-    if (response.code === 200) {
-      // 提交成功后刷新评论列表
-      await fetchComments()
-      newComment.value = ''
-      showCommentPanel.value = false
-    } else {
-      alert('评论提交失败: ' + response.message)
-    }
+  if (response.code === 200) {
+    // 提交成功后刷新评论列表
+    await fetchComments()
+    newComment.value = ''
+    showCommentPanel.value = false
+  } else {
+    alert('评论提交失败: ' + response.message)
+  }
 }
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -242,7 +244,7 @@ const fetchComments = async () => {
 
       comments.value = response.data
         .map((comment) => addUIProperties(comment))
-            .sort((a, b) => b.originalTime - a.originalTime)
+        .sort((a, b) => b.originalTime - a.originalTime)
     }
   } catch (error) {
     console.error('获取评论列表失败:', error)
@@ -262,8 +264,6 @@ onMounted(fetchComments)
 //     replyContent.value = ''
 //   }
 // }
-
-
 </script>
 <style scoped>
 .sidebar-buttons {
@@ -747,10 +747,14 @@ onMounted(fetchComments)
 }
 
 /* 动画效果 */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
+.fade-enter-active,
+.fade-leave-active {
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
   transform: translateY(-10px);
 }

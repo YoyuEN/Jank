@@ -1,5 +1,7 @@
 package com.team.backend.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -14,33 +16,36 @@ import java.util.List;
 @Data
 public class CommentVO {
     // 评论ID
-    private Long commentId;
+    /**
+     * 评论ID
+     * 使用AUTO策略，依赖数据库的自增功能
+     */
+    @TableId(type = IdType.AUTO)
+    private String commentId;
 
-    // 评论用户ID
+    // 评论所属用户ID
     private String userId;
 
-    // 评论用户名称
     private String username;
 
-    // 评论用户头像
+    private String replyToCommentId;
+
+    // 评论所属文章ID
+    private String postId;
+
+    private String rootParentId;
+
     private String avatar;
 
     // 评论内容
     private String content;
 
-    // 父评论ID
+    // 父评论ID，如果是顶级评论则为null
     private String parentId;
 
-    // 回复的评论ID
-    private String replyToCommentId;
-
-    // 回复的用户名称
-    private String replyToUsername;
-
-    // 创建时间
-    private LocalDateTime createTime;
     private Integer goodorbad;
 
-    // 子评论列表
-    private List<CommentVO> replies;
+    // 创建时间
+    private String createTime;
+    private String updateTime;
 }

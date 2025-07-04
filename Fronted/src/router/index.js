@@ -4,6 +4,8 @@ import LoginForm from '@/views/LoginForm.vue';
 import Register from '@/views/Register.vue'
 import MomentView from '@/views/MomentView.vue'
 import PublishMoment from '@/views/PublishMoment.vue'
+import StatisticsAdd from '@/views/StatisticsAdd.vue';
+
 const routes = [
   {
     path: '/login',
@@ -70,6 +72,11 @@ const routes = [
     name: 'PublishMoment',
     component: PublishMoment
   },
+  {
+    path: '/statistics',
+    name: 'Statistics',
+    component: StatisticsAdd,
+  }
 ];
 
 const router = createRouter({

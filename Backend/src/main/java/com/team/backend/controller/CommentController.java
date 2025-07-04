@@ -3,6 +3,7 @@ package com.team.backend.controller;
 import com.team.backend.domain.Comment;
 import com.team.backend.domain.User;
 import com.team.backend.domain.vo.CommentVO;
+import com.team.backend.domain.vo.CommentsVO;
 import com.team.backend.handler.ResponseResult;
 import com.team.backend.service.ICommentService;
 import com.team.backend.service.IUserService;
@@ -55,10 +56,10 @@ public class CommentController {
     public Map<String, Integer> getCommentStatistics(@PathVariable String articleId) {
         return commentService.getCommentStatistics(articleId);
     }
-    @GetMapping("/articles/{articleId}/rating-stats")
-    public ResponseResult getArticleRatingStats(@PathVariable String articleId) {
-        return commentService.getArticleRatingStats(articleId);
-    }
+//    @GetMapping("/articles/{articleId}/rating-stats")
+//    public ResponseResult getArticleRatingStats(@PathVariable String articleId) {
+//        return commentService.getArticleRatingStats(articleId);
+//    }
 
     /**
      * 获取评论列表（平铺结构）
@@ -91,18 +92,15 @@ public class CommentController {
         return result;
     }
 
-    @GetMapping("/comments/{postId}")
-    public List<CommentVO> getComments(@PathVariable String postId) {
-        return commentService.getCommentsByArticleId(postId);
+    @GetMapping("/listcomments/{postId}")
+    public Result<List<Comment>> getComments(@PathVariable String postId) {
+        List<Comment> data = commentService.getCommentsByArticleId(postId);
+        return Result.success(ResponseCode.SUCCESS,data);
     }
 
     @PostMapping("/comments")
-    public CommentVO addComment(@RequestBody Map<String, Object> params) {
-        String userId = params.get("userId").toString();
-        String postId = params.get("postId").toString();
-        String content = params.get("content").toString();
-        String parentId = params.get("parentId") != null ? params.get("parentId").toString() : null;
-
-        return commentService.addComment(userId, postId, content, parentId);
+    public Result<Void> addComment(@RequestBody CommentsVO params) {
+        commentService.addCommentgood(params);
+        return Result.success(ResponseCode.SUCCESS);
     }
 }
