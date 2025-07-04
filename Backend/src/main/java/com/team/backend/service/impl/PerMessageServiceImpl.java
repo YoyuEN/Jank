@@ -16,6 +16,7 @@ public class PerMessageServiceImpl extends ServiceImpl<PerMessageMapper, PerMess
     @Override
     public List<PerMessage> getMessageList() {
         LambdaQueryWrapper<PerMessage> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PerMessage::getDeleted,0);
         return this.list(wrapper);
     }
 

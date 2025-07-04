@@ -112,7 +112,7 @@ public class CommentController {
         StartVO data = commentService.getCommentsStarts(postId);
         return Result.success(ResponseCode.SUCCESS,data);
     }
-
+    
     @GetMapping("/getComments/{userId}")
     public Result<List<Comment>> getCommentsUserId(@PathVariable String userId) {
         List<Comment> data = commentService.getCommentsUserId(userId);

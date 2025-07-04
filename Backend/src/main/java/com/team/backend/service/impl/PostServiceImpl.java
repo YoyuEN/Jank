@@ -63,6 +63,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     public List<Post> getPostList() {
         // 查询所有动态
         LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Post::getDeleted, 0);
         List<Post> postList = this.list(wrapper);
 
         for (Post post : postList) {
@@ -102,7 +103,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
             return null;
         }
         LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Post::getUserId, userId);
+        queryWrapper.eq(Post::getUserId, userId).eq(Post::getDeleted, 0);
 
         return this.list(queryWrapper);
     }

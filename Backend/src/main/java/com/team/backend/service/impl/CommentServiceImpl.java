@@ -79,11 +79,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     public List<Comment> getCommentsListByPostId(String postId) {
 
         // 按创建时间倒序排序，确保最新评论在前面
-        return query()
-                .eq("post_id", postId)
-                .eq("deleted", 0)
-                .orderByDesc("comment_id")  // 使用comment_id字段进行排序
-                .list();
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getPostId,postId).eq(Comment::getDeleted,0);
+        return super.list(wrapper);
     }
 
 //    @Override
@@ -181,7 +179,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Override
     public List<Comment> getCommentsByArticleId(String postId) {
         List<Comment> comments = lambdaQuery()
-                .eq(Comment::getPostId, postId)
+                .eq(Comment::getPostId, postId).eq(Comment::getDeleted,0)
                 .list();
 
         comments.forEach(comment -> {
@@ -246,7 +244,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             return null;
         }
         LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Comment::getPostId,postId);
+        wrapper.eq(Comment::getPostId,postId).eq(Comment::getDeleted,0);
         List<Comment> comments = super.list(wrapper);
         StartVO startVO = new StartVO();
         //遍历
@@ -270,7 +268,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         if (userId == null){
             return null;
         }
-        return lambdaQuery().eq(Comment::getUserId,userId).list();
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getUserId,userId).eq(Comment::getDeleted,0);
+        return super.list(wrapper);
     }
 
     @Override

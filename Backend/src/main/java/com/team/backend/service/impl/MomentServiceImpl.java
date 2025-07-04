@@ -46,6 +46,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
     public List<Moment> getMomentList() {
         // 查询所有动态
         LambdaQueryWrapper<Moment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Moment::getDeleted,0);
         List<Moment> momentList = this.list(wrapper);
 
         // 遍历每个 Moment，为其设置对应的图片 URL 列表
@@ -108,13 +109,14 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
         this.baseMapper.increaseLikeCount(momentId);
     }
 
+    // 获取用户所有动态
     @Override
     public List<Moment> getUserIdMoment(String userId) {
         if (userId == null){
             return null;
         }
         LambdaQueryWrapper<Moment> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Moment::getUserId,userId);
+        wrapper.eq(Moment::getUserId,userId).eq(Moment::getDeleted,0);
         return this.list(wrapper);
     }
 

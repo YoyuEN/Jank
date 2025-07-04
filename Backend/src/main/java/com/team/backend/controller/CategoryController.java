@@ -22,6 +22,7 @@ public class CategoryController {
     @Autowired
     private ICategoryService categoryService;
 
+    //获取所有分类
     @RequestMapping("/getCategoryList")
     public Result<List<Category>> getCategoryList() {
         return Result.success(ResponseCode.SUCCESS, categoryService.list());

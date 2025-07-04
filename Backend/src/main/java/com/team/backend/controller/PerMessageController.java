@@ -16,6 +16,7 @@ public class PerMessageController {
 
     @Autowired
     private IPerMessageService perMessageService;
+    //留言获取
     @GetMapping("/getmessagelist")
     public Result<List<PerMessage>> getMessageList(){
         return Result.success(ResponseCode.SUCCESS,perMessageService.getMessageList());
