@@ -41,7 +41,7 @@ public class IPostServiceImpl extends ServiceImpl<PostMapper, Post> implements I
     public List<PostVO> selectPostList(Post post) {
         List<PostVO> postVOList = new ArrayList<>();
         LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(StringUtils.isNotEmpty(post.getTitle()), Post::getTitle, post.getTitle());
+        wrapper.like(StringUtils.isNotEmpty(post.getCategoryName()), Post::getCategoryName, post.getCategoryName());
         List<Post> postList = list(wrapper);
         postList.forEach(item -> {
             PostVO postVO = new PostVO();
