@@ -52,6 +52,7 @@ public class PostController {
         // 构造 PostVO 或直接调用 service
         PostVO postVO = new PostVO();
         postVO.setTitle(title);
+        postVO.setUserId(userId);
         postVO.setContentHtml(contentHtml);
         postVO.setCategoryName(categoryName);
         postVO.setImage(image);

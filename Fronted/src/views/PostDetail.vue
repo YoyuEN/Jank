@@ -288,7 +288,6 @@ const handleScroll = () => {
 }
 
 .card code {
-  background-color: #f4f4f4;
   padding: 2px 6px;
   border-radius: 4px;
   font-family: monospace;

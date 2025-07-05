@@ -87,12 +87,14 @@ export default {
 import { getNestedCommentList, submitComment as submitCommentApi } from '@/api/comment/comment.js'
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { ElRate } from 'element-plus'
+import { ElMessage, ElRate } from 'element-plus'
+import { useUserStore } from '@/store/userStore.js'
 
 // 确保初始显示数量是非负的
 const comments = ref([])
 const loadingComments = ref(false)
 const displayCount = ref(Math.max(3, 0)) // 初始显示3条评论
+const userStore = useUserStore()
 
 // 计算要显示的评论 - 增加安全检查
 const displayedComments = computed(() => {
@@ -131,9 +133,10 @@ const submitComment = async () => {
   console.log('提交评论前检查 - Username:', username)
   console.log('提交评论前检查 - Avatar:', avatar)
 
-  // 从userStore中获取用户信息
-  const userStore = JSON.parse(localStorage.getItem('user') || '{}')
-  console.log('提交评论前检查 - UserStore:', userStore)
+  if (userStore.user === null) {
+    ElMessage.error('请先登录')
+    return
+  }
 
   // 尝试从多个可能的来源获取userId
   const effectiveUserId = userId || userStore.userId || userStore.id || ''

@@ -30,7 +30,7 @@
             <label for="category">分类</label>
             <select
               id="category"
-              v-model="postForm.categoryNames"
+              v-model="postForm.categoryName"
               @focus="getCategoryList"
               class="form-select"
             >
@@ -39,7 +39,7 @@
                 {{ item.name }}
               </option>
             </select>
-            <span class="error-text" v-if="errors.categoryNames">{{ errors.categoryNames }}</span>
+            <span class="error-text" v-if="errors.categoryName">{{ errors.categoryName }}</span>
           </div>
           <div class="form-group">
             <label for="content">内容</label>
@@ -84,12 +84,12 @@ export default {
         title: '',
         image: '',
         contentHtml: '',
-        categoryNames: '',
+        categoryName: '',
       },
       errors: {
         title: '',
         contentHtml: '',
-        categoryNames: '',
+        categoryName: '',
       },
       categoryList: [],
       publishing: false,
@@ -144,7 +144,7 @@ export default {
       this.errors = {
         title: '',
         contentHtml: '',
-        categoryNames: '',
+        categoryName: '',
       }
 
       if (!this.postForm.title || !this.postForm.title.trim()) {
@@ -160,8 +160,8 @@ export default {
         isValid = false
       }
 
-      if (!this.postForm.categoryNames) {
-        this.errors.categoryNames = '请选择帖子分类'
+      if (!this.postForm.categoryName) {
+        this.errors.categoryName = '请选择帖子分类'
         isValid = false
       }
       return isValid
@@ -176,10 +176,15 @@ export default {
 
       try {
         const userStore = useUserStore()
+        // 判断用户是否已登录
+        if (userStore.user === null) {
+          ElMessage.error('请先登录')
+           return
+        }
         const formData = new FormData()
         formData.append('title', this.postForm.title)
         formData.append('contentHtml', this.postForm.contentHtml)
-        formData.append('categoryNames', this.postForm.categoryNames)
+        formData.append('categoryName', this.postForm.categoryName)
         formData.append('userId', userStore.user?.userId || '')
 
         // 如果有图片，则追加到 formData 中
