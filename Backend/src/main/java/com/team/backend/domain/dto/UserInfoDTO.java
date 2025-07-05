@@ -1,8 +1,6 @@
-package com.team.backend.domain;
+package com.team.backend.domain.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("user")
-public class User {
+public class UserInfoDTO {
     @TableId
     private String userId;
     // 用户昵称
@@ -40,6 +38,8 @@ public class User {
     private Integer freeze;
     //地址
     private String address;
+
+    List<String> techStacks;
     // 访问令牌
     private String accessToken;
     // 刷新令牌
@@ -49,9 +49,7 @@ public class User {
     //修改时间
     private LocalDateTime updateTime;
 
-    private String techStacks;
     // 删除状态
-//    @TableLogic
     private int deleted;
 
 }

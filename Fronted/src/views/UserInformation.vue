@@ -27,6 +27,32 @@
             </p>
           </div>
         </div>
+
+        <!-- 技术栈信息 -->
+        <div class="tech-stack-panel">
+          <div class="tech-stack-header">
+            <h3 class="tech-stack-title">技术栈</h3>
+            <button class="edit-tech-btn" @click="editTechStack">
+              <span class="edit-icon">✏️</span>
+              修改
+            </button>
+          </div>
+          <div class="tech-stack-content">
+            <div v-if="userInfo.techStacks && userInfo.techStacks.length > 0" class="tech-tags">
+              <span
+                v-for="tech in userInfo.techStacks"
+                :key="tech"
+                class="tech-tag"
+                :class="getTechTagClass(tech)"
+              >
+                # {{ tech }}
+              </span>
+            </div>
+            <div v-else class="no-tech-stack">
+              <span class="no-tech-text">暂无技术栈信息</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 右侧：帖子和评论 -->
@@ -124,6 +150,17 @@
         </div>
       </div>
     </div>
+
+    <!-- 技术栈编辑穿梭框 -->
+    <div v-if="showTechStackTransfer" class="modal-overlay" @click="closeTechStackTransfer">
+      <div @click.stop>
+        <TechStackTransfer
+          :current-tech-stack="userInfo.techStacks || []"
+          @close="closeTechStackTransfer"
+          @update="updateTechStack"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -137,6 +174,7 @@ import { deletePostById, deleteMomentById, deleteCommentById } from '@/api/delet
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { updatePost } from '@/api/posts/posts.js'
 import { getUserByUserId } from '@/api/user/user.js'
+import TechStackTransfer from '@/components/TechStackTransfer.vue'
 // 用户基本信息
 const userStore = useUserStore()
 
@@ -182,6 +220,9 @@ const moments = ref([])
 const comments = ref([])
 // 当前激活的标签页
 const activeTab = ref('posts') // 默认显示帖子
+
+// 技术栈穿梭框显示状态
+const showTechStackTransfer = ref(false)
 
 // 获取用户帖子数据
 const fetchUserPosts = async () => {
@@ -364,6 +405,38 @@ const deleteComments = async (commentId) => {
     }
   }
 }
+
+// 编辑技术栈
+const editTechStack = () => {
+  showTechStackTransfer.value = true
+}
+
+// 关闭技术栈穿梭框
+const closeTechStackTransfer = () => {
+  showTechStackTransfer.value = false
+}
+
+// 更新技术栈
+const updateTechStack = (newTechStack) => {
+  userInfo.value.techStacks = newTechStack
+}
+
+// 获取技术栈标签的CSS类
+const getTechTagClass = (techName) => {
+  const techColors = {
+    Java: 'tech-java',
+    Python: 'tech-python',
+    JavaScript: 'tech-javascript',
+    'C++': 'tech-cpp',
+    Ruby: 'tech-ruby',
+    Go: 'tech-go',
+    Swift: 'tech-swift',
+    Kotlin: 'tech-kotlin',
+    Rust: 'tech-rust',
+    SQL: 'tech-sql',
+  }
+  return techColors[techName] || 'tech-default'
+}
 // 在组件挂载时获取用户帖子
 onMounted(() => {
   fetchUserPosts()
@@ -403,6 +476,184 @@ watchEffect(() => {
   padding: 30px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   height: fit-content;
+  margin-bottom: 20px;
+}
+
+/* 技术栈面板 */
+.tech-stack-panel {
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.tech-stack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.tech-stack-title {
+  font-size: 18px;
+  color: #333;
+  margin: 0;
+  font-weight: 600;
+}
+
+.edit-tech-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border: 1px solid #1890ff;
+  border-radius: 6px;
+  background: white;
+  color: #1890ff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.edit-tech-btn:hover {
+  background: #1890ff;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+}
+
+.edit-icon {
+  font-size: 12px;
+}
+
+.tech-stack-content {
+  min-height: 60px;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tech-tag {
+  padding: 8px 16px;
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-tag::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tech-tag:hover::before {
+  opacity: 1;
+}
+
+.tech-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Java */
+.tech-java {
+  background: linear-gradient(135deg, #f89820, #e76f00);
+}
+
+/* Python */
+.tech-python {
+  background: linear-gradient(135deg, #3776ab, #ffde57);
+  color: #2d5aa0;
+}
+
+/* JavaScript */
+.tech-javascript {
+  background: linear-gradient(135deg, #f7df1e, #f0db4f);
+  color: #323330;
+}
+
+/* C++ */
+.tech-cpp {
+  background: linear-gradient(135deg, #00599c, #004482);
+}
+
+/* Ruby */
+.tech-ruby {
+  background: linear-gradient(135deg, #cc342d, #a91e1a);
+}
+
+/* Go */
+.tech-go {
+  background: linear-gradient(135deg, #00add8, #007d9e);
+}
+
+/* Swift */
+.tech-swift {
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+}
+
+/* Kotlin */
+.tech-kotlin {
+  background: linear-gradient(135deg, #7f52ff, #6b46c1);
+}
+
+/* Rust */
+.tech-rust {
+  background: linear-gradient(135deg, #ce422b, #a91e1a);
+}
+
+/* SQL */
+.tech-sql {
+  background: linear-gradient(135deg, #336791, #2c5aa0);
+}
+
+/* 默认样式 */
+.tech-default {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.no-tech-stack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.no-tech-text {
+  color: #999;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* 遮罩层样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
 .avatar-section {
