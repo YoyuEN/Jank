@@ -19,7 +19,7 @@ public class HotPostVO implements Serializable {
     @TableId
     private String postId;
     private String title;
-    private Integer visibility;
+    private String image;
     private String contentHtml;
     private String categoryName;
     //用户id

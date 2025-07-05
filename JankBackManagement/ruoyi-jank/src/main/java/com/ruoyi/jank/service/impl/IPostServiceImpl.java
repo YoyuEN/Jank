@@ -113,6 +113,7 @@ public class IPostServiceImpl extends ServiceImpl<PostMapper, Post> implements I
         HotPostVO hotPostVO = new HotPostVO();
         hotPostVO.setPostId(hotPost.getPostId());
         hotPostVO.setContentHtml(hotPost.getContentHtml());
+        hotPostVO.setImage(minioService.getPresignedUrl(hotPost.getImage()));
         hotPostVO.setTitle(hotPost.getTitle());
         hotPostVO.setCreateTime(hotPost.getCreateTime());
         hotPostVO.setGood(maxFiveStarCount);

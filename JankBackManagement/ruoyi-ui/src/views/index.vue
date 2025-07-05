@@ -2,16 +2,18 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>热门帖子</span>
+        <span>博客数据</span>
         <el-button style="float: right; padding: 3px 0" type="text" @click="refreshHotPosts">刷新</el-button>
       </div>
 
       <el-row :gutter="20">
         <el-col :span="8" :data="hotPostsList" :xs="24" :sm="12" :md="8" :lg="6">
+          <!--          热门帖子-->
           <el-card class="post-card" shadow="hover">
+            <div class="post-title">热门帖子</div>
             <!-- 上部分：图片 -->
             <div class="post-image">
-              <img :src="defaultImage" alt="帖子图片" class="image">
+              <img :src="hotPostsList.image" alt="帖子图片" class="image">
             </div>
 
             <!-- 下部分：基本信息 -->
@@ -19,15 +21,19 @@
               <h3 class="post-title">{{ hotPostsList ? hotPostsList.title : '无标题' }}</h3>
               <div class="post-stats">
                 <span><i class="el-icon-star-on"></i> 好评数：{{ hotPostsList ? (hotPostsList.good || 0) : 0 }}</span>
+                <div><span class="post-time">{{ hotPostsList ? (hotPostsList.createTime || '无创建时间') : '无创建时间' }}</span></div>
               </div>
 
               <!-- 内容伸缩框 -->
               <el-collapse accordion>
                 <el-collapse-item title="查看内容">
-                  <div class="post-content">{{ post ? (hotPostsList.contentHtml || '暂无内容') : '暂无内容' }}</div>
+                  <div class="post-content">{{ hotPostsList ? (hotPostsList.contentHtml || '暂无内容') : '暂无内容' }}</div>
                 </el-collapse-item>
               </el-collapse>
             </div>
+          </el-card>
+          <!--          用户注册数据-->
+          <el-card class="post-card" shadow="hover">
           </el-card>
         </el-col>
       </el-row>
@@ -37,9 +43,9 @@
 
 <script>
 import { hotPost } from "@/api/postlist/postlist";
-
 export default {
   name: "HotPosts",
+  components: {User},
   data() {
     return {
       hotPostsList: [],
