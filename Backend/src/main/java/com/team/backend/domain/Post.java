@@ -37,8 +37,7 @@ public class Post implements Serializable {
     @TableField("content_html")
     private String contentHtml;
     // 帖子所属分类 ID
-    @TableField(exist = false)
-    private List<String> categoryNames;
+    private String categoryName;
     // 创建时间
     private String createTime;
     //修改时间

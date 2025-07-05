@@ -45,7 +45,7 @@ public class PostController {
     public Result<?> addPost(
             @RequestParam("title") String title,
             @RequestParam("contentHtml") String contentHtml,
-            @RequestParam("categoryNames") List<String> categoryNames,
+            @RequestParam("categoryName") String categoryName,
             @RequestParam("image") MultipartFile image,
             @RequestParam("userId") String userId) throws Exception {
 
@@ -53,7 +53,7 @@ public class PostController {
         PostVO postVO = new PostVO();
         postVO.setTitle(title);
         postVO.setContentHtml(contentHtml);
-        postVO.setCategoryNames(categoryNames);
+        postVO.setCategoryName(categoryName);
         postVO.setImage(image);
         if (userId != null) {
             postVO.setUserId(userId);

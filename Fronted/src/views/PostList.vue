@@ -60,9 +60,7 @@ export default {
         return this.posts
       } else {
         return this.posts.filter((post) => {
-          return Array.isArray(post.categoryNames)
-            ? post.categoryNames.includes(this.selectedCategory)
-            : false
+          return post.categoryName === this.selectedCategory
         })
       }
     },

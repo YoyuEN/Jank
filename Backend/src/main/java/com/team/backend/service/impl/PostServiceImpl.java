@@ -44,7 +44,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
             imageUrl = minioService.uploadFile(postVO.getImage());
         }
 
-        if (postVO.getTitle() == null && postVO.getContentHtml() == null && postVO.getCategoryNames() == null) {
+        if (postVO.getTitle() == null && postVO.getContentHtml() == null && postVO.getCategoryName() == null) {
             return;
         }
 
@@ -52,7 +52,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         post.setTitle(postVO.getTitle());
         post.setImage(imageUrl);
         post.setContentHtml(postVO.getContentHtml());
-        post.setCategoryNames(postVO.getCategoryNames());
+        post.setCategoryName(postVO.getCategoryName());
         post.setVisibility(true);
         post.setUserId(postVO.getUserId());
 
@@ -67,14 +67,13 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         List<Post> postList = this.list(wrapper);
 
         for (Post post : postList) {
-            String postId = post.getPostId();
+//            String postId = post.getPostId();
 
-            List<String> categoryNames = categoryService.getCategoryNamesByPostId(postId);
-            post.setCategoryNames(categoryNames);
+//            List<String> categoryNames = categoryService.getCategoryNamesByPostId(postId);
+//            post.setCategoryNames(categoryNames);
 
             String image = post.getImage();
             post.setImage(minioService.getPresignedUrl(image));
-//            BeanUtils.copyProperties(post, post);
         }
         return postList;
     }

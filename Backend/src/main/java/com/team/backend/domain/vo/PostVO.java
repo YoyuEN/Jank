@@ -23,6 +23,5 @@ public class PostVO {
     //用户id
     private String userId;
     // 帖子所属分类 ID
-    @TableField(exist = false)
-    private List<String> categoryNames;
+    private String categoryName;
 }
