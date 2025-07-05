@@ -85,6 +85,7 @@ public class CommonUserController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody CommonUser commonUser)
     {
+        commonUser.setAvatar("YoyuEN.png");
         return toAjax(commonUserService.save(commonUser));
     }
 

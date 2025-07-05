@@ -8,7 +8,7 @@ export function listCommonuser(query) {
     params: query
   })
 }
-// @/api/commonuser/commonuser.js
+
 export function checkUsernameExist(username) {
   return request({
     url: '/commonuser/commonuser/check-username',

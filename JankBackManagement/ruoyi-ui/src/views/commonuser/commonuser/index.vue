@@ -244,7 +244,7 @@ export default {
     },
     rowStyle({ row}) {
       // 行样式
-      if (row.freeze==0) {
+      if (row.freeze === 0) {
         return {
           color: '#999',backgroundColor: '#f5f7fa'
         };
