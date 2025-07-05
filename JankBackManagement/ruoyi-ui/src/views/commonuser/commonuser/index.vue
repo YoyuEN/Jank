@@ -26,28 +26,7 @@
           v-hasPermi="['commonuser:commonuser:add']"
         >新增</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['commonuser:commonuser:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['commonuser:commonuser:remove']"
-        >删除</el-button>
-      </el-col>
+
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -61,7 +40,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="commonuserList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="commonuserList" @selection-change="handleSelectionChange" :row-style="rowStyle">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" width="60">
         <template slot-scope="scope">
@@ -70,23 +49,46 @@
       </el-table-column>
       <el-table-column label="用户邮箱" align="center" prop="email" />
       <el-table-column label="用户名" align="center" prop="username" />
-      <el-table-column label="用户状态" align="center" prop="freeze"/>
+      <el-table-column label="用户头像" align="center" prop="avatar">
+        <template slot-scope="scope">
+          <img v-if="scope.row.avatar" :src="scope.row.avatar" alt="头像" style="width:40px;height:40px;border-radius:50%;" />
+          <span v-else>无</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="用户地址" align="center" prop="address" />
+      <!-- 修改后使用开关组件展示用户状态 -->
+      <el-table-column label="用户状态" align="center" width="200">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.freeze"
+            :active-value="1"
+            :inactive-value="0"
+            active-text="启用"
+            inactive-text="冻结"
+            @change="handleStatusChange(scope.row)"
+            :disabled="!canModifyStatus"
+          />
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['commonuser:commonuser:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['commonuser:commonuser:remove']"
-          >删除</el-button>
+          <template v-if="scope.row.freeze === 1">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['commonuser:commonuser:edit']"
+            >修改</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['commonuser:commonuser:remove']"
+            >删除</el-button>
+          </template>
+          <span v-else style="color:#999">已冻结</span>
         </template>
       </el-table-column>
     </el-table>
@@ -111,16 +113,23 @@
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入用户名" />
         </el-form-item>
-        <el-form-item label="用户所在地址" prop="address" label-width="100px">
+        <el-form-item label="所在地区" prop="address" label-width="100px">
           <el-cascader
             ref="addressCascader"
             v-model="selectedAddress"
             :options="options"
             :props="addressProps"
             @change="handleAddressChange"
-            placeholder="请选择所在地区"
+            placeholder="请选择省市区"
             clearable>
           </el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" prop="detailAddress">
+          <el-input
+            v-model="form.detailAddress"
+            placeholder="请输入街道、门牌号等详细地址"
+            clearable
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -134,12 +143,17 @@
 <script>
 import { listCommonuser, getCommonuser, delCommonuser, addCommonuser, updateCommonuser } from "@/api/commonuser/commonuser";
 import { getProvinces, getChildrenByPId } from "@/api/address/address";
-import { checkUsernameExist } from "@/api/commonuser/commonuser"; // 根据实际路径调整
+import { checkUsernameExist,updateCommonuserStatus } from "@/api/commonuser/commonuser"; // 根据实际路径调整
 
 export default {
   name: "Commonuser",
   data() {
     return {
+      selectedAddress: [], // 确保初始化为数组
+      // 控制状态开关是否可修改
+      canModifyStatus: true,
+      // 批量操作时是否禁用
+      isBatchOperation: false,
       value: true,
       // 遮罩层
       loading: true,
@@ -167,17 +181,29 @@ export default {
         address: null
       },
       // 表单参数
-      form: {},
+      form: {
+        address: null,
+        detailAddress: null,
+        username: null
+      },
       // 表单校验
       rules: {
         email: [
-          {message: '请输入用户邮箱', trigger: 'blur' },
-                { pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: '请输入正确的邮箱格式', trigger: 'blur' }
+          {required: true, message: '请输入用户邮箱', trigger: 'blur' },
+          { pattern: /^[a-zA-Z0-9._%+-]+@(163\.com|qq\.com)$/, message: '邮箱格式不正确，只支持@163.com或@qq.com结尾的邮箱', trigger: 'blur' }
         ],
         username: [
           { required: true, message: "请输入用户名,用户名不能为空", trigger: "blur" },
-          { validator: this.validateUsernameUnique, trigger: 'blur' }
+          { validator:this.checkUsernameExists, trigger: 'blur' }
         ],
+        phone: [
+          {message: '请输入手机号', trigger: 'blur' },
+          {
+            pattern: /^1[3-9]\d{9}$/, // 中国大陆手机号正则表达式
+            message: '请输入正确的手机号格式',
+            trigger: 'blur'
+          }
+        ]
       },
       options: [], // 省份选项
       addressProps: {
@@ -188,7 +214,6 @@ export default {
         lazy: true,
         lazyLoad: this.lazyLoadAddress
       },
-      selectedAddress: [] // 选中的地址ID数组
     };
   },
   created() {
@@ -196,25 +221,36 @@ export default {
     this.loadProvinces();
   },
   methods: {
-    async validateUsernameUnique(rule, value, callback) {
+    // 检查用户名是否存在的验证函数
+    checkUsernameExists(rule, value, callback) {
+      // 空值校验已在前面的规则中处理
       if (!value) {
-        callback(new Error('用户名不能为空'));
-        return;
+        return callback();
       }
 
-      try {
-        const response = await checkUsernameExist(value); // 假设你有这个API
-        if (response.exist) {
-          callback(new Error('该用户名已存在，请重新输入'));
+      // 发送异步请求检查用户名是否存在
+      checkUsernameExist(value).then(response => {
+        if (response.data) {
+          // 用户名已存在
+          callback(new Error("用户名已存在"));
         } else {
+          // 用户名可用
           callback();
         }
-      } catch (error) {
-        console.error('检查用户名失败:', error);
-        //callback(new Error('无法验证用户名是否存在'));
+      }).catch(error => {
+        console.error("检查用户名存在失败", error);
+        callback(new Error("检查用户名失败，请重试"));
+      });
+    },
+    rowStyle({ row}) {
+      // 行样式
+      if (row.freeze==0) {
+        return {
+          color: '#999',backgroundColor: '#f5f7fa'
+        };
       }
-    }
-,
+      return {};
+    },
     /** 查询用户管理列表 */
     getList() {
       this.loading = true;
@@ -234,6 +270,42 @@ export default {
       this.reset();
     },
     // 表单重置
+    /** 处理用户状态变更 */
+    handleStatusChange(row) {
+      // 发送请求更新用户状态
+      const params = {
+        userId: row.userId,
+        freeze: row.freeze ? 1 : 0  // 将布尔值转换为整数
+      };
+
+        return updateCommonuserStatus(params);
+        // 刷新列表数据
+        this.getList();
+    },
+
+    /** 处理表单中的状态变更 */
+    handleFormStatusChange(value) {
+      if (this.form.userId) {
+        const params = {
+          userId: this.form.userId,
+          freeze: value ? 1 : 0  // 将布尔值转换为整数
+        };
+        updateCommonuserStatus(params).then(() => {
+          this.$message({
+            message: value ? "用户已成功启用" : "用户已成功冻结",
+            type: "success"
+          });
+        }).catch(() => {
+          // 恢复原状态
+          this.form.freeze = !value;
+        });
+      }
+    },
+    /** 控制操作按钮是否禁用 */
+    isOperationDisabled(row) {
+      // 如果用户被冻结，则禁用所有操作按钮
+      return !row.freeze;
+    },
     reset() {
       this.form = {
         userId: null,
@@ -253,6 +325,7 @@ export default {
       this.selectedAddress = [];
       this.resetForm("form");
     },
+
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -277,10 +350,37 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
+      if (this.isOperationDisabled(row)) {
+        this.$message({
+          message: "该用户已被冻结，无法进行修改操作",
+          type: "warning"
+        });
+        return;
+      }
       this.reset();
-      const userId = row.userId || this.ids
+      const userId = row.userId || this.ids;
+
       getCommonuser(userId).then(response => {
         this.form = response.data;
+        // 拆分地址数据
+        if (this.form.address) {
+          const addressParts = this.form.address.split('/');
+
+          // 省市区部分（前三个部分）
+          const regionParts = addressParts.slice(0, 3);
+          // 详细地址部分（剩余部分）
+          const detailAddress = addressParts.slice(3).join('/');
+
+          // 设置详细地址
+          this.form.detailAddress = detailAddress;
+
+          // 如果有地址数据，设置selectedAddress
+          if (regionParts.length > 0) {
+            // 将地址字符串拆分为数组
+            // 在options中查找对应的地址ID
+            this.findAndSetAddressIds(regionParts);
+          }
+        }
         // 如果有地址数据，设置selectedAddress
         if (this.form.address) {
           // 将地址字符串拆分为数组
@@ -327,9 +427,28 @@ export default {
       }
     },
     /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
+     submitForm() {
+      this.$refs["form"].validate(async valid => {
         if (valid) {
+          // // 拼接完整地址：省市区/详细地址
+          // if (this.form.address && this.form.detailAddress) {
+          //   // 先获取省市区部分
+          //   const regionAddress = this.selectedAddress.length > 0
+          //     ? this.getAddressPathById(this.selectedAddress).join('/')
+          //     : this.form.address.split('/').slice(0, 3).join('/');
+          //
+          //   // 拼接完整地址
+          //   this.form.address = `${regionAddress}/${this.form.detailAddress}`;
+          //
+          //   //this.form.address = `${this.form.address}/${this.form.detailAddress}`;
+          // }
+          // 拼接完整地址：省市区/详细地址
+          if (this.selectedAddress && this.selectedAddress.length > 0 && this.form.detailAddress) {
+            const regionParts = await this.getAddressPathById(this.selectedAddress);
+            if (regionParts.length > 0) {
+              this.form.address = `${regionParts.join('/')}/${this.form.detailAddress}`;
+            }
+          }
           if (this.form.userId != null) {
             updateCommonuser(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
@@ -348,6 +467,13 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
+      if (this.isOperationDisabled(row)) {
+        this.$message({
+          message: "该用户已被冻结，无法进行删除操作",
+          type: "warning"
+        });
+        return;
+      }
       const userIds = row.userId || this.ids;
       this.$modal.confirm('是否确认删除用户管理编号为"' + userIds + '"的数据项？').then(function() {
         return delCommonuser(userIds);
@@ -454,3 +580,29 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+/* 仅在当前组件生效的样式 */
+.el-form-item.is-error .el-input__inner {
+  border-color: #f56c6c;
+}
+
+.el-form-item.is-error .el-input__append,
+.el-form-item.is-error .el-input__prepend {
+  border-color: #f56c6c;
+}
+
+.el-form-item__error {
+  position: relative;
+  top: 0;
+  left: 0;
+  margin-top: 4px;
+  padding: 0 5px;
+  font-size: 12px;
+  color: #f56c6c;
+}
+
+.el-message--error {
+  display: none;
+}
+</style>

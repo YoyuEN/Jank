@@ -1,66 +1,68 @@
 <template>
-  <div class="publish-container">
-    <div class="publish-header">
-      <h1>发布新帖子</h1>
-      <p>分享你的想法和故事</p>
-    </div>
-
-    <div class="publish-form">
-      <div class="form-group">
-        <label for="title">标题</label>
-        <input
-          type="text"
-          id="title"
-          v-model="postForm.title"
-          placeholder="请输入帖子标题"
-          class="form-input"
-        />
-        <span class="error-text" v-if="errors.title">{{ errors.title }}</span>
-      </div>
-      <div class="form-group">
-        <label for="imageUpload">图片上传</label>
-        <input
-          type="file"
-          id="imageUpload"
-          accept="image/*"
-          @change="handleImageUpload"
-          class="form-input"
-        />
-        <div class="el-upload__tip">只能上传jpg/png文件，且不超过1mb</div>
-        <span v-if="errors.image">{{ errors.image }}</span>
-      </div>
-      <div class="form-group">
-        <label for="content">内容</label>
-        <div class="markdown-editor">
-          <textarea
-            id="content"
-            v-model="postForm.contentHtml"
-            placeholder="请输入帖子内容（支持Markdown语法）"
-            class="form-textarea markdown-textarea"
-            rows="10"
-          ></textarea>
-          <div class="markdown-preview" v-html="markedContent"></div>
+  <div class="publish-bg">
+    <div class="publish-container split-layout">
+      <div class="split-left">
+        <div class="publish-form">
+          <div class="form-group">
+            <label for="title">标题</label>
+            <input
+              type="text"
+              id="title"
+              v-model="postForm.title"
+              placeholder="请输入帖子标题"
+              class="form-input"
+            />
+            <span class="error-text" v-if="errors.title">{{ errors.title }}</span>
+          </div>
+          <div class="form-group">
+            <label for="imageUpload">图片上传</label>
+            <input
+              type="file"
+              id="imageUpload"
+              accept="image/*"
+              @change="handleImageUpload"
+              class="form-input"
+            />
+            <div class="el-upload__tip">只能上传jpg/png文件，且不超过1mb</div>
+            <span v-if="errors.image" class="error-text">{{ errors.image }}</span>
+          </div>
+          <div class="form-group">
+            <label for="category">分类</label>
+            <select
+              id="category"
+              v-model="postForm.categoryNames"
+              @focus="getCategoryList"
+              class="form-select"
+            >
+              <option value="">请选择分类</option>
+              <option v-for="item in categoryList" :key="item.categoryId" :value="item.name">
+                {{ item.name }}
+              </option>
+            </select>
+            <span class="error-text" v-if="errors.categoryNames">{{ errors.categoryNames }}</span>
+          </div>
+          <div class="form-group">
+            <label for="content">内容</label>
+            <textarea
+              id="content"
+              v-model="postForm.contentHtml"
+              placeholder="请输入帖子内容（支持Markdown语法）"
+              class="form-textarea markdown-textarea"
+              rows="12"
+            ></textarea>
+            <span class="error-text" v-if="errors.contentHtml">{{ errors.contentHtml }}</span>
+          </div>
         </div>
-        <span class="error-text" v-if="errors.contentHtml">{{ errors.contentHtml }}</span>
+        <div class="form-actions">
+          <button class="btn-cancel" @click="handleCancel">取消</button>
+          <button class="btn-publish" @click="handlePublish" :disabled="publishing">
+            {{ publishing ? '发布中...' : '发布帖子' }}
+          </button>
+        </div>
       </div>
-
-      <div class="form-group">
-        <label for="category">分类</label>
-        <select id="category" v-model="postForm.categoryNames" class="form-select">
-          <option value="">请选择分类</option>
-          <option value="technology">技术</option>
-          <option value="life">生活</option>
-          <option value="discussion">讨论</option>
-          <option value="question">问答</option>
-        </select>
-        <span class="error-text" v-if="errors.categoryNames">{{ errors.categoryNames }}</span>
-      </div>
-
-      <div class="form-actions">
-        <button class="btn-cancel" @click="handleCancel">取消</button>
-        <button class="btn-publish" @click="handlePublish" :disabled="publishing">
-          {{ publishing ? '发布中...' : '发布帖子' }}
-        </button>
+      <div class="split-right">
+        <div class="preview-header">实时预览</div>
+        <div class="markdown-preview" v-html="markedContent"></div>
       </div>
     </div>
   </div>
@@ -70,7 +72,9 @@
 import * as marked from 'marked'
 import DOMPurify from 'dompurify'
 import { addPostDetail } from '@/api/posts/posts.js'
+import { getCategoryList } from '@/api/posts/category/category'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/store/userStore'
 
 export default {
   name: 'PublishPost',
@@ -87,6 +91,7 @@ export default {
         contentHtml: '',
         categoryNames: '',
       },
+      categoryList: [],
       publishing: false,
     }
   },
@@ -103,7 +108,15 @@ export default {
       })
     },
   },
+  created() {
+    this.getCategoryList
+  },
   methods: {
+    getCategoryList() {
+      getCategoryList().then((response) => {
+        this.categoryList = response.data
+      })
+    },
     handleImageUpload(event) {
       const file = event.target.files[0]
       if (file) {
@@ -156,35 +169,37 @@ export default {
 
     async handlePublish() {
       if (!this.validateForm()) {
-        return;
+        return
       }
 
-      this.publishing = true;
+      this.publishing = true
 
       try {
-        const formData = new FormData();
-        formData.append('title', this.postForm.title);
-        formData.append('contentHtml', this.postForm.contentHtml);
-        formData.append('categoryNames', this.postForm.categoryNames);
+        const userStore = useUserStore()
+        const formData = new FormData()
+        formData.append('title', this.postForm.title)
+        formData.append('contentHtml', this.postForm.contentHtml)
+        formData.append('categoryNames', this.postForm.categoryNames)
+        formData.append('userId', userStore.user?.userId || '')
 
         // 如果有图片，则追加到 formData 中
         if (this.postForm.image) {
-          formData.append('image', this.postForm.image); // 确保字段名与后端接口一致（如 MultipartFile image）
+          formData.append('image', this.postForm.image) // 确保字段名与后端接口一致（如 MultipartFile image）
         }
 
-        const response = await addPostDetail(formData);
+        const response = await addPostDetail(formData)
 
         if (response.code === 200) {
-          ElMessage.success('帖子发布成功！');
-          this.$router.push('/posts');
+          ElMessage.success('帖子发布成功！')
+          this.$router.push('/posts')
         } else {
-          ElMessage.error(response.message || '发布失败，请重试');
+          ElMessage.error(response.message || '发布失败，请重试')
         }
       } catch (error) {
-        console.error('发布帖子失败:', error);
-        ElMessage.error('服务器错误，请稍后重试');
+        console.error('发布帖子失败:', error)
+        ElMessage.error('服务器错误，请稍后重试')
       } finally {
-        this.publishing = false;
+        this.publishing = false
       }
     },
 
@@ -205,66 +220,129 @@ export default {
 </script>
 
 <style scoped>
+.publish-bg {
+  min-height: 50vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 0 40px 0;
+}
+
 .publish-container {
-  max-width: 800px;
-  margin: 100px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1100px;
+  height: 600px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 24px;
+  box-shadow:
+    0 8px 32px rgba(102, 126, 234, 0.1),
+    0 1.5px 6px rgba(102, 126, 234, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 36px 24px 32px 24px;
+  margin: 0 16px;
+  display: flex;
+  gap: 36px;
+}
+
+.split-layout {
+  flex-direction: row;
+}
+.split-left {
+  flex: 1.1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.split-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(236, 239, 255, 0.18);
+  border-radius: 16px;
+  border: 1.5px solid #e4e4e4;
+  padding: 18px 18px 18px 18px;
+  box-sizing: border-box;
+  max-height: 700px;
+  overflow: auto;
+}
+
+.preview-header {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #667eea;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
 }
 
 .publish-header {
-  text-align: center;
-  margin-bottom: 30px;
+  text-align: left;
+  margin-bottom: 24px;
 }
 
 .publish-header h1 {
-  font-size: 24px;
-  color: #333;
+  font-size: 2rem;
+  color: #667eea;
   margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 .publish-header p {
-  font-size: 14px;
-  color: #666;
+  font-size: 1rem;
+  color: #64748b;
+}
+
+.publish-form {
+  margin-top: 0;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 600;
   color: #333;
+  letter-spacing: 0.5px;
 }
 
 .form-input,
 .form-textarea {
-  width: 97%;
-  padding: 10px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.2s;
-}
-
-.form-select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.2s;
+  padding: 12px 14px;
+  border: 1.5px solid #dcdfe6;
+  border-radius: 10px;
+  font-size: 15px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  background: rgba(236, 239, 255, 0.4);
+  box-sizing: border-box;
 }
 
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
   outline: none;
-  border-color: #409eff;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px #e0e7ef;
+}
+
+.form-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #dcdfe6;
+  border-radius: 10px;
+  font-size: 15px;
+  background: rgba(236, 239, 255, 0.4);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .form-textarea {
@@ -275,46 +353,53 @@ export default {
 .error-text {
   display: block;
   margin-top: 5px;
-  font-size: 12px;
+  font-size: 13px;
   color: #f56c6c;
+  font-weight: 500;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 15px;
-  margin-top: 30px;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.markdown-textarea {
+  height: 120px;
 }
 
 .btn-cancel,
 .btn-publish {
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 12px 32px;
+  border-radius: 12px;
+  font-size: 15px;
   cursor: pointer;
+  font-weight: 600;
   transition: all 0.3s;
 }
 
 .btn-cancel {
   background: #fff;
-  border: 1px solid #dcdfe6;
+  border: 1.5px solid #dcdfe6;
   color: #606266;
 }
 
 .btn-cancel:hover {
-  color: #409eff;
-  border-color: #c6e2ff;
-  background-color: #ecf5ff;
+  color: #667eea;
+  border-color: #b4cafe;
+  background-color: #f4f8ff;
 }
 
 .btn-publish {
-  background: #409eff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   color: #fff;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
 }
 
 .btn-publish:hover {
-  background: #66b1ff;
+  background: linear-gradient(135deg, #667eea 0%, #a5b4fc 100%);
 }
 
 .btn-publish:disabled {
@@ -322,24 +407,61 @@ export default {
   cursor: not-allowed;
 }
 
-.markdown-editor {
-  display: flex;
-  gap: 20px;
-}
-
-.markdown-textarea {
-  flex: 1;
-  width: 50%;
-  border-right: 1px solid #e4e4e4;
-  resize: vertical;
-}
-
 .markdown-preview {
   flex: 1;
-  padding: 10px;
-  background: #f9f9f9;
-  border: 1px solid #e4e4e4;
-  border-radius: 4px;
+  padding: 10px 12px;
+  background: rgba(249, 249, 255, 0.7);
+  border: none;
+  border-radius: 10px;
   min-height: 200px;
+  font-size: 15px;
+  color: #334155;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+
+.el-upload__tip {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+@media (max-width: 1100px) {
+  .publish-container {
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px 4px 16px 4px;
+  }
+  .split-left,
+  .split-right {
+    max-width: 100%;
+    border-radius: 10px;
+    padding: 0;
+  }
+  .split-right {
+    margin-top: 0;
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 600px) {
+  .publish-bg {
+    padding: 10px 0 6px 0;
+  }
+  .publish-container {
+    border-radius: 10px;
+    padding: 6px 0 4px 0;
+  }
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .btn-cancel,
+  .btn-publish {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 16px;
+  }
 }
 </style>

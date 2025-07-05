@@ -99,7 +99,7 @@ public class PostController extends BaseController
     @DeleteMapping("/{postIds}")
     public AjaxResult remove(@PathVariable List<String> postIds)
     {
-        return toAjax(postService.removeBatchByIds(postIds));
+        return toAjax(postService.removeByPostId(postIds));
     }
 }
 

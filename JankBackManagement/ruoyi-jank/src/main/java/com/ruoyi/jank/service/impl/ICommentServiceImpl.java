@@ -20,6 +20,9 @@ import java.util.List;
  */
 @Service
 public class ICommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements ICommentService {
+    @Autowired
+    private CommentMapper commentMapper;
+
     @Override
     //查询评论列表
     public List<CommentDto> selectCommentList(Comment comment) {
@@ -34,5 +37,24 @@ public class ICommentServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
             CommentDtoList.add(CommentDto);
         });
         return CommentDtoList;
+    }
+
+        @Override
+        public List<Comment> selectCommentWithUserAndPost(Comment comment) {
+            return commentMapper.selectCommentWithUserAndPost(comment);
+        }
+
+    @Override
+    public List<Comment> getCommentByPostId(String postId) {
+        LambdaQueryWrapper<Comment> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Comment::getPostId,postId);
+        return list(lambdaQueryWrapper);
+    }
+
+    @Override
+    public List<Comment> getCommentByUserId(String userId) {
+        LambdaQueryWrapper<Comment> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Comment::getUserId,userId);
+        return list(lambdaQueryWrapper);
     }
 }

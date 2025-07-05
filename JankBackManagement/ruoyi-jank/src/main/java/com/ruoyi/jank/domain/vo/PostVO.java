@@ -26,8 +26,7 @@ public class PostVO implements Serializable {
     private String image;
     private Integer visibility;
     private String contentHtml;
-    @TableField(exist = false)
-    private List<String> categoryNames;
+    private String categoryName;
     private String username;
     private String createTime;
     private String updateTime;

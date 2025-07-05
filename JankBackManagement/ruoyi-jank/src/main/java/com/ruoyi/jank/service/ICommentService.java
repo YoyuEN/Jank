@@ -11,6 +11,10 @@ import java.util.List;
  * author: wuyinai
  * date: 2025/6/24
  */
+
 public interface ICommentService extends IService<Comment> {
     List<CommentDto> selectCommentList(Comment comment);
+    List<Comment> selectCommentWithUserAndPost(Comment comment);
+    List<Comment> getCommentByPostId(String postId);
+    List<Comment> getCommentByUserId(String userId);
 }

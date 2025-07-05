@@ -1,6 +1,7 @@
 package com.team.backend.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,5 +30,6 @@ public class MomentComment {
     // 评论时间
     private String createTime;
     // 删除状态（0:未删除, 1:已删除）
+//    @TableLogic
     private Integer deleted;
 }

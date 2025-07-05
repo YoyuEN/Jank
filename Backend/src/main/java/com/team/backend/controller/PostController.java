@@ -45,15 +45,21 @@ public class PostController {
     public Result<?> addPost(
             @RequestParam("title") String title,
             @RequestParam("contentHtml") String contentHtml,
-            @RequestParam("categoryNames") List<String> categoryNames,
-            @RequestParam("image") MultipartFile image) throws Exception {
+            @RequestParam("categoryName") String categoryName,
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("userId") String userId) throws Exception {
 
         // 构造 PostVO 或直接调用 service
         PostVO postVO = new PostVO();
         postVO.setTitle(title);
         postVO.setContentHtml(contentHtml);
-        postVO.setCategoryNames(categoryNames);
+        postVO.setCategoryName(categoryName);
         postVO.setImage(image);
+        if (userId != null) {
+            postVO.setUserId(userId);
+        } else {
+            throw new Exception("请先登录");
+        }
 
         postService.addPost(postVO);
         return Result.success(ResponseCode.SUCCESS);
@@ -64,5 +70,11 @@ public class PostController {
     public Result<List<Post>> getUserIdPost(@RequestParam("userId") String userId) {
         List<Post> post = postService.getUserIdPost(userId);
         return Result.success(ResponseCode.SUCCESS, post);
+    }
+    //删除帖子
+    @DeleteMapping("/deletePost")
+    public Result<Boolean> deletePost(@RequestParam("postId") String postId) {
+        boolean flag =  postService.removeAllById(postId);
+        return Result.success(ResponseCode.SUCCESS,flag);
     }
 }

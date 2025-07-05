@@ -42,3 +42,11 @@ export function delCategory(categoryId) {
     method: 'delete'
   })
 }
+
+// 获取所有类目名称
+export function listAllCategoryNames() {
+  return request({
+    url: '/jank/category/names',
+    method: 'get'
+  })
+}

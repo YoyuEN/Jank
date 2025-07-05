@@ -101,6 +101,16 @@ public class CategoryController extends BaseController
 	@DeleteMapping("/{categoryIds}")
     public AjaxResult remove(@PathVariable List<String> categoryIds)
     {
-        return toAjax(categoryService.removeBatchByIds(categoryIds));
+        return toAjax(categoryService.removeByCategoryIds(categoryIds));
+    }
+    
+    /**
+     * 获取所有类目名称列表
+     */
+    @GetMapping("/names")
+    public AjaxResult listAllCategoryNames()
+    {
+        List<String> categoryNames = categoryService.listAllCategoryNames();
+        return success(categoryNames);
     }
 }

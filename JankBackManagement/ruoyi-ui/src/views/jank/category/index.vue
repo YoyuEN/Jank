@@ -2,12 +2,18 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="类目名称" prop="name">
-        <el-input
+        <el-select
           v-model="queryParams.name"
-          placeholder="请输入类目名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          placeholder="请选择类目名称"
+          style="width: 240px"
+        >
+          <el-option
+            v-for="item in categoryNames"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -63,7 +69,11 @@
 
     <el-table v-loading="loading" :data="categoryList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="序号" align="center" prop="categoryId" width="100px"/>
+      <el-table-column label="序号" align="center" width="60">
+        <template slot-scope="scope">
+          {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
       <el-table-column label="类目名称" align="center" prop="name" width="100px"/>
       <el-table-column label="类目描述" align="center" prop="description" :formatter="removePTags" width="700px"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -98,16 +108,24 @@
     <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="类目名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入类目名称" />
+          <el-select
+            v-model="form.name"
+            placeholder="请选择类目名称"
+            clearable
+            filterable
+            allow-create
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in categoryNames"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="类目描述" prop="description">
           <editor v-model="form.description" :min-height="192" />
-        </el-form-item>
-        <el-form-item label="父类目ID" prop="parentId">
-          <el-input v-model="form.parentId" placeholder="请输入父类目ID" />
-        </el-form-item>
-        <el-form-item label="类目图标路径" prop="path">
-          <el-input v-model="form.path" placeholder="请输入类目图标路径" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -119,7 +137,7 @@
 </template>
 
 <script>
-import { listCategory, getCategory, delCategory, addCategory, updateCategory } from "@/api/jank/category";
+import { listCategory, getCategory, delCategory, addCategory, updateCategory, listAllCategoryNames } from "@/api/jank/category";
 
 export default {
   name: "Category",
@@ -139,6 +157,8 @@ export default {
       total: 0,
       // 类目管理表格数据
       categoryList: [],
+      // 类目名称列表
+      categoryNames: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -170,6 +190,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getCategoryNames();
   },
   methods: {
     /** 查询类目管理列表 */
@@ -204,6 +225,12 @@ export default {
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
+    },
+    /** 获取所有类目名称 */
+    getCategoryNames() {
+      listAllCategoryNames().then(response => {
+        this.categoryNames = response.data;
+      });
     },
     /** 重置按钮操作 */
     resetQuery() {

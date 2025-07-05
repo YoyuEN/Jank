@@ -2,17 +2,15 @@ package com.team.backend.controller;
 
 import com.team.backend.domain.Comment;
 import com.team.backend.domain.User;
-import com.team.backend.domain.vo.CommentVO;
 import com.team.backend.domain.vo.CommentsVO;
 import com.team.backend.domain.vo.StartVO;
-import com.team.backend.handler.ResponseResult;
 import com.team.backend.service.ICommentService;
 import com.team.backend.service.IUserService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
+import dev.langchain4j.agent.tool.P;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +27,7 @@ import java.util.Map;
 public class CommentController {
     @Autowired
     private ICommentService commentService;
+
     @Autowired
     private IUserService userService;
 
@@ -109,5 +108,19 @@ public class CommentController {
     public Result<StartVO> getStarts(@PathVariable String postId) {
         StartVO data = commentService.getCommentsStarts(postId);
         return Result.success(ResponseCode.SUCCESS,data);
+    }
+    
+    @GetMapping("/getComments/{userId}")
+    public Result<List<Comment>> getCommentsUserId(@PathVariable String userId) {
+        List<Comment> data = commentService.getCommentsUserId(userId);
+        return Result.success(ResponseCode.SUCCESS,data);
+    }
+
+    //删除评论
+    @DeleteMapping("/deleteComment")
+
+    public Result<Void> deleteComment(@RequestParam("commentId") String commentId) {
+        commentService.removeCommentById(commentId);
+        return Result.success(ResponseCode.SUCCESS);
     }
 }
