@@ -22,7 +22,9 @@
               <span class="label">邮箱：</span>{{ user.email || 'example@email.com' }}
             </p>
             <p class="user-detail"><span class="label">加入时间：</span>{{ user.createTime }}</p>
-            <p class="user-detail"><span class="label">地址：</span>{{ user.address }}</p>
+            <p class="user-detail">
+              <span class="label">地址：</span>{{ userInfo.address || '未设置' }}
+            </p>
           </div>
         </div>
       </div>
@@ -134,6 +136,7 @@ import { getUserIdMoment } from '@/api/moments/moments.js'
 import { deletePostById, deleteMomentById, deleteCommentById } from '@/api/delete/delete.js'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { updatePost } from '@/api/posts/posts.js'
+import { getUserByUserId } from '@/api/user/user.js'
 // 用户基本信息
 const userStore = useUserStore()
 
@@ -143,8 +146,25 @@ const user = ref(
     avatar: '/YoyuEN.png',
     username: '游客',
     userId: '',
+    address: '',
   },
 )
+const userInfo = ref({})
+
+// 获取用户详细信息
+const fetchUserInfo = async () => {
+  if (userStore.user && userStore.user.userId) {
+    try {
+      const response = await getUserByUserId(userStore.user.userId)
+      if (response && response.data) {
+        userInfo.value = response.data
+      }
+    } catch (error) {
+      console.error('获取用户详细信息失败:', error)
+    }
+  }
+}
+
 // 监听 store 的变化（响应式更新头像）
 watchEffect(() => {
   if (userStore.user) {
@@ -349,6 +369,7 @@ onMounted(() => {
   fetchUserPosts()
   fetchUserComment()
   fetchUsermoments()
+  fetchUserInfo()
 })
 
 // 当用户信息变化时重新获取帖子
