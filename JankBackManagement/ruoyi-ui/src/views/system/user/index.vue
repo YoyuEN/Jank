@@ -359,12 +359,24 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.loading = true;
+      console.log('查询参数:', this.queryParams); // 调试日志
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.rows;
-          this.total = response.total;
+          console.log('API响应:', response); // 调试日志
+          if (response.code === 200) {
+            // 兼容不同返回数据结构
+            const data = response.data || response;
+            this.userList = data.rows || data.list || [];
+            this.total = data.total || (data.rows ? data.rows.length : 0);
+          } else {
+            this.$modal.msgError(response.msg || '获取用户列表失败');
+          }
           this.loading = false;
         }
-      );
+      ).catch(error => {
+        console.error('获取用户列表出错:', error);
+        this.loading = false;
+        this.$modal.msgError('获取用户列表出错');
+      });
     },
     /** 查询部门下拉树结构 */
     getDeptTree() {

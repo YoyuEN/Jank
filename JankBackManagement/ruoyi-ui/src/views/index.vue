@@ -45,7 +45,6 @@
 import { hotPost } from "@/api/postlist/postlist";
 export default {
   name: "HotPosts",
-  components: {User},
   data() {
     return {
       hotPostsList: [],
