@@ -69,7 +69,11 @@
 
     <el-table v-loading="loading" :data="categoryList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="序号" align="center" prop="categoryId" width="100px"/>
+      <el-table-column label="序号" align="center" width="60">
+        <template slot-scope="scope">
+          {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
       <el-table-column label="类目名称" align="center" prop="name" width="100px"/>
       <el-table-column label="类目描述" align="center" prop="description" :formatter="removePTags" width="700px"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -122,12 +126,6 @@
         </el-form-item>
         <el-form-item label="类目描述" prop="description">
           <editor v-model="form.description" :min-height="192" />
-        </el-form-item>
-        <el-form-item label="父类目ID" prop="parentId">
-          <el-input v-model="form.parentId" placeholder="请输入父类目ID" />
-        </el-form-item>
-        <el-form-item label="类目图标路径" prop="path">
-          <el-input v-model="form.path" placeholder="请输入类目图标路径" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

@@ -189,8 +189,8 @@ export default {
       // 表单校验
       rules: {
         email: [
-          {message: '请输入用户邮箱', trigger: 'blur' },
-                { pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: '请输入正确的邮箱格式', trigger: 'blur' }
+          {required: true, message: '请输入用户邮箱', trigger: 'blur' },
+          { pattern: /^[a-zA-Z0-9._%+-]+@(163\.com|qq\.com)$/, message: '邮箱格式不正确，只支持@163.com或@qq.com结尾的邮箱', trigger: 'blur' }
         ],
         username: [
           { required: true, message: "请输入用户名,用户名不能为空", trigger: "blur" },
