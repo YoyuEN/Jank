@@ -95,7 +95,7 @@
         <el-form-item label="帖子标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入帖子标题" />
         </el-form-item>
-        <el-form-item label="帖子所属分类" prop="categoryIds">
+        <el-form-item label="帖子所属分类" >
           <el-input v-model="form.categoryNames" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="帖子封面图片URL" prop="image">
