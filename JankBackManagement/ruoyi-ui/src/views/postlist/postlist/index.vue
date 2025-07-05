@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="帖子标题" prop="title">
-        <el-input
-          v-model="queryParams.title"
-          placeholder="请输入帖子标题"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="帖子标题" prop="title">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.title"-->
+<!--          placeholder="请输入帖子标题"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="所属分类" prop="categoryName">
         <el-select v-model="queryParams.categoryName" placeholder="请选择分类" clearable>
           <el-option
