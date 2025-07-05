@@ -2,7 +2,6 @@ package com.team.backend.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.team.backend.handler.CategoryIdsTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,3 +42,4 @@ public class Post {
     // 删除状态
     private int deleted;
 }
+
