@@ -470,16 +470,14 @@ onUnmounted(() => {
 /* 饼图容器样式 */
 .chart-container {
   position: absolute;
-  left: 50%;
+  left: 70%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255, 0.2); /* 半透明背景 */
+
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   padding: 20px;
   z-index: 100;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .pie-chart {

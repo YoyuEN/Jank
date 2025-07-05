@@ -11,6 +11,7 @@ import com.team.backend.domain.vo.UpdateUserVO;
 import com.team.backend.mapper.TechStackMapper;
 import com.team.backend.service.ITechStackService;
 import com.team.backend.service.IUserService;
+import com.team.backend.service.MinioService;
 import com.team.backend.utils.ResponseCode;
 import com.team.backend.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +32,19 @@ import java.util.List;
 public class UserController {
     private final IUserService userService;
     private final ITechStackService techStackService;
+    private final MinioService minioService;
 
     @Autowired
-    public UserController(IUserService userService, ITechStackService techStackService) {
+    public UserController(IUserService userService, ITechStackService techStackService, MinioService minioService) {
         this.userService = userService;
         this.techStackService = techStackService;
+        this.minioService = minioService;
     }
 
     @PostMapping("/login")
     public Result<UserDTO> login(@RequestBody LoginUserVO userVO){
         UserDTO userDTO = userService.login(userVO);
+        userDTO.setAvatar(minioService.getPresignedUrl(userDTO.getAvatar()));
         return Result.success(ResponseCode.SUCCESS, userDTO);
     }
 

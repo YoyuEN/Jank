@@ -59,9 +59,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new ServiceExceptionHandler(ResponseCode.USER_PASSWORD_ERROR);
         }
         if(user.getFreeze() == 0){
-            throw new ServiceExceptionHandler(ResponseCode.USER_HAVE_EXIST);
+            throw new ServiceExceptionHandler(ResponseCode.USER_FREEZE);
         }
-        List<String> addresses = List.of(user.getAddress().split("/"));
+        List<String> addresses = new ArrayList<>();
+        if (user.getAddress() !=  null) {
+            addresses = List.of(user.getAddress().split("/"));
+        }
         List<Integer> address = new ArrayList<>();
         for (String s : addresses) {
             address.add(addressService.getAddressIdByAddress(s));

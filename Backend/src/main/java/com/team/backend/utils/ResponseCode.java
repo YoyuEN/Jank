@@ -20,7 +20,8 @@ public enum ResponseCode {
     USER_HAVE_EXIST(700, "用户已存在"),
     USER_NOT_FOUND(800, "用户不存在"),
     UPLOAD_FILE_FAIL(900, "上传文件失败"),
-    ADDRESS_NOT_EXIST(1000, "地址不存在");
+    ADDRESS_NOT_EXIST(1000, "地址不存在"),
+    USER_FREEZE(1100, "用户被冻结");
 
     private final Integer code;
     private final String message;

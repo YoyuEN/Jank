@@ -36,6 +36,7 @@
         <div class="avatar-wrapper">
           <img :src="user.avatar" alt="" class="user-avatar" />
           <div class="avatar-status"></div>
+          <div class="avatar-status" :class="{ offline: !userStore.user }"></div>
         </div>
         <!-- 下拉菜单 -->
         <div v-show="isDropdownOpen" class="dropdown-menu">
@@ -396,6 +397,10 @@ const logout = () => {
   border-radius: 50%;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-status.offline {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
 }
 
 /* 下拉菜单样式 */
