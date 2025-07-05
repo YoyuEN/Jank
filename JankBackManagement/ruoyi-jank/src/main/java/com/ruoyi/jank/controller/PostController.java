@@ -46,6 +46,14 @@ public class PostController extends BaseController
         return getDataTable(list);
     }
 
+    @PreAuthorize("@ss.hasPermi('postlist:postlist:listNums')")
+    @GetMapping("/listNums")
+    public int list()
+    {
+        List<Post> list = postService.list();
+        return list.size();
+    }
+
 //    /**
 //     * 导出帖子列表
 //     */

@@ -54,6 +54,14 @@ public class CommonUserController extends BaseController
         return getDataTable(list);
     }
 
+    @PreAuthorize("@ss.hasPermi('commonuser:commonuser:listNums')")
+    @GetMapping("/listNums")
+    public int list()
+    {
+        List<CommonUser> list = commonUserService.list();
+        return list.size();
+    }
+
     /**
      * 导出用户管理列表
      */

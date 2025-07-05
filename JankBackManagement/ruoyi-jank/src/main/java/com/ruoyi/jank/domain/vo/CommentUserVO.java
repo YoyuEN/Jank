@@ -1,5 +1,6 @@
 package com.ruoyi.jank.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.ruoyi.common.annotation.Excel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,4 +19,6 @@ public class CommentUserVO implements Serializable {
     private String createTime;
     private Integer goodorbad;
     private String  username;
+    @TableField(exist = false)
+    private Integer total;
 }

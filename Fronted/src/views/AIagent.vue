@@ -1,23 +1,22 @@
 <template>
-  <div class="app-layout">
-    <div class="main-content">
-      <div class="chat-container">
-        <div class="message-list" ref="messageListRef">
-          <div
-            v-for="(message, index) in messages"
-            :key="index"
-            :class="message.isUser ? 'message user-message' : 'message bot-message'"
-          >
-            <!-- 会话图标 -->
+  <div class="aiagent-bg">
+    <div class="chat-container">
+      <div class="message-list" ref="messageListRef">
+        <div
+          v-for="(message, index) in messages"
+          :key="index"
+          :class="message.isUser ? 'message user-message' : 'message bot-message'"
+        >
+          <div class="bubble-wrap">
             <i
               :class="
-                message.isUser ? 'fa-solid fa-user message-icon' : 'fa-solid fa-robot message-icon'
+                message.isUser
+                  ? 'fa-solid fa-user message-icon user-icon'
+                  : 'fa-solid fa-robot message-icon bot-icon'
               "
             ></i>
-            <!-- 会话内容 -->
-            <span>
+            <span class="bubble" :class="message.isUser ? 'bubble-user' : 'bubble-bot'">
               <span v-html="message.content"></span>
-              <!-- loading -->
               <span class="loading-dots" v-if="message.isThinking || message.isTyping">
                 <span class="dot"></span>
                 <span class="dot"></span>
@@ -25,18 +24,21 @@
             </span>
           </div>
         </div>
-        <div class="input-container">
-          <el-button class="new-chat-button" @click="newChat" type="primary">
-            <i class="fa-solid fa-plus"></i>
-            &nbsp;新会话
-          </el-button>
-          <el-input
-            v-model="inputMessage"
-            placeholder="请输入您的问题"
-            @keyup.enter="sendMessage"
-          ></el-input>
-          <el-button @click="sendMessage" :disabled="isSending" type="primary">发送 </el-button>
-        </div>
+      </div>
+      <div class="input-container">
+        <el-button class="new-chat-button" @click="newChat" type="primary">
+          <i class="fa-solid fa-plus"></i>
+          &nbsp;新会话
+        </el-button>
+        <el-input
+          v-model="inputMessage"
+          placeholder="请输入您的问题"
+          @keyup.enter="sendMessage"
+          class="ai-input"
+        ></el-input>
+        <el-button @click="sendMessage" :disabled="isSending" type="primary" class="send-btn"
+        >发送</el-button
+        >
       </div>
     </div>
   </div>
@@ -143,15 +145,6 @@ const uuidToNumber = (uuid) => {
   return number % 1000000
 }
 
-// const convertStreamOutput = (output) => {
-//   return output
-//     .replace(/\n/g, '<br>')
-//     .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
-//     .replace(/&/g, '&amp;')
-//     .replace(/</g, '&lt;')
-//     .replace(/>/g, '&gt;')
-// }
-
 const newChat = () => {
   console.log('开始新会话')
   localStorage.removeItem('user_uuid')
@@ -160,80 +153,118 @@ const newChat = () => {
 </script>
 
 <style scoped>
-.app-layout {
+.aiagent-bg {
+  height: 100%;
   display: flex;
-  height: 20vh; /* 缩小为原来的四分之一 */
-  max-height: 150px; /* 缩小为原来的四分之一 */
-  margin: 10px auto;
-  width: 90%; /* 增加宽度为原来的四倍 */
-  max-width: 900px; /* 增加最大宽度为原来的四倍 */
-}
-
-.main-content {
-  flex: 1;
-  padding: 8px;
-  overflow-y: auto;
+  align-items: center;
+  justify-content: center;
+  margin-top: 90px;
+  width: 100%;
 }
 
 .chat-container {
+  width: 90%;
+  height: 500px;
+  margin: 20px auto;
   display: flex;
   flex-direction: column;
-  border-radius: 6px;
-  box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 8px 32px rgba(102, 126, 234, 0.1),
+    0 1.5px 6px rgba(102, 126, 234, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(102, 126, 234, 0.1);
+  padding: 32px 18px 18px 18px;
 }
 
 .message-list {
   flex: 1;
   overflow-y: auto;
-  padding: 4px;
-  border: 1px solid #e0e0e0;
-  border-radius: 3px;
-  margin-bottom: 4px;
+  padding: 18px 8px 8px 8px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #c7d2fe #f1f5f9;
+}
+.message-list::-webkit-scrollbar {
+  width: 6px;
+}
+.message-list::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 6px;
+}
+
+.bubble-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .message {
-  margin-bottom: 4px;
-  padding: 4px;
-  border-radius: 3px;
   display: flex;
-  font-size: 14px;
+  align-items: flex-end;
+  font-size: 15px;
 }
-
 .user-message {
-  max-width: 70%;
-  align-self: flex-end;
-  flex-direction: row-reverse;
+  justify-content: flex-end;
 }
-
 .bot-message {
-  max-width: 100%;
-  align-self: flex-start;
+  justify-content: flex-start;
 }
 
 .message-icon {
-  margin: 0 4px;
-  font-size: 0.8em;
+  font-size: 1.3em;
+  opacity: 0.85;
+  margin-bottom: 2px;
+}
+.user-icon {
+  color: #667eea;
+}
+.bot-icon {
+  color: #059669;
+}
+
+.bubble {
+  max-width: 340px;
+  padding: 12px 18px;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
+  word-break: break-word;
+  font-size: 15px;
+  line-height: 1.7;
+  position: relative;
+  min-height: 28px;
+  display: inline-block;
+}
+.bubble-user {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+.bubble-bot {
+  background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+  color: #334155;
+  border-bottom-left-radius: 6px;
 }
 
 .loading-dots {
   padding-left: 2px;
 }
-
 .dot {
   display: inline-block;
   margin-left: 2px;
   width: 4px;
   height: 4px;
   border-radius: 50%;
+  background: #64748b;
   animation: pulse 1.2s infinite ease-in-out both;
 }
-
 .dot:nth-child(2) {
   animation-delay: -0.6s;
 }
-
 @keyframes pulse {
   0%,
   100% {
@@ -245,36 +276,70 @@ const newChat = () => {
     opacity: 1;
   }
 }
+
 .input-container {
   display: flex;
-  padding: 4px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px 0 8px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.04);
+  margin-top: 8px;
 }
 
-.input-container .el-input {
+.ai-input {
   flex: 1;
-  margin-right: 4px;
+  border-radius: 12px;
+  background: rgba(236, 239, 255, 0.5);
+  border: 1.5px solid #c7d2fe;
+  font-size: 15px;
+  padding: 8px 12px;
 }
 
-/* 响应式布局调整 */
+.send-btn {
+  background: linear-gradient(135deg, #667eea 0%, #059669 100%);
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+  transition: all 0.2s;
+}
+.send-btn:active {
+  background: linear-gradient(135deg, #667eea 0%, #059669 80%);
+}
+
+.new-chat-button {
+  background: linear-gradient(135deg, #fbbf24 0%, #f472b6 100%);
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  color: #fff;
+  margin-right: 6px;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.08);
+  transition: all 0.2s;
+}
+.new-chat-button:active {
+  background: linear-gradient(135deg, #fbbf24 0%, #f472b6 80%);
+}
+
 @media (max-width: 768px) {
-  .app-layout {
-    width: 90%; /* 增加小屏幕宽度为原来的四倍左右 */
-    height: 25vh; /* 保持高度不变 */
-    margin: 5px auto;
+  .chat-container {
+    max-width: 98vw;
+    margin: 10px auto;
+    border-radius: 12px;
+    padding: 16px 4px 4px 4px;
+    min-height: 350px;
   }
-
-  .main-content {
-    padding: 4px;
+  .bubble {
+    max-width: 90vw;
+    font-size: 13px;
+    padding: 8px 10px;
   }
-
-  .message {
-    font-size: 11px;
-  }
-}
-
-@media (min-width: 769px) {
-  .main-content {
-    padding: 0 0 4px 4px;
+  .input-container {
+    padding: 8px 2px 0 2px;
+    border-radius: 0 0 12px 12px;
   }
 }
 </style>

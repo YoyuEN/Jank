@@ -141,7 +141,14 @@
 </template>
 
 <script>
-import { listCommonuser, getCommonuser, delCommonuser, addCommonuser, updateCommonuser } from "@/api/commonuser/commonuser";
+import {
+  listCommonuser,
+  getCommonuser,
+  delCommonuser,
+  addCommonuser,
+  updateCommonuser,
+  listCommonuserNums
+} from '@/api/commonuser/commonuser'
 import { getProvinces, getChildrenByPId } from "@/api/address/address";
 import { checkUsernameExist,updateCommonuserStatus } from "@/api/commonuser/commonuser"; // 根据实际路径调整
 
@@ -176,7 +183,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 50,
+        pageSize: 10,
         username: null,
         address: null
       },
@@ -256,11 +263,12 @@ export default {
       this.loading = true;
       listCommonuser(this.queryParams).then(response => {
         // 按创建时间从晚到早排序
-        const sortedList = response.rows.sort((a, b) => {
-          return new Date(b.createTime) - new Date(a.createTime);
+        this.commonuserList = response.rows;
+        listCommonuserNums().then(res => {
+          this.total = res;
+          this.loading = false;
         });
-        this.commonuserList = sortedList;
-        this.total = response.total;
+      }).catch(() => {
         this.loading = false;
       });
     },

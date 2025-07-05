@@ -8,6 +8,14 @@ export function listPost(query) {
     params: query
   })
 }
+export function listPostNums(query) {
+  return request({
+    url: '/postlist/postlist/listNums',
+    method: 'get',
+    params: query
+  })
+}
+
 
 // 查询帖子详细
 export function getPost(postId) {

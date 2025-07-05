@@ -38,7 +38,7 @@ public class CommentController extends BaseController
     private ICommentService commentService;
 
     @GetMapping("/listWithUserAndPost")
-    public TableDataInfo listWithUserAndPost( ) {
+    public TableDataInfo listWithUserAndPost() {
         startPage();
         List<CommentUserVO> list = commentService.selectCommentWithUserAndPost();
         return getDataTable(list);
@@ -48,11 +48,12 @@ public class CommentController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('jank:comment:list')")
     @GetMapping("/list")
-    public TableDataInfo list(Comment comment)
+    public int list()
     {
-        startPage();
-        List<CommentDto> list = commentService.selectCommentList(comment);
-        return getDataTable(list);
+//        startPage();
+        // 获取到list列表的长度
+        List<Comment> list = commentService.list();
+        return list.size();
     }
 
     /**

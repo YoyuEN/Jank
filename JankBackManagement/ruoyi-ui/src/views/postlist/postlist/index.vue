@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { listPost, getPost, delPost, addPost, updatePost } from "@/api/postlist/postlist";
+import { listPost, getPost, delPost, addPost, updatePost, listPostNums } from '@/api/postlist/postlist'
 import { listAllCategoryNames } from "@/api/jank/category";
 import VueMarkdownIt from 'vue-markdown-it';
 
@@ -162,7 +162,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 50,
+        pageSize: 10,
         title: null,
         visibility: null,
         categoryIds: null,
@@ -228,8 +228,14 @@ export default {
         // });
 
         this.postList = response.rows;
-        this.total = response.total;
-        this.loading = false;
+        listPostNums() .then(response => {
+          this.total = response;
+          this.loading = false;
+        }).catch(error => {
+          console.error('获取帖子数量失败:', error);
+          this.total = 0;
+          this.loading = false;
+        });
       }).catch(error => {
         console.error('查询失败:', error);
         this.loading = false;

@@ -148,13 +148,12 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 50,
+        pageSize: 10,
         content: null,
         userId: null,
         postId: null,
         replyToCommentId: null,
-        createdAt: null,
-        updatedAt: null,
+        createTime: null,
         deleted: null
       },
       // 表单参数
@@ -186,17 +185,17 @@ export default {
     },
     /** 查询评论功能列表 */
     getList() {
-      this.loading = true
+      this.loading = true;
       listCommentWithUserAndPost(this.queryParams).then(response => {
-        // 按照 createTime 降序排列（从晚到早）
-        // const sortedList = response.data.sort((a, b) => {
-        //   return new Date(b.createTime) - new Date(a.createTime)
-        // })
-
-        this.commentList = response.rows
-        this.total = response.total
-        this.loading = false
-      })
+        this.commentList = response.rows;
+        // 等待 listComment() 的结果解析完成
+        listComment().then(res => {
+          this.total = res; // res 应为 Number 类型
+          this.loading = false;
+        });
+      }).catch(() => {
+        this.loading = false;
+      });
     },
     // 取消按钮
     cancel() {

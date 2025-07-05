@@ -8,6 +8,13 @@ export function listCommonuser(query) {
     params: query
   })
 }
+export function listCommonuserNums(query) {
+  return request({
+    url: '/commonuser/commonuser/listNums',
+    method: 'get',
+    params: query
+  })
+}
 
 export function checkUsernameExist(username) {
   return request({
