@@ -49,7 +49,7 @@
           <image-preview :src="scope.row.image" :width="100" :height="100"/>
         </template>
       </el-table-column>
-      <el-table-column label="帖子所属分类" align="center" prop="categoryNames" />
+      <el-table-column label="帖子所属分类" align="center" prop="categoryName" />
       <el-table-column label="用户" align="center" prop="username" />
 <!--      <el-table-column label="创建时间" align="center" prop="createTime" width="100">-->
 <!--        <template slot-scope="scope">-->
@@ -96,7 +96,7 @@
           <el-input v-model="form.title" placeholder="请输入帖子标题" />
         </el-form-item>
         <el-form-item label="帖子所属分类" >
-          <el-input v-model="form.categoryNames" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.categoryName" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="帖子封面图片URL" prop="image">
           <image-upload v-model="form.image"/>
@@ -200,7 +200,7 @@ export default {
         image: null,
         visibility: null,
         contentHtml: null,
-        categoryNames: null,
+        categoryName: null,
         userId: null,
         createTime: null,
         updateTime: null,

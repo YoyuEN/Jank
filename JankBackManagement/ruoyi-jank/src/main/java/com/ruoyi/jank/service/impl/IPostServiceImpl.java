@@ -47,8 +47,8 @@ public class IPostServiceImpl extends ServiceImpl<PostMapper, Post> implements I
             PostVO postVO = new PostVO();
             BeanUtils.copyProperties(item, postVO);
             // 获取分类名称
-            List<String> categoryNames = categoryService.selectCategoryNamesByPostId(item.getPostId());
-            postVO.setCategoryNames(categoryNames);
+//            List<String> categoryNames = categoryService.selectCategoryNamesByPostId(item.getPostId());
+//            postVO.setCategoryNames(categoryNames);
 
             String image = postService.getById(item.getPostId()).getImage();
             postVO.setImage(minioService.getPresignedUrl(image));
