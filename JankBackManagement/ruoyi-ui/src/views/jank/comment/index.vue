@@ -45,15 +45,15 @@
     <el-table v-loading="loading" :data="commentList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="序号" align="center" width="60">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="用户姓名" align="center" prop="user.username" >
-        <template slot-scope="scope">
+      <el-table-column label="用户姓名" align="center" prop="user.username">
+        <template v-slot="scope">
           <span class="empty-value">
-<span v-if="scope.row.user && scope.row.user.username" class="normal-text">
-      {{ scope.row.user.username }}
+<span v-if="scope" class="normal-text">
+      {{ scope.row.username }}
     </span>
     <span v-else class="anonymous-text">
       <i class="el-icon-user-solid"></i> 匿名用户
@@ -61,10 +61,10 @@
   </span>
         </template>
       </el-table-column>
-      <el-table-column label="文章标题" align="center" prop="post.title" >
-        <template slot-scope="scope">
-        <span v-if="scope.row.post && scope.row.post.title" class="normal-text">
-      {{ scope.row.post.title }}
+      <el-table-column label="文章标题" align="center" prop="post.title">
+        <template v-slot="scope">
+        <span v-if="scope" class="normal-text">
+      {{ scope.row.title }}
     </span>
           <span v-else class="no-title-text">
       <i class="el-icon-warning-outline"></i> 该文章暂无标题
@@ -118,9 +118,11 @@
   </div>
 </template>
 
+
 <script>
-import { listComment, getComment, delComment, addComment, updateComment } from '@/api/jank/comment'
-import { listCommentWithUserAndPost } from '@/api/jank/comment'
+import {listComment, getComment, delComment, addComment, updateComment} from '@/api/jank/comment'
+import {listCommentWithUserAndPost} from '@/api/jank/comment'
+
 export default {
   name: 'Comment',
   data() {
@@ -146,7 +148,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 50,
         content: null,
         userId: null,
         postId: null,
@@ -160,12 +162,12 @@ export default {
       // 表单校验
       rules: {
         content: [
-          { required: true, message: '评论内容不能为空', trigger: 'blur' }
+          {required: true, message: '评论内容不能为空', trigger: 'blur'}
         ],
         userId: [
-          { required: true, message: '类目描述不能为空', trigger: 'blur' }],
+          {required: true, message: '类目描述不能为空', trigger: 'blur'}],
         postId: [
-          { required: true, message: '类目描述不能为空', trigger: 'blur' }]
+          {required: true, message: '类目描述不能为空', trigger: 'blur'}]
       }
     }
   },
@@ -187,11 +189,11 @@ export default {
       this.loading = true
       listCommentWithUserAndPost(this.queryParams).then(response => {
         // 按照 createTime 降序排列（从晚到早）
-        const sortedList = response.rows.sort((a, b) => {
-          return new Date(b.createTime) - new Date(a.createTime)
-        })
+        // const sortedList = response.data.sort((a, b) => {
+        //   return new Date(b.createTime) - new Date(a.createTime)
+        // })
 
-        this.commentList = sortedList
+        this.commentList = response.rows
         this.total = response.total
         this.loading = false
       })
@@ -270,7 +272,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const commentIds = row.commentId || this.ids
-      this.$modal.confirm('是否确认删除评论功能编号为"' + commentIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除评论功能编号为"' + commentIds + '"的数据项？').then(function () {
         return delComment(commentIds)
       }).then(() => {
         this.getList()

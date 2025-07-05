@@ -72,6 +72,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return userDTO;
     }
 
+
+
     @Override
     public long register(RegisterUserVO userVO) {
         if(userVO.getUsername()== null&& userVO.getPassword()== null&& userVO.getCheckPassword()== null){

@@ -1,13 +1,23 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="帖子标题" prop="title">
-        <el-input
-          v-model="queryParams.title"
-          placeholder="请输入帖子标题"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+<!--      <el-form-item label="帖子标题" prop="title">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.title"-->
+<!--          placeholder="请输入帖子标题"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <el-form-item label="所属分类" prop="categoryName">
+        <el-select v-model="queryParams.categoryName" placeholder="请选择分类" clearable>
+          <el-option
+            v-for="(item, index) in categoryOptions"
+            :key="index"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -17,14 +27,6 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['post:post:add']"
-        >新增</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -95,11 +97,22 @@
         <el-form-item label="帖子标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入帖子标题" />
         </el-form-item>
-        <el-form-item label="帖子所属分类" >
-          <el-input v-model="form.categoryName" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="帖子封面图片URL" prop="image">
-          <image-upload v-model="form.image"/>
+        <el-form-item label="类目名称" prop="categoryName">
+          <el-select
+            v-model="form.categoryName"
+            placeholder="请选择类目名称"
+            clearable
+            filterable
+            allow-create
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in categoryNames"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="帖子HTML格式内容">
           <editor v-model="form.contentHtml" :min-height="192"/>
@@ -115,6 +128,7 @@
 
 <script>
 import { listPost, getPost, delPost, addPost, updatePost } from "@/api/postlist/postlist";
+import { listAllCategoryNames } from "@/api/jank/category";
 import VueMarkdownIt from 'vue-markdown-it';
 
 export default {
@@ -124,6 +138,7 @@ export default {
   },
   data() {
     return {
+      categoryNames: [],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -142,13 +157,16 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      // 分类选项
+      categoryOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 50,
         title: null,
         visibility: null,
         categoryIds: null,
+        categoryName: null,
       },
       // 表单参数
       form: {},
@@ -171,19 +189,49 @@ export default {
   },
   created() {
     this.getList();
+    this.getCategoryOptions();
   },
   methods: {
+    /** 查询分类下拉选项 */
+    getCategoryOptions() {
+      listAllCategoryNames().then(response => {
+        console.log('分类数据:', response.data);
+        this.categoryOptions = response.data;
+        this.categoryNames = response.data; // 同时设置categoryNames，确保两个下拉列表使用相同的数据
+      }).catch(error => {
+        console.error('获取分类数据失败:', error);
+        this.$modal.msgError("获取分类数据失败");
+      });
+    },
     /** 查询帖子列表 */
     getList() {
       this.loading = true;
+      console.log('发送查询参数:', JSON.stringify(this.queryParams));
       listPost(this.queryParams).then(response => {
-        // 按照创建时间降序排列（从晚到早）
-        const sortedList = response.rows.sort((a, b) => {
-          return new Date(b.createTime) - new Date(a.createTime);
-        });
+        // console.log('收到完整响应:', response);
 
-        this.postList = sortedList;
+        // 处理不同的响应数据结构
+        // let data = response.data || response;
+        // if (!data) {
+        //   console.error('无效的响应数据');
+        //   this.loading = false;
+        //   return;
+        // }
+
+        // 兼容不同的数据结构
+        // const items = data.rows || data.list || data.data || [];
+        // const total = data.total || data.pageInfo?.total || items.length;
+
+        // 按照创建时间降序排列（从晚到早）
+        // const sortedList = items.sort((a, b) => {
+        //   return new Date(b.createTime) - new Date(a.createTime);
+        // });
+
+        this.postList = response.rows;
         this.total = response.total;
+        this.loading = false;
+      }).catch(error => {
+        console.error('查询失败:', error);
         this.loading = false;
       });
     },
@@ -277,7 +325,7 @@ export default {
       }, `post_${new Date().getTime()}.xlsx`)
     }
   }
-};
+}
 </script>
 <style>
 .v-markdown-body h1 {

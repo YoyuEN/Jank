@@ -14,6 +14,6 @@ import java.util.List;
  */
 @Mapper
 public interface CommentMapper extends BaseMapper<Comment> {
-//    int getPostGoodOrBad(String postId);
-//    List<Comment> getCommentsByArticleId(String postId);
+    int getPostGoodOrBad(String postId);
+    List<Comment> getCommentsByArticleId(String postId);
 }

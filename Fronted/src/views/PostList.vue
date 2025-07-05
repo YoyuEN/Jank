@@ -53,6 +53,7 @@ export default {
       selectedCategory: '全部', // 新增：当前选中的分类
       categories: ['全部', '前端', '后端', '算法', '运维', 'AI'], // 示例分类列表
     }
+
   },
   computed: {
     filteredPosts() {
