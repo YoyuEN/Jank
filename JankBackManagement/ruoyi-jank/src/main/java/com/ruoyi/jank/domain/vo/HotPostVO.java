@@ -10,26 +10,19 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * author: wuyinai
- * date: 2025/6/24
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 //帖子
-public class PostVO implements Serializable {
+public class HotPostVO implements Serializable {
     private static final long serialVersionUID = 1L;
     @TableId
     private String postId;
     private String title;
-    private String image;
     private Integer visibility;
     private String contentHtml;
     private String categoryName;
-    private String username;
+    //用户id
     private String createTime;
-    private String updateTime;
-    @TableLogic
-    private Integer deleted;
+    private Long good;
 }

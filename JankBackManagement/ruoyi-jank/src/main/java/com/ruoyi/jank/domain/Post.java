@@ -26,8 +26,7 @@ public class Post implements Serializable {
     private String image;
     private Integer visibility;
     private String contentHtml;
-    @TableField(exist = false)
-    private List<String> categoryNames;
+    private String categoryName;
     //用户id
     private String userId;
     private String createTime;

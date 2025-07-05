@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.jank.domain.dto.CommentDto;
+import com.ruoyi.jank.domain.vo.CommentUserVO;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,9 +38,9 @@ public class CommentController extends BaseController
     private ICommentService commentService;
 
     @GetMapping("/listWithUserAndPost")
-    public TableDataInfo listWithUserAndPost(Comment comment) {
+    public TableDataInfo listWithUserAndPost( ) {
         startPage();
-        List<Comment> list = commentService.selectCommentWithUserAndPost(comment);
+        List<CommentUserVO> list = commentService.selectCommentWithUserAndPost();
         return getDataTable(list);
     }
     /**
