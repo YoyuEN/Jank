@@ -133,6 +133,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
         LambdaQueryWrapper<Moment> wrapper1 = new LambdaQueryWrapper<>();
         wrapper1.eq(Moment::getMomentId, momentId);
         Moment moment = super.getOne(wrapper1);
+        moment.setDeleted(1);
         this.updateById(moment);
         return true;
     }
