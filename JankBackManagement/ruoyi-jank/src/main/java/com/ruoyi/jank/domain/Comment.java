@@ -1,6 +1,7 @@
 package com.ruoyi.jank.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.ruoyi.common.annotation.Excel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,15 +37,16 @@ public class Comment implements Serializable {
     @TableField("post_id")
     private String postId;
     @Excel(name = "创建时间")
-    @TableField("create_time")
-    private Date createTime;
+    private String createTime;
     @Excel(name = "更新时间")
-    @TableField("update_time")
-    private Date updateTime;
+    private String updateTime;
+    private Integer goodorbad;
+    private String  username;
+    private String RootParentId;
+    private String parentName;
+    private String replyToCommentId;
+    private String ParentId;
+    private String avatar;
+    @TableLogic
     private Integer deleted;
-    @TableField(exist = false)
-    private CommonUser user;
-    @TableField(exist = false)
-    private Post post;
-
 }

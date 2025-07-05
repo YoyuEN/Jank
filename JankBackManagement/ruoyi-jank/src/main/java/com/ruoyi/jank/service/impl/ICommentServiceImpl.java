@@ -5,9 +5,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.jank.domain.Comment;
+import com.ruoyi.jank.domain.Post;
 import com.ruoyi.jank.domain.dto.CommentDto;
+import com.ruoyi.jank.domain.vo.CommentUserVO;
 import com.ruoyi.jank.mapper.CommentMapper;
 import com.ruoyi.jank.service.ICommentService;
+import com.ruoyi.jank.service.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,8 @@ public class ICommentServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
     @Autowired
     private CommentMapper commentMapper;
 
+    @Autowired
+    private IPostService postService;
     @Override
     //查询评论列表
     public List<CommentDto> selectCommentList(Comment comment) {
@@ -39,10 +44,24 @@ public class ICommentServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
         return CommentDtoList;
     }
 
-        @Override
-        public List<Comment> selectCommentWithUserAndPost(Comment comment) {
-            return commentMapper.selectCommentWithUserAndPost(comment);
+    @Override
+    public List<CommentUserVO> selectCommentWithUserAndPost() {
+        LambdaQueryWrapper<Comment> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Comment::getDeleted,0);
+        List<Comment> commentList=list(lambdaQueryWrapper);
+        List<CommentUserVO> commentUserVOList =new ArrayList<>();
+        for (Comment comment : commentList) {
+            CommentUserVO commentUserVO=new CommentUserVO();
+            commentUserVO.setContent(comment.getContent());
+            Post post = postService.getById(comment.getPostId());
+            commentUserVO.setTitle(post.getTitle());
+            commentUserVO.setCreateTime(comment.getCreateTime());
+            commentUserVO.setUsername(comment.getUsername());
+            commentUserVO.setGoodorbad(comment.getGoodorbad());
+            commentUserVOList.add(commentUserVO);
         }
+        return commentUserVOList;
+    }
 
     @Override
     public List<Comment> getCommentByPostId(String postId) {
