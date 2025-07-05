@@ -101,5 +101,12 @@ public class PostController extends BaseController
     {
         return toAjax(postService.removeByPostId(postIds));
     }
+
+
+    @GetMapping("/hot")
+    public AjaxResult hotPost()
+    {
+        return success(postService.hotPost());
+    }
 }
 

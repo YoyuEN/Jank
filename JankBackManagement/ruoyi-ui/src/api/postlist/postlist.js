@@ -42,3 +42,10 @@ export function delPost(postId) {
     method: 'delete'
   })
 }
+
+export function hotPost(){
+  return request({
+    url: '/postlist/postlist/hot',
+    method: 'get'
+  })
+}
