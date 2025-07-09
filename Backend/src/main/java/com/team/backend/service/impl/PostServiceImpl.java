@@ -75,6 +75,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
             String image = post.getImage();
             post.setImage(minioService.getPresignedUrl(image));
         }
+        // 根据创建时间进行倒序排序
+        postList.sort((post1, post2) -> post2.getCreateTime().compareTo(post1.getCreateTime()));
         return postList;
     }
 

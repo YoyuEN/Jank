@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/Backend/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Backend/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-admin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-admin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-framework/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-framework/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-generator/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-generator/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-jank/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-jank/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-quartz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-quartz/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-system/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/ruoyi-system/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JankBackManagement/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

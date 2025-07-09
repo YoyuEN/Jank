@@ -131,11 +131,6 @@ import YoyuEN from '@/assets/YoyuEN.png'
 import zhao from '@/assets/zhao.jpg'
 import hua from '@/assets/hua.jpg'
 import hu from '@/assets/hu.jpg'
-import slide5 from '@/assets/slide5.png'
-import slide4 from '@/assets/slide4.jpg'
-import slide3 from '@/assets/slide3.jpg'
-import slide2 from '@/assets/slide5.png'
-import slide1 from '@/assets/slide1.png'
 
 
 
@@ -148,27 +143,27 @@ export default defineComponent({
       {
         text: "探索、创新、分享",
         description: "我们的核心价值观",
-        image: slide1
+        image: YoyuEN
       },
       {
         text: "基于Vue 3的现代化应用",
         description: "使用最新前端技术栈",
-        image: slide2
+        image: YoyuEN
       },
       {
         text: "优雅的设计，流畅的体验",
         description: "以用户为中心的界面设计",
-        image: slide3
+        image: YoyuEN
       },
       {
         text: "欢迎了解我们的项目",
         description: "加入我们的社区",
-        image: slide4
+        image: YoyuEN
       },
       {
         text: "感谢您的援助和支持",
         description: "支持更多交互与个性化设置",
-        image: slide5
+        image: YoyuEN
       }
     ]);
 

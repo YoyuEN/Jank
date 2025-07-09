@@ -6,14 +6,14 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://localhost:3306/Jank?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                url: jdbc:mysql://localhost:3306/yoyuen?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
                 password: 242431
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
                 enabled: true
-                url: jdbc:mysql://localhost:3306/Jank?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                url: jdbc:mysql://localhost:3306/yoyuen?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
                 password: 242431
             # 初始连接数
@@ -59,3 +59,10 @@ spring:
                 wall:
                     config:
                         multi-statement-allow: true
+
+
+minio:
+  endpoint: http://172.26.58.74:9005
+  access-key: minioadmin
+  secret-key: minioadmin123
+  bucket-name: yoyuen

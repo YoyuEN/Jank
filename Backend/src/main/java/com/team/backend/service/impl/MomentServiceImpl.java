@@ -68,6 +68,8 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
             String avatarUrl = userService.getAvatarUrlByUserId(moment.getUserId());
             moment.setAvatarUrl(avatarUrl);
         }
+        // 根据创建时间进行倒叙排序
+        momentList.sort((moment1, moment2) -> moment2.getCreateTime().compareTo(moment1.getCreateTime()));
         return momentList;
     }
 

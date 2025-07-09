@@ -21,7 +21,10 @@
             <p class="user-detail">
               <span class="label">邮箱：</span>{{ user.email || 'example@email.com' }}
             </p>
-            <p class="user-detail"><span class="label">加入时间：</span>{{ user.createTime }}</p>
+            <p class="user-detail">
+              <span class="label">加入时间：</span>
+              {{ new Date(user.createTime).toLocaleDateString('zh-CN') }}
+            </p>
             <p class="user-detail">
               <span class="label">地址：</span>{{ userInfo.address || '未设置' }}
             </p>
